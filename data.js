@@ -78,6 +78,16 @@ const OBSAH = {
     },
   ],
 
+  // --- AKTUÁLNĚ SKLADEM ---
+  // Sem piš co je zrovna k dostání – zobrazí se jako tagy v sekci Aktuálně
+  // Pokud je seznam prázdný, blok se nezobrazí
+  aktuality: {
+    skladem: [
+      "Jablka – Fuji, Jonagold, Braeburn",
+      "Domácí mošty – dostupné celoročně",
+    ],
+  },
+
   // --- CENÍK MOŠTU ---
   // Cena se píše jako číslo (bez Kč)
   // dostupne: true = normálně, false = zobrazí se jako nedostupné
