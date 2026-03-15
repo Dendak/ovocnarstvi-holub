@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ovocnářství Holub – čerstvé ovoce a mošty z Krtel</title>
+  <meta name="description" content="Čerstvé ovoce a domácí mošty přímo ze sadu v Krtelích u Netolic. Třešně, višně, meruňky, broskve, švestky, hrušky, jablka. Rozvoz do Českých Budějovic." />
+  <meta name="keywords" content="ovocnářství, ovoce, mošty, Krtely, Netolice, České Budějovice, třešně, jablka, hrušky" />
+  <link rel="canonical" href="https://ovocnarstvi-holub.cz/" />
+  <!-- Open Graph (sdílení na FB, WhatsApp) -->
+  <meta property="og:title" content="Ovocnářství Holub – čerstvé ovoce a mošty" />
+  <meta property="og:description" content="Čerstvé ovoce a domácí mošty přímo ze 30ha sadu v Krtelích. Rozvoz do Českých Budějovic po–st–pá." />
+  <meta property="og:image" content="img/504681257_4078182002327026_6055659733487249673_n.jpg" />
+  <meta property="og:type" content="website" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍎</text></svg>" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50:  '#f2f9f2', 100: '#e0f2e0', 200: '#b8e0b8', 300: '#86c886',
+              400: '#52a852', 500: '#2e8b2e', 600: '#237023', 700: '#1a561a',
+              800: '#133e13', 900: '#0d2b0d',
+            },
+          },
+          fontFamily: { serif: ['"Playfair Display"', 'Georgia', 'serif'] },
+        },
+      },
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+    .hero-photo {
+      background-image: linear-gradient(to bottom, rgba(10,40,10,0.55) 0%, rgba(10,40,10,0.7) 100%),
+                        url('img/504681257_4078182002327026_6055659733487249673_n.jpg');
+      background-size: cover; background-position: center 40%;
+    }
+    .card { transition: transform 0.2s, box-shadow 0.2s; }
+    .card:hover { transform: translateY(-3px); box-shadow: 0 10px 28px rgba(46,139,46,0.15); }
+    #lightbox { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.88); z-index:1000; align-items:center; justify-content:center; }
+    #lightbox.open { display:flex; }
+    #lightbox img { max-width:90vw; max-height:90vh; border-radius:8px; object-fit:contain; }
+    #lightbox-close { position:fixed; top:1.2rem; right:1.5rem; color:#fff; font-size:2.5rem; cursor:pointer; line-height:1; }
+  </style>
+  <script src="data.js"></script>
+</head>
+<body class="bg-brand-50 text-gray-800">
+
+  <div id="lightbox" onclick="closeLightbox()">
+    <span id="lightbox-close">&times;</span>
+    <img id="lightbox-img" src="" alt="" />
+  </div>
+
+  <!-- NAV -->
+  <nav class="bg-brand-800 text-white sticky top-0 z-50 shadow-md">
+    <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+      <span id="nav-jmeno" class="font-serif font-bold text-base whitespace-nowrap">🍎</span>
+      <div class="flex gap-3 sm:gap-6 text-sm font-medium text-brand-200">
+        <a href="#ovoce"   class="hover:text-white transition-colors">Ovoce</a>
+        <a href="#mosty"   class="hover:text-white transition-colors">Mošty</a>
+        <a href="#aktuality" class="hover:text-white transition-colors">Aktuality</a>
+        <a href="#galerie" class="hover:text-white transition-colors">Fotky</a>
+        <a href="#kontakt" class="hover:text-white transition-colors">Kontakt</a>
+        <div class="flex items-center gap-1 ml-2 bg-brand-700 rounded-full px-1 py-0.5">
+          <span class="flex items-center gap-1 px-2 py-0.5 rounded-full bg-white text-brand-800 font-semibold text-xs cursor-default">🇨🇿 CS</span>
+          <a href="index-de.html" class="flex items-center gap-1 px-2 py-0.5 rounded-full text-brand-300 hover:text-white transition-colors text-xs">🇩🇪 DE</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <header class="hero-photo text-white">
+    <div class="max-w-4xl mx-auto px-6 py-14 md:py-24 text-center">
+      <h1 id="hero-jmeno" class="font-serif text-3xl sm:text-5xl md:text-6xl font-bold mb-3 tracking-tight drop-shadow-lg"></h1>
+      <p class="text-green-200 text-base sm:text-xl mb-8 md:mb-10 drop-shadow">Čerstvé ovoce a domácí mošty přímo ze sadu v Krtelích</p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+        <a id="hero-tel" href="#"
+           class="inline-flex items-center gap-2 bg-white text-brand-700 font-semibold px-7 py-3 rounded-full shadow-lg hover:bg-green-50 transition">
+          📞 ...
+        </a>
+        <a href="#mosty" class="inline-flex items-center gap-2 border-2 border-white text-white font-semibold px-7 py-3 rounded-full hover:bg-white hover:text-brand-700 transition">
+          Ceník moštu →
+        </a>
+      </div>
+      <p class="text-green-300 text-sm mt-6 drop-shadow">Prodej po telefonické domluvě</p>
+    </div>
+  </header>
+
+  <!-- STATS PÁSEK -->
+  <div class="bg-brand-800 text-white">
+    <div class="max-w-4xl mx-auto px-6 py-5 flex flex-wrap justify-center gap-6 sm:gap-12 text-center text-sm">
+      <div><div class="text-2xl font-bold font-serif">30 ha</div><div class="text-brand-300 text-xs mt-0.5">vlastního sadu</div></div>
+      <div class="w-px bg-brand-600 hidden sm:block"></div>
+      <div class="flex flex-col items-center gap-1">
+        <img src="img/sispo.gif" alt="Certifikace SISPO" class="h-10 object-contain" onerror="this.style.display='none';this.nextElementSibling.style.display='block'" />
+        <span style="display:none" class="text-brand-200 font-semibold text-sm">SISPO</span>
+        <div class="text-brand-300 text-xs">certifikace integrované produkce</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OVOCE -->
+  <section id="ovoce" class="max-w-5xl mx-auto px-6 py-16">
+    <h2 class="font-serif text-3xl sm:text-4xl font-bold text-brand-800 text-center mb-2">Naše ovoce</h2>
+    <p class="text-center text-gray-500 mb-12">Přesné termíny dostupnosti dle ročníku 2026</p>
+    <div id="ovoce-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+  </section>
+
+  <!-- MOŠTY -->
+  <section id="mosty" class="bg-white border-y border-brand-100 py-16">
+    <div class="max-w-3xl mx-auto px-6">
+      <h2 class="font-serif text-3xl sm:text-4xl font-bold text-brand-800 text-center mb-2">Domácí mošty</h2>
+      <p class="text-center text-gray-500 mb-2">100% přírodní šťávy bez přidaných cukrů a konzervantů</p>
+      <p class="text-center text-brand-600 font-medium mb-2">
+        Dostupné celoročně &nbsp;·&nbsp; Ceník platný od <span id="mosty-platnost"></span>
+      </p>
+      <p class="text-center text-gray-500 text-sm mb-10">Základem všech moštu je čerstvá jablečná šťáva z vlastního sadu</p>
+      <div class="overflow-x-auto rounded-2xl border border-brand-200 shadow-sm">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="bg-brand-700 text-white">
+              <th class="text-left px-3 sm:px-5 py-3 font-semibold">Příchuť</th>
+              <th class="text-right px-3 sm:px-5 py-3 font-semibold whitespace-nowrap">5 l</th>
+              <th class="text-right px-3 sm:px-5 py-3 font-semibold whitespace-nowrap">3 l</th>
+            </tr>
+          </thead>
+          <tbody id="mosty-tbody"></tbody>
+        </table>
+      </div>
+      <p class="text-center text-gray-400 text-xs mt-4">Ceny jsou za bag-in-box balení. Pro objednávku zavolejte nebo napište.</p>
+    </div>
+  </section>
+
+  <!-- GALERIE -->
+  <section id="galerie" class="max-w-5xl mx-auto px-6 py-16">
+    <h2 class="font-serif text-3xl sm:text-4xl font-bold text-brand-800 text-center mb-2">Ze sadu</h2>
+    <p class="text-center text-gray-500 mb-10">Záběry z naší každodenní práce</p>
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+      <img src="img/504681257_4078182002327026_6055659733487249673_n.jpg" alt="Jarní sad v květu"
+           class="w-full h-52 object-cover rounded-xl cursor-pointer hover:opacity-90 transition col-span-2 md:col-span-1" onclick="openLightbox(this.src)" />
+      <img src="img/484803473_1088135826450156_1603854554852976317_n.jpg" alt="Sklizeň třešní"
+           class="w-full h-52 object-cover rounded-xl cursor-pointer hover:opacity-90 transition" onclick="openLightbox(this.src)" />
+      <img src="img/119992725_2437457233066186_4983175529147161289_n.jpg" alt="Jablka na větvi"
+           class="w-full h-52 object-cover rounded-xl cursor-pointer hover:opacity-90 transition" onclick="openLightbox(this.src)" />
+      <img src="img/119992199_2437457283066181_6907105438319047381_n.jpg" alt="Hrušky v sadu"
+           class="w-full h-52 object-cover rounded-xl cursor-pointer hover:opacity-90 transition" onclick="openLightbox(this.src)" />
+      <img src="img/542007542_1218005136796557_6760772214935127534_n.jpg" alt="Sklizeň hrušek"
+           class="w-full h-52 object-cover rounded-xl cursor-pointer hover:opacity-90 transition" onclick="openLightbox(this.src)" />
+      <img src="img/hrusky.jpg" alt="Hrušky v bedně"
+           class="w-full h-52 object-cover rounded-xl cursor-pointer hover:opacity-90 transition" onclick="openLightbox(this.src)" />
+      <img src="img/WhatsApp%20Image%202026-03-15%20at%2013.38.50.jpeg" alt="Meruňky a broskve"
+           class="w-full h-52 object-cover rounded-xl cursor-pointer hover:opacity-90 transition" onclick="openLightbox(this.src)" />
+      <img src="img/WhatsApp%20Image%202026-03-15%20at%2013.39.21.jpeg" alt="Meruňkový strom"
+           class="w-full h-52 object-cover rounded-xl cursor-pointer hover:opacity-90 transition" onclick="openLightbox(this.src)" />
+      <img src="img/WhatsApp%20Image%202026-03-15%20at%2013.42.01.jpeg" alt="Švestky v bednách"
+           class="w-full h-52 object-cover rounded-xl cursor-pointer hover:opacity-90 transition" onclick="openLightbox(this.src)" />
+      <img src="img/vi%C5%A1n%C4%9B.jpeg" alt="Višně v bednách"
+           class="w-full h-52 object-cover rounded-xl cursor-pointer hover:opacity-90 transition" onclick="openLightbox(this.src)" />
+    </div>
+  </section>
+
+  <!-- AKTUÁLNĚ (FACEBOOK) -->
+  <section id="aktuality" class="bg-white border-t border-brand-100 py-16">
+    <div class="max-w-4xl mx-auto px-6">
+      <h2 class="font-serif text-3xl sm:text-4xl font-bold text-brand-800 text-center mb-2">Aktuálně</h2>
+      <p class="text-center text-gray-500 mb-8 text-sm">Sledujte naše příspěvky na Facebooku</p>
+      <div class="flex justify-center">
+        <div id="fb-placeholder" class="w-full max-w-lg bg-gray-100 border border-gray-200 rounded-2xl p-8 text-center text-gray-500 text-sm hidden">
+          <div class="text-3xl mb-2">📘</div>
+          <p class="mb-3">Pro zobrazení příspěvků z Facebooku je potřeba povolit cookies třetích stran.</p>
+          <button onclick="prijimatCookies()" class="bg-brand-700 text-white text-xs font-semibold px-4 py-2 rounded-full hover:bg-brand-600 transition">Povolit cookies</button>
+        </div>
+        <iframe id="fb-iframe"
+          data-src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2FOvoceHolub&tabs=timeline&width=500&height=600&small_header=true&adapt_container_width=true&hide_cover=false&show_facepile=false"
+          width="500" height="600"
+          style="border:none;overflow:hidden;max-width:100%;border-radius:1rem;display:none"
+          scrolling="no" frameborder="0" allowfullscreen="true"
+          allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share">
+        </iframe>
+      </div>
+    </div>
+  </section>
+
+  <!-- JAK NAKOUPIT -->
+  <section class="bg-white border-t border-brand-100 py-16">
+    <div class="max-w-4xl mx-auto px-6">
+      <h2 class="font-serif text-3xl font-bold text-brand-800 text-center mb-10">Jak nakoupit?</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-8 text-center mb-10">
+        <div><div class="text-5xl mb-3">📞</div><h3 class="font-semibold text-brand-700 mb-1">1. Zavolejte</h3><p class="text-gray-500 text-sm">Domluvte se předem – rádi vám řekneme, co zrovna máme čerstvé.</p></div>
+        <div><div class="text-5xl mb-3">📅</div><h3 class="font-semibold text-brand-700 mb-1">2. Domluvte termín</h3><p class="text-gray-500 text-sm">Přizpůsobíme se vám – prodej probíhá po vzájemné domluvě.</p></div>
+        <div><div class="text-5xl mb-3">🧺</div><h3 class="font-semibold text-brand-700 mb-1">3. Přijeďte / Doručíme</h3><p class="text-gray-500 text-sm">Vyzvednutí v Krtelích, nebo dovoz do Českých Budějovic.</p></div>
+      </div>
+      <!-- ROZVOZ ČB -->
+      <div class="bg-brand-50 border border-brand-200 rounded-2xl p-6 flex flex-col sm:flex-row items-center gap-5">
+        <div class="text-5xl">🚗</div>
+        <div>
+          <h3 class="font-semibold text-brand-800 text-lg mb-1">Rozvoz do Českých Budějovic</h3>
+          <p class="text-gray-600 text-sm">Pravidelně každé <strong>pondělí, středu a pátek</strong> dovážíme ovoce a mošty přímo do Českých Budějovic. Stačí napsat nebo zavolat a domluvit se na místě předání.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FORMULÁŘ -->
+  <section id="napiste" class="bg-brand-50 border-t border-brand-100 py-16">
+    <div class="max-w-2xl mx-auto px-6">
+      <h2 class="font-serif text-3xl font-bold text-brand-800 text-center mb-2">Napište nám</h2>
+      <p class="text-center text-gray-500 text-sm mb-8">Objednávka, dotaz nebo zájem o rozvoz do Budějovic – ozveme se zpět</p>
+      <form id="kontakt-form" action="https://formsubmit.co/ajax/holubdenis@seznam.cz" method="POST" class="bg-white rounded-2xl border border-brand-100 shadow-sm p-6 sm:p-8 space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-600 mb-1">Jméno</label>
+            <input type="text" name="jmeno" required placeholder="Jan Novák"
+                   class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-600 mb-1">Telefon nebo e-mail</label>
+            <input type="text" name="kontakt" required placeholder="777 123 456 nebo jan@email.cz"
+                   class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100" />
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-600 mb-1">Zpráva</label>
+          <textarea name="zprava" required rows="4" placeholder="Co vás zajímá? O co máte zájem?"
+                    class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-100 resize-none"></textarea>
+        </div>
+        <input type="hidden" name="_subject" value="Nová zpráva z webu – Ovocnářství Holub" />
+        <input type="hidden" name="_language" value="cs" />
+        <button type="submit"
+                class="w-full bg-brand-700 hover:bg-brand-600 text-white font-semibold py-3 rounded-xl transition text-sm">
+          Odeslat zprávu →
+        </button>
+        <p id="form-ok" class="hidden text-center text-green-700 text-sm font-medium">✅ Zpráva odeslána! Ozveme se co nejdříve.</p>
+        <p id="form-err" class="hidden text-center text-red-600 text-sm">❌ Nepodařilo se odeslat. Zkuste to prosím znovu.</p>
+      </form>
+    </div>
+  </section>
+
+  <!-- KONTAKT -->
+  <section id="kontakt" class="bg-brand-50 border-t border-brand-100 py-16">
+    <div class="max-w-4xl mx-auto px-6">
+      <h2 class="font-serif text-3xl sm:text-4xl font-bold text-brand-800 text-center mb-12">Kontakt</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+
+        <div class="card bg-white rounded-2xl p-6 border border-brand-100 flex items-start gap-4">
+          <div class="text-3xl">📍</div>
+          <div>
+            <h3 class="font-semibold text-brand-700 mb-1">Adresa</h3>
+            <p id="kontakt-adresa" class="text-gray-700"></p>
+            <a id="kontakt-mapa" href="#" target="_blank" class="inline-block mt-2 text-brand-600 text-sm hover:underline">Zobrazit na mapě →</a>
+          </div>
+        </div>
+
+        <div class="card bg-white rounded-2xl p-6 border border-brand-100 flex items-start gap-4">
+          <div class="text-3xl">📞</div>
+          <div>
+            <h3 class="font-semibold text-brand-700 mb-1">Telefon</h3>
+            <a id="kontakt-tel1" href="#" class="block text-gray-700 font-medium hover:text-brand-600"></a>
+            <a id="kontakt-tel2" href="#" class="block text-gray-700 font-medium hover:text-brand-600"></a>
+            <p class="text-gray-400 text-xs mt-1">Prodej po telefonické domluvě</p>
+          </div>
+        </div>
+
+        <div class="card bg-white rounded-2xl p-6 border border-brand-100 flex items-start gap-4">
+          <div class="text-3xl">✉️</div>
+          <div>
+            <h3 class="font-semibold text-brand-700 mb-1">E-mail</h3>
+            <a id="kontakt-email" href="#" class="text-gray-700 hover:text-brand-600"></a>
+          </div>
+        </div>
+
+        <div class="card bg-white rounded-2xl p-6 border border-brand-100 flex items-start gap-4">
+          <div class="text-3xl">🌐</div>
+          <div>
+            <h3 class="font-semibold text-brand-700 mb-2">Sledujte nás</h3>
+            <a id="kontakt-fb" href="#" target="_blank" class="flex items-center gap-2 text-gray-700 hover:text-brand-600 text-sm mb-1">
+              <span class="font-medium">Facebook</span><span id="kontakt-fb-label" class="text-gray-400"></span>
+            </a>
+            <a id="kontakt-ig" href="#" target="_blank" class="flex items-center gap-2 text-gray-700 hover:text-brand-600 text-sm">
+              <span class="font-medium">Instagram</span><span id="kontakt-ig-label" class="text-gray-400"></span>
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- MAPA -->
+      <div class="mt-8 rounded-2xl overflow-hidden border border-brand-100 shadow-sm">
+        <div id="map-placeholder" class="bg-gray-100 h-40 flex flex-col items-center justify-center text-gray-500 text-sm gap-2 hidden">
+          <span class="text-2xl">🗺️</span>
+          <p>Mapa se zobrazí po povolení cookies.</p>
+          <button onclick="prijimatCookies()" class="bg-brand-700 text-white text-xs font-semibold px-4 py-2 rounded-full hover:bg-brand-600 transition">Povolit cookies</button>
+        </div>
+        <iframe id="map-iframe"
+          data-src="https://maps.google.com/maps?q=Ovocn%C3%A1%C5%99stv%C3%AD+Holub&output=embed"
+          width="100%" height="320" style="border:0;display:none" allowfullscreen="" loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade" title="Mapa – Ovocnářství Holub"></iframe>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="bg-brand-800 text-brand-300 text-center py-8 text-sm">
+    <p id="footer-jmeno" class="font-serif text-white text-lg mb-1"></p>
+    <p id="footer-info"></p>
+    <p class="mt-3 text-brand-500 text-xs">© 2026 Ovocnářství Holub &nbsp;·&nbsp; <a href="gdpr.html" class="hover:text-brand-300 underline">Zásady ochrany osobních údajů</a></p>
+  </footer>
+
+  <!-- WHATSAPP TLAČÍTKO -->
+  <a id="wa-btn" href="#" target="_blank" rel="noopener"
+     class="fixed bottom-6 right-5 z-40 bg-green-500 hover:bg-green-600 text-white rounded-full w-14 h-14 flex items-center justify-center shadow-xl transition text-2xl"
+     title="Napište nám na WhatsApp">
+    <svg viewBox="0 0 24 24" fill="currentColor" class="w-7 h-7"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+  </a>
+
+  <!-- COOKIE LIŠTA -->
+  <div id="cookie-bar" class="fixed bottom-0 left-0 right-0 z-50 bg-brand-900 text-white px-4 py-4 shadow-2xl" style="display:none">
+    <div class="max-w-4xl mx-auto flex flex-col sm:flex-row items-start sm:items-center gap-4">
+      <p class="text-sm flex-1 text-brand-200">
+        Tento web používá cookies třetích stran (Facebook, Google Maps) pro zobrazení mapy a aktualit.
+        <a href="gdpr.html" class="underline text-brand-300 hover:text-white ml-1">Více informací</a>
+      </p>
+      <div class="flex gap-2 flex-shrink-0">
+        <button onclick="prijimatCookies()"
+                class="bg-brand-500 hover:bg-brand-400 text-white font-semibold text-sm px-5 py-2 rounded-full transition">
+          Přijmout vše
+        </button>
+        <button onclick="odmitnoutCookies()"
+                class="border border-brand-500 hover:border-brand-300 text-brand-300 hover:text-white font-semibold text-sm px-5 py-2 rounded-full transition">
+          Odmítnout
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- cookies ---
+    function nacistEmbedy() {
+      ['fb-iframe','map-iframe'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el && el.dataset.src) { el.src = el.dataset.src; el.style.display = ''; }
+      });
+      ['fb-placeholder','map-placeholder'].forEach(id => {
+        const el = document.getElementById(id); if (el) el.classList.add('hidden');
+      });
+    }
+    function zobrazitPlaceholdery() {
+      ['fb-placeholder','map-placeholder'].forEach(id => {
+        const el = document.getElementById(id); if (el) el.classList.remove('hidden');
+      });
+    }
+    function prijimatCookies() {
+      localStorage.setItem('cookies', 'accepted');
+      document.getElementById('cookie-bar').style.display = 'none';
+      nacistEmbedy();
+    }
+    function odmitnoutCookies() {
+      localStorage.setItem('cookies', 'declined');
+      document.getElementById('cookie-bar').style.display = 'none';
+      zobrazitPlaceholdery();
+    }
+    (function() {
+      const vol = localStorage.getItem('cookies');
+      if (!vol) { document.getElementById('cookie-bar').style.display = ''; }
+      else if (vol === 'accepted') { nacistEmbedy(); }
+      else { zobrazitPlaceholdery(); }
+    })();
+
+    // --- formulář ---
+    document.getElementById('kontakt-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const ok  = document.getElementById('form-ok');
+      const err = document.getElementById('form-err');
+      try {
+        const res = await fetch(this.action, { method: 'POST', body: new FormData(this), headers: { Accept: 'application/json' } });
+        if (res.ok) { this.reset(); ok.classList.remove('hidden'); err.classList.add('hidden'); }
+        else         { ok.classList.add('hidden'); err.classList.remove('hidden'); }
+      } catch { ok.classList.add('hidden'); err.classList.remove('hidden'); }
+    });
+
+    // --- lightbox ---
+    function openLightbox(src) {
+      document.getElementById('lightbox-img').src = src;
+      document.getElementById('lightbox').classList.add('open');
+    }
+    function closeLightbox() {
+      document.getElementById('lightbox').classList.remove('open');
+    }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+
+    // --- barvy sezón ---
+    const BARVY = {
+      red:    ['bg-red-100',    'text-red-700'],
+      orange: ['bg-orange-100', 'text-orange-700'],
+      purple: ['bg-purple-100', 'text-purple-700'],
+      yellow: ['bg-yellow-100', 'text-yellow-700'],
+      green:  ['bg-brand-100',  'text-brand-700'],
+    };
+
+    // --- naplnění stránky z data.js ---
+    document.addEventListener('DOMContentLoaded', () => {
+      const k = OBSAH.kontakt;
+
+      // whatsapp
+      const waNum = '+420' + k.tel1.replace(/\s/g,'');
+      document.getElementById('wa-btn').href = 'https://wa.me/' + waNum.replace('+','') + '?text=' + encodeURIComponent('Dobrý den, mám zájem o ovoce/mošty.');
+
+      // nav + hero
+      document.getElementById('nav-jmeno').textContent  = '🍎 ' + k.jmeno;
+      document.getElementById('hero-jmeno').textContent = k.jmeno;
+      const tel1čistý = k.tel1.replace(/\s/g, '');
+      document.getElementById('hero-tel').href          = 'tel:+420' + tel1čistý;
+      document.getElementById('hero-tel').textContent   = '📞 ' + k.tel1;
+
+      // kontakt
+      document.getElementById('kontakt-adresa').innerHTML = k.adresa + '<br>' + k.mesto;
+      document.getElementById('kontakt-mapa').href        = 'https://maps.google.com/?q=' + encodeURIComponent(k.adresa + ', ' + k.mesto);
+      document.getElementById('kontakt-tel1').href        = 'tel:+420' + k.tel1.replace(/\s/g, '');
+      document.getElementById('kontakt-tel1').textContent = k.tel1;
+      document.getElementById('kontakt-tel2').href        = 'tel:+420' + k.tel2.replace(/\s/g, '');
+      document.getElementById('kontakt-tel2').textContent = k.tel2;
+      document.getElementById('kontakt-email').href       = 'mailto:' + k.email;
+      document.getElementById('kontakt-email').textContent = k.email;
+      document.getElementById('kontakt-fb').href          = k.facebook;
+      document.getElementById('kontakt-fb-label').textContent = k.facebook.split('/').pop();
+      document.getElementById('kontakt-ig').href          = k.instagram;
+      document.getElementById('kontakt-ig-label').textContent = k.instagram.split('/').pop();
+
+      // footer
+      document.getElementById('footer-jmeno').textContent = k.jmeno;
+      document.getElementById('footer-info').textContent  = k.adresa + ', ' + k.mesto + '  ·  ' + k.tel1 + '  ·  ' + k.email;
+
+      // --- ovoce ---
+      const grid = document.getElementById('ovoce-grid');
+      OBSAH.ovoce.forEach(o => {
+        const [bg, text] = BARVY[o.barva] || BARVY.green;
+        const fotoSrc = 'img/' + encodeURIComponent(o.foto);
+        const fotoHTML = o.foto
+          ? `<img src="${fotoSrc}" alt="${o.nazev}" class="w-full h-44 object-cover cursor-pointer" onclick="openLightbox(this.src)" />`
+          : `<div class="w-full h-44 ${bg} flex items-center justify-center text-5xl">🍎</div>`;
+
+        const wideClass = o.wide ? 'sm:col-span-2 lg:col-span-3' : '';
+        const innerClass = o.wide ? 'flex flex-col sm:flex-row' : '';
+        const imgClass   = o.wide ? 'w-full sm:w-64 h-44 object-cover cursor-pointer flex-shrink-0' : 'w-full h-44 object-cover cursor-pointer';
+        const fotoHTMLWide = o.foto
+          ? `<img src="${fotoSrc}" alt="${o.nazev}" class="${imgClass}" onclick="openLightbox(this.src)" />`
+          : '';
+
+        let html;
+        if (o.wide) {
+          html = `<div class="card bg-white rounded-2xl overflow-hidden shadow-sm border border-brand-100 ${wideClass}">
+            <div class="${innerClass}">
+              ${fotoHTMLWide}
+              <div class="p-5 flex flex-col justify-center">
+                <h3 class="font-serif text-xl font-semibold text-brand-800 mb-1">${o.nazev}</h3>
+                <span class="inline-block ${bg} ${text} text-xs font-medium px-2 py-0.5 rounded-full mb-2 w-fit">${o.sezona}</span>
+                <p class="text-gray-500 text-sm">${o.popis}</p>
+              </div>
+            </div>
+          </div>`;
+        } else {
+          html = `<div class="card bg-white rounded-2xl overflow-hidden shadow-sm border border-brand-100">
+            ${fotoHTML}
+            <div class="p-5">
+              <h3 class="font-serif text-xl font-semibold text-brand-800 mb-1">${o.nazev}</h3>
+              <span class="inline-block ${bg} ${text} text-xs font-medium px-2 py-0.5 rounded-full mb-2">${o.sezona}</span>
+              <p class="text-gray-500 text-sm">${o.popis}</p>
+            </div>
+          </div>`;
+        }
+        grid.insertAdjacentHTML('beforeend', html);
+      });
+
+      // --- mošty ---
+      document.getElementById('mosty-platnost').textContent = OBSAH.mosty.platnostOd;
+      const tbody = document.getElementById('mosty-tbody');
+      OBSAH.mosty.skupiny.forEach((sk, si) => {
+        sk.polozky.forEach((pol, pi) => {
+          const prvni    = pi === 0;
+          const posledni = pi === sk.polozky.length - 1;
+          const specialniRadek = sk.special && posledni;
+          const nedostupne     = pol.dostupne === false;
+
+          const borderTop = prvni ? 'border-t-2 border-brand-200' : 'border-t border-brand-100';
+          const rowCls    = nedostupne ? 'bg-gray-50 hover:bg-gray-100' :
+                            specialniRadek ? 'bg-amber-50 hover:bg-amber-100' : 'hover:bg-brand-50';
+          const tdCls     = nedostupne ? 'px-3 sm:px-5 py-3 text-gray-400' :
+                            specialniRadek ? 'px-3 sm:px-5 py-3 font-semibold text-amber-800' : 'px-3 sm:px-5 py-3';
+          const priceCls  = nedostupne ? 'px-3 sm:px-5 py-3 text-right text-gray-400 whitespace-nowrap' :
+                            specialniRadek ? 'px-3 sm:px-5 py-3 text-right font-semibold text-amber-800 whitespace-nowrap' : 'px-3 sm:px-5 py-3 text-right font-semibold text-brand-700 whitespace-nowrap';
+
+          const nazevHTML = nedostupne
+            ? `<span class="line-through">${pol.nazev}</span> <span class="ml-2 text-xs bg-gray-200 text-gray-500 px-2 py-0.5 rounded-full">nedostupné</span>`
+            : pol.nazev;
+
+          let row = `<tr class="${borderTop} ${rowCls}"><td class="${tdCls}">${nazevHTML}</td>`;
+          if (prvni) {
+            row += `<td class="${priceCls}" rowspan="${sk.polozky.length}" style="vertical-align:middle">${sk.cena5l} Kč</td>`;
+            row += `<td class="${priceCls}" rowspan="${sk.polozky.length}" style="vertical-align:middle">${sk.cena3l} Kč</td>`;
+          }
+          row += '</tr>';
+          tbody.insertAdjacentHTML('beforeend', row);
+        });
+      });
+    });
+  </script>
+
+</body>
+</html>

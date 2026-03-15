@@ -1,0 +1,129 @@
+// ============================================================
+//  OBSAH WEBU – sem piš změny
+//  Po uložení souboru stačí obnovit stránku v prohlížeči (F5)
+// ============================================================
+
+const OBSAH = {
+
+  // --- KONTAKTNÍ ÚDAJE ---
+  kontakt: {
+    jmeno:     "Ovocnářství Holub",
+    adresa:    "Krtely 70",
+    mesto:     "Netolice, 384 11",
+    tel1:      "607 575 271",
+    tel2:      "722 949 299",
+    email:     "holous25@seznam.cz",
+    facebook:  "https://www.facebook.com/OvoceHolub",
+    instagram: "https://www.instagram.com/ovoceholub",
+  },
+
+  // --- OVOCE ---
+  // foto: název souboru z složky img/ (nebo "" když fotka není)
+  // sezona: text zobrazený na štítku
+  // popis: krátký text pod názvem
+  ovoce: [
+    {
+      nazev:  "Třešně",
+      foto:   "484803473_1088135826450156_1603854554852976317_n.jpg",
+      sezona: "1. 7. – 25. 7.",
+      barva:  "red",
+      popis:  "Sladké letní třešně přímo ze stromu.",
+    },
+    {
+      nazev:  "Višně",
+      foto:   "višně.jpeg",
+      sezona: "15. 7. – 8. 8.",
+      barva:  "red",
+      popis:  "Ideální na džem, kompot nebo koláče.",
+    },
+    {
+      nazev:  "Meruňky",
+      foto:   "WhatsApp Image 2026-03-15 at 13.39.21.jpeg",
+      sezona: "červenec – srpen",
+      barva:  "orange",
+      popis:  "Voňavé a šťavnaté, skvělé čerstvé i na zavařování.",
+    },
+    {
+      nazev:  "Broskve",
+      foto:   "WhatsApp Image 2026-03-15 at 13.38.50.jpeg",
+      sezona: "srpen – září",
+      barva:  "orange",
+      popis:  "Šťavnaté broskve na vrcholu léta.",
+    },
+    {
+      nazev:  "Švestky",
+      foto:   "WhatsApp Image 2026-03-15 at 13.42.01.jpeg",
+      sezona: "1. 8. – 15. 10.",
+      barva:  "purple",
+      popis:  "Tradiční česká švestka – ideální na zavařování i do koláče.",
+    },
+    {
+      nazev:  "Hrušky",
+      foto:   "119992199_2437457283066181_6907105438319047381_n.jpg",
+      sezona: "1. 8. – 31. 1.",
+      barva:  "yellow",
+      popis:  "Šťavnaté hrušky různých odrůd.",
+    },
+    {
+      nazev:  "Jablka",
+      foto:   "119992725_2437457233066186_4983175529147161289_n.jpg",
+      sezona: "15. 8. – 31. 3.",
+      barva:  "green",
+      popis:  "Více odrůd, sklizené z vlastního sadu a skladované pro vás.",
+      wide:   true, // tato karta zabere celou šířku
+    },
+  ],
+
+  // --- CENÍK MOŠTU ---
+  // Cena se píše jako číslo (bez Kč)
+  // dostupne: true = normálně, false = zobrazí se jako nedostupné
+  mosty: {
+    platnostOd: "15. 3. 2026",
+    skupiny: [
+      {
+        polozky: [
+          { nazev: "Čisté jablko", dostupne: true },
+        ],
+        cena5l:  160,
+        cena3l:  110,
+      },
+      {
+        polozky: [
+          { nazev: "Hruška",       dostupne: true },
+          { nazev: "Červená řepa", dostupne: true },
+          { nazev: "Mrkev",        dostupne: true },
+        ],
+        cena5l:  170,
+        cena3l:  120,
+      },
+      {
+        polozky: [
+          { nazev: "Skořice",       dostupne: true },
+          { nazev: "Červený rybíz", dostupne: true },
+          { nazev: "Limetka",       dostupne: true },
+          { nazev: "Zázvor",        dostupne: true },
+        ],
+        cena5l:  180,
+        cena3l:  125,
+      },
+      {
+        polozky: [
+          { nazev: "Višeň",        dostupne: true },
+          { nazev: "Černý rybíz",  dostupne: true },
+        ],
+        cena5l:  190,
+        cena3l:  130,
+      },
+      {
+        polozky: [
+          { nazev: "Rakytník",        dostupne: true },
+          { nazev: "🎄 Vánoční mošt", dostupne: true },
+        ],
+        cena5l:  240,
+        cena3l:  170,
+        special: true,
+      },
+    ],
+  },
+
+};

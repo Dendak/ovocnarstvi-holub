@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Správa webu – Ovocnářství Holub</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="data.js"></script>
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; }
+    input, textarea { transition: border-color 0.15s; }
+    input:focus, textarea:focus { outline: none; border-color: #2e8b2e; box-shadow: 0 0 0 3px rgba(46,139,46,0.15); }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+  <div class="max-w-2xl mx-auto px-4 py-10">
+
+    <div class="text-center mb-8">
+      <div class="text-5xl mb-2">🍎</div>
+      <h1 class="text-2xl font-bold text-gray-800">Správa webu</h1>
+      <p class="text-gray-500 text-sm mt-1">Ovocnářství Holub</p>
+    </div>
+
+    <!-- PŘIPOJENÍ SOUBORU -->
+    <div id="panel-pripojit" class="bg-blue-50 border border-blue-200 rounded-xl p-5 mb-8 text-center">
+      <p class="text-blue-800 font-medium mb-1">Před editací připojte soubor data.js</p>
+      <p class="text-blue-600 text-sm mb-4">Stačí jednou za sezení — pak se změny ukládají přímo</p>
+      <button onclick="pripojit()"
+        class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2.5 rounded-full transition">
+        📂 Vybrat soubor data.js
+      </button>
+    </div>
+    <div id="panel-pripojeno" class="hidden bg-green-50 border border-green-200 rounded-xl p-4 mb-8 flex items-center gap-3 text-sm">
+      <span class="text-2xl">✅</span>
+      <div>
+        <p class="font-semibold text-green-800">Připojeno — změny se ukládají přímo do souboru</p>
+        <p class="text-green-600">Po uložení obnovte stránku webu (F5)</p>
+      </div>
+    </div>
+
+    <!-- CENY MOŠTU -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-6">
+      <h2 class="text-lg font-bold text-gray-800 mb-1">💧 Ceny moštu</h2>
+      <p class="text-gray-400 text-sm mb-4">Ceny v Kč, balení 5 litrů a 3 litry. Zaškrtnutí = dostupné.</p>
+      <div id="mosty-form" class="space-y-3"></div>
+      <button onclick="addSkupina()"
+        class="mt-4 w-full border-2 border-dashed border-gray-200 hover:border-green-400 text-gray-400 hover:text-green-600 rounded-xl py-2.5 text-sm font-medium transition">
+        + Přidat cenovou skupinu
+      </button>
+      <div class="mt-4">
+        <label class="block text-sm font-medium text-gray-600 mb-1">Ceník platný od</label>
+        <input id="mosty-platnost" type="text" class="border border-gray-200 rounded-lg px-3 py-2 text-sm w-48" />
+      </div>
+    </div>
+
+    <!-- SEZÓNY OVOCE -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-6">
+      <h2 class="text-lg font-bold text-gray-800 mb-1">📅 Dostupnost ovoce</h2>
+      <p class="text-gray-400 text-sm mb-4">Termíny zobrazené u každého druhu ovoce</p>
+      <div id="ovoce-form" class="space-y-3"></div>
+    </div>
+
+    <!-- KONTAKT -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-8">
+      <h2 class="text-lg font-bold text-gray-800 mb-1">📞 Kontaktní údaje</h2>
+      <p class="text-gray-400 text-sm mb-4">Telefonní čísla, e-mail a adresa</p>
+      <div class="space-y-3">
+        <div>
+          <label class="block text-sm font-medium text-gray-600 mb-1">Telefon 1</label>
+          <input id="k-tel1" type="text" class="border border-gray-200 rounded-lg px-3 py-2 text-sm w-full" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-600 mb-1">Telefon 2</label>
+          <input id="k-tel2" type="text" class="border border-gray-200 rounded-lg px-3 py-2 text-sm w-full" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-600 mb-1">E-mail</label>
+          <input id="k-email" type="text" class="border border-gray-200 rounded-lg px-3 py-2 text-sm w-full" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-600 mb-1">Adresa (ulice a číslo)</label>
+          <input id="k-adresa" type="text" class="border border-gray-200 rounded-lg px-3 py-2 text-sm w-full" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-600 mb-1">Město a PSČ</label>
+          <input id="k-mesto" type="text" class="border border-gray-200 rounded-lg px-3 py-2 text-sm w-full" />
+        </div>
+      </div>
+    </div>
+
+    <!-- ULOŽIT -->
+    <button id="btn-ulozit" onclick="ulozit()" disabled
+      class="w-full bg-green-700 text-white font-bold py-4 px-6 rounded-2xl text-lg shadow-lg transition opacity-40 cursor-not-allowed">
+      💾 Uložit změny
+    </button>
+
+    <div id="zprava" class="hidden mt-4 bg-green-50 border border-green-200 text-green-800 rounded-xl p-4 text-sm text-center"></div>
+
+  </div>
+
+  <script>
+    // ─── stav moštu ────────────────────────────────────────────────
+    let skupiny = [];
+
+    // Přečte aktuální hodnoty z formuláře do pole skupiny
+    function syncState() {
+      skupiny.forEach((sk, si) => {
+        const c5 = document.querySelector(`input[data-si="${si}"][data-field="cena5l"]`);
+        const c3 = document.querySelector(`input[data-si="${si}"][data-field="cena3l"]`);
+        if (c5) sk.cena5l = parseInt(c5.value) || 0;
+        if (c3) sk.cena3l = parseInt(c3.value) || 0;
+        sk.polozky.forEach((pol, pi) => {
+          const nameEl = document.querySelector(`input[data-si="${si}"][data-pi="${pi}"][data-field="nazev"]`);
+          const cbEl   = document.querySelector(`input[type="checkbox"][data-si="${si}"][data-pi="${pi}"]`);
+          if (nameEl) pol.nazev   = nameEl.value;
+          if (cbEl)   pol.dostupne = cbEl.checked;
+        });
+      });
+    }
+
+    // Vykreslí celý seznam skupin moštu
+    function renderMosty() {
+      const mf = document.getElementById('mosty-form');
+      mf.innerHTML = '';
+      skupiny.forEach((sk, si) => {
+        const div = document.createElement('div');
+        div.className = 'border border-gray-200 rounded-xl overflow-hidden';
+
+        const polHtml = sk.polozky.map((pol, pi) => {
+          const dostupne = pol.dostupne !== false;
+          const safe = pol.nazev.replace(/&/g,'&amp;').replace(/"/g,'&quot;');
+          return `
+            <div class="flex items-center gap-2 px-4 py-2 border-t border-gray-100">
+              <input type="checkbox" data-si="${si}" data-pi="${pi}" ${dostupne ? 'checked' : ''}
+                     class="w-4 h-4 accent-green-700 flex-none" title="Dostupné" />
+              <input type="text" data-si="${si}" data-pi="${pi}" data-field="nazev" value="${safe}"
+                     class="flex-1 border border-gray-200 rounded-lg px-2 py-1 text-sm min-w-0" />
+              <button onclick="removePol(${si},${pi})"
+                      class="flex-none text-red-400 hover:text-red-600 text-xl leading-none w-6 text-center"
+                      title="Odebrat příchuť">×</button>
+            </div>`;
+        }).join('');
+
+        div.innerHTML = `
+          <div class="flex items-center flex-wrap gap-2 bg-gray-50 px-4 py-3">
+            <span class="text-xs text-gray-500 font-semibold mr-auto">Skupina ${si + 1}</span>
+            <div class="flex items-center gap-1">
+              <span class="text-xs text-gray-400">5 l</span>
+              <input type="number" data-si="${si}" data-field="cena5l" value="${sk.cena5l}"
+                     class="border border-gray-200 rounded-lg px-2 py-1 text-sm w-20 text-right" />
+              <span class="text-xs text-gray-400">Kč</span>
+            </div>
+            <div class="flex items-center gap-1">
+              <span class="text-xs text-gray-400">3 l</span>
+              <input type="number" data-si="${si}" data-field="cena3l" value="${sk.cena3l}"
+                     class="border border-gray-200 rounded-lg px-2 py-1 text-sm w-20 text-right" />
+              <span class="text-xs text-gray-400">Kč</span>
+            </div>
+            <button onclick="removeSkupina(${si})"
+                    class="text-xs text-red-400 hover:text-red-600 border border-red-200 rounded px-2 py-1">
+              × Odebrat skupinu
+            </button>
+          </div>
+          ${polHtml}
+          <div class="flex items-center gap-2 px-4 py-2 border-t border-dashed border-gray-200 bg-gray-50">
+            <input type="text" id="new-pol-${si}" placeholder="Název nové příchuti…"
+                   class="flex-1 border border-gray-200 rounded-lg px-3 py-1 text-sm min-w-0" />
+            <button onclick="addPol(${si})"
+                    class="flex-none bg-green-600 hover:bg-green-700 text-white text-xs px-3 py-1.5 rounded-lg font-medium">
+              + Přidat
+            </button>
+          </div>`;
+
+        mf.appendChild(div);
+      });
+    }
+
+    function addPol(si) {
+      syncState();
+      const inp = document.getElementById(`new-pol-${si}`);
+      const name = inp ? inp.value.trim() : '';
+      if (!name) { inp && inp.focus(); return; }
+      skupiny[si].polozky.push({ nazev: name, dostupne: true });
+      renderMosty();
+    }
+
+    function removePol(si, pi) {
+      syncState();
+      if (skupiny[si].polozky.length <= 1) { alert('Každá skupina musí mít alespoň jednu příchuť.'); return; }
+      skupiny[si].polozky.splice(pi, 1);
+      renderMosty();
+    }
+
+    function addSkupina() {
+      syncState();
+      skupiny.push({ polozky: [{ nazev: 'Nová příchuť', dostupne: true }], cena5l: 150, cena3l: 100 });
+      renderMosty();
+    }
+
+    function removeSkupina(si) {
+      if (skupiny.length <= 1) { alert('Musí zůstat alespoň jedna skupina.'); return; }
+      syncState();
+      skupiny.splice(si, 1);
+      renderMosty();
+    }
+
+    // ─── inicializace formuláře ─────────────────────────────────────
+    window.addEventListener('DOMContentLoaded', () => {
+
+      // kontakt
+      document.getElementById('k-tel1').value   = OBSAH.kontakt.tel1;
+      document.getElementById('k-tel2').value   = OBSAH.kontakt.tel2;
+      document.getElementById('k-email').value  = OBSAH.kontakt.email;
+      document.getElementById('k-adresa').value = OBSAH.kontakt.adresa;
+      document.getElementById('k-mesto').value  = OBSAH.kontakt.mesto;
+
+      // mošty
+      document.getElementById('mosty-platnost').value = OBSAH.mosty.platnostOd;
+      skupiny = JSON.parse(JSON.stringify(OBSAH.mosty.skupiny)); // hluboká kopie
+      renderMosty();
+
+      // ovoce
+      const of2 = document.getElementById('ovoce-form');
+      OBSAH.ovoce.forEach((o, oi) => {
+        of2.insertAdjacentHTML('beforeend', `
+          <div class="flex items-center gap-3 bg-gray-50 rounded-xl px-4 py-3">
+            <span class="w-28 text-sm font-medium text-gray-700">${o.nazev}</span>
+            <input type="text" id="ov-${oi}" value="${o.sezona}"
+                   class="flex-1 border border-gray-200 rounded-lg px-3 py-1.5 text-sm" />
+          </div>
+        `);
+      });
+    });
+
+    // ─── připojení souboru ─────────────────────────────────────────
+    let fileHandle = null;
+
+    async function pripojit() {
+      try {
+        const [handle] = await window.showOpenFilePicker({
+          types: [{ description: 'JavaScript', accept: { 'text/javascript': ['.js'] } }],
+          multiple: false,
+        });
+        if ((await handle.requestPermission({ mode: 'readwrite' })) !== 'granted') {
+          alert('Potřebuji oprávnění k zápisu do souboru.');
+          return;
+        }
+        fileHandle = handle;
+        document.getElementById('panel-pripojit').classList.add('hidden');
+        document.getElementById('panel-pripojeno').classList.remove('hidden');
+        document.getElementById('btn-ulozit').disabled = false;
+        document.getElementById('btn-ulozit').classList.remove('opacity-40', 'cursor-not-allowed');
+      } catch (e) {
+        if (e.name !== 'AbortError') alert('Nepodařilo se připojit soubor: ' + e.message);
+      }
+    }
+
+    // ─── sestavení obsahu data.js ───────────────────────────────────
+    function sestavObsah() {
+      syncState();
+      const k = {
+        jmeno:     OBSAH.kontakt.jmeno,
+        adresa:    document.getElementById('k-adresa').value,
+        mesto:     document.getElementById('k-mesto').value,
+        tel1:      document.getElementById('k-tel1').value,
+        tel2:      document.getElementById('k-tel2').value,
+        email:     document.getElementById('k-email').value,
+        facebook:  OBSAH.kontakt.facebook,
+        instagram: OBSAH.kontakt.instagram,
+      };
+      const ovoce = OBSAH.ovoce.map((o, oi) => ({
+        ...o,
+        sezona: document.getElementById('ov-' + oi).value,
+      }));
+      const mosty = {
+        platnostOd: document.getElementById('mosty-platnost').value,
+        skupiny,
+      };
+      return `// ============================================================
+//  OBSAH WEBU – sem piš změny
+//  Po uložení souboru stačí obnovit stránku v prohlížeči (F5)
+// ============================================================
+
+const OBSAH = ${JSON.stringify({ kontakt: k, ovoce, mosty }, null, 2)
+  .replace(/"([^"]+)":/g, '$1:')
+  .replace(/"/g, "'")};
+`;
+    }
+
+    // ─── uložení ────────────────────────────────────────────────────
+    async function ulozit() {
+      if (!fileHandle) return;
+      const obsah = sestavObsah();
+      const z     = document.getElementById('zprava');
+      const btn   = document.getElementById('btn-ulozit');
+      try {
+        btn.textContent = '⏳ Ukládám…';
+        btn.disabled = true;
+        const writable = await fileHandle.createWritable();
+        await writable.write(obsah);
+        await writable.close();
+        z.textContent = '✅ Uloženo! Obnovte stránku webu (F5) aby se změny projevily.';
+        z.className = 'mt-4 bg-green-50 border border-green-200 text-green-800 rounded-xl p-4 text-sm text-center';
+        z.classList.remove('hidden');
+      } catch (e) {
+        z.textContent = '❌ Chyba při ukládání: ' + e.message;
+        z.className = 'mt-4 bg-red-50 border border-red-200 text-red-800 rounded-xl p-4 text-sm text-center';
+        z.classList.remove('hidden');
+      } finally {
+        btn.textContent = '💾 Uložit změny';
+        btn.disabled = false;
+      }
+    }
+  </script>
+
+</body>
+</html>
