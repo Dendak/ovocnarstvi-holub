@@ -198,24 +198,57 @@
     </div>
   </section>
 
-  <!-- AKTUÁLNĚ (FACEBOOK) -->
+  <!-- AKTUÁLNĚ (FACEBOOK + INSTAGRAM) -->
   <section id="aktuality" class="bg-white border-t border-brand-100 py-16">
     <div class="max-w-4xl mx-auto px-6">
       <h2 class="font-serif text-3xl sm:text-4xl font-bold text-brand-800 text-center mb-2">Aktuálně</h2>
-      <p class="text-center text-gray-500 mb-8 text-sm">Sledujte naše příspěvky na Facebooku</p>
-      <div class="flex justify-center">
-        <div id="fb-placeholder" class="w-full max-w-lg bg-gray-100 border border-gray-200 rounded-2xl p-8 text-center text-gray-500 text-sm hidden">
-          <div class="text-3xl mb-2">📘</div>
-          <p class="mb-3">Pro zobrazení příspěvků z Facebooku je potřeba povolit cookies třetích stran.</p>
-          <button onclick="prijimatCookies()" class="bg-brand-700 text-white text-xs font-semibold px-4 py-2 rounded-full hover:bg-brand-600 transition">Povolit cookies</button>
+      <p class="text-center text-gray-500 mb-10 text-sm">Sledujte nás na sociálních sítích</p>
+
+      <div class="flex flex-col lg:flex-row gap-8 items-start justify-center">
+
+        <!-- FACEBOOK -->
+        <div class="flex flex-col items-center w-full lg:w-auto">
+          <div class="flex items-center gap-2 mb-4">
+            <svg class="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.236 2.686.236v2.97h-1.513c-1.491 0-1.956.93-1.956 1.886v2.268h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
+            <span class="text-sm font-semibold text-gray-700">Facebook</span>
+          </div>
+          <div id="fb-placeholder" class="w-full max-w-sm bg-gray-100 border border-gray-200 rounded-2xl p-8 text-center text-gray-500 text-sm hidden">
+            <div class="text-3xl mb-2">📘</div>
+            <p class="mb-3">Pro zobrazení příspěvků z Facebooku je potřeba povolit cookies třetích stran.</p>
+            <button onclick="prijimatCookies()" class="bg-brand-700 text-white text-xs font-semibold px-4 py-2 rounded-full hover:bg-brand-600 transition">Povolit cookies</button>
+          </div>
+          <iframe id="fb-iframe"
+            data-src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2FOvoceHolub&tabs=timeline&width=400&height=600&small_header=true&adapt_container_width=true&hide_cover=false&show_facepile=false"
+            width="400" height="600"
+            style="border:none;overflow:hidden;max-width:100%;border-radius:1rem;display:none"
+            scrolling="no" frameborder="0" allowfullscreen="true"
+            allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share">
+          </iframe>
         </div>
-        <iframe id="fb-iframe"
-          data-src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2FOvoceHolub&tabs=timeline&width=500&height=600&small_header=true&adapt_container_width=true&hide_cover=false&show_facepile=false"
-          width="500" height="600"
-          style="border:none;overflow:hidden;max-width:100%;border-radius:1rem;display:none"
-          scrolling="no" frameborder="0" allowfullscreen="true"
-          allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share">
-        </iframe>
+
+        <!-- INSTAGRAM -->
+        <div class="flex flex-col items-center w-full lg:w-72">
+          <div class="flex items-center gap-2 mb-4">
+            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="url(#ig-grad)" stroke-width="2"><defs><linearGradient id="ig-grad" x1="0%" y1="100%" x2="100%" y2="0%"><stop offset="0%" style="stop-color:#f09433"/><stop offset="25%" style="stop-color:#e6683c"/><stop offset="50%" style="stop-color:#dc2743"/><stop offset="75%" style="stop-color:#cc2366"/><stop offset="100%" style="stop-color:#bc1888"/></linearGradient></defs><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="#dc2743" stroke="none"/></svg>
+            <span class="text-sm font-semibold text-gray-700">Instagram</span>
+          </div>
+          <div class="w-full rounded-2xl overflow-hidden border border-gray-200 shadow-sm" style="background: linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)">
+            <div class="m-0.5 rounded-2xl bg-white p-6 text-center">
+              <div class="w-16 h-16 rounded-full mx-auto mb-3 overflow-hidden border-2 border-gray-100">
+                <div class="w-full h-full flex items-center justify-center text-3xl" style="background:linear-gradient(135deg,#f09433,#dc2743,#bc1888)">🍎</div>
+              </div>
+              <p class="font-semibold text-gray-800 text-sm mb-0.5">ovoceholub</p>
+              <p class="text-gray-400 text-xs mb-4">Ovocnářství Holub · Krtely</p>
+              <p class="text-gray-600 text-sm mb-5 leading-relaxed">Čerstvé ovoce a domácí mošty přímo ze sadu. Sledujte nás pro novinky ze sezóny.</p>
+              <a id="ig-follow-btn" href="#" target="_blank" rel="noopener"
+                class="inline-block text-white text-sm font-semibold px-6 py-2.5 rounded-full transition-opacity hover:opacity-90"
+                style="background: linear-gradient(135deg, #f09433, #dc2743, #bc1888)">
+                Sledovat na Instagramu
+              </a>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </section>
@@ -465,6 +498,7 @@
       document.getElementById('kontakt-fb-label').textContent = k.facebook.split('/').pop();
       document.getElementById('kontakt-ig').href          = k.instagram;
       document.getElementById('kontakt-ig-label').textContent = k.instagram.split('/').pop();
+      document.getElementById('ig-follow-btn').href = k.instagram;
 
       // footer
       document.getElementById('footer-jmeno').textContent = k.jmeno;
