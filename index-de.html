@@ -339,6 +339,18 @@
       return UEBERSETZUNG[pol] || pol;
     }
 
+    // Překlad českých názvů měsíců v sezóně
+    const MESICE = {
+      'leden':'Januar','únor':'Februar','březen':'März','duben':'April',
+      'květen':'Mai','červen':'Juni','červenec':'Juli','srpen':'August',
+      'září':'September','říjen':'Oktober','listopadu':'November','prosinec':'Dezember',
+      'ledna':'Januar','února':'Februar','března':'März','dubna':'April',
+      'května':'Mai','června':'Juni','července':'Juli','srpna':'August',
+    };
+    function deSezona(s) {
+      return s.replace(/[a-záčďéěíňóřšťúůýž]+/gi, m => MESICE[m.toLowerCase()] || m);
+    }
+
     // --- cookies ---
     function nacistEmbedy() {
       const mi = document.getElementById('map-iframe');
@@ -403,9 +415,10 @@
     document.addEventListener('DOMContentLoaded', () => {
       const k = OBSAH.kontakt;
 
-      // nav + hero
-      document.getElementById('nav-jmeno').textContent  = '🍎 ' + k.jmeno;
-      document.getElementById('hero-jmeno').textContent = k.jmeno;
+      // nav + hero (německý název firmy)
+      const deJmeno = 'Obstbauernhof Holub';
+      document.getElementById('nav-jmeno').textContent  = '🍎 ' + deJmeno;
+      document.getElementById('hero-jmeno').textContent = deJmeno;
       const tel1čistý = k.tel1.replace(/\s/g, '');
       document.getElementById('hero-tel').href          = 'tel:+420' + tel1čistý;
       document.getElementById('hero-tel').textContent   = '📞 ' + k.tel1;
@@ -425,7 +438,7 @@
       document.getElementById('kontakt-ig-label').textContent = k.instagram.split('/').pop();
 
       // footer
-      document.getElementById('footer-jmeno').textContent = k.jmeno;
+      document.getElementById('footer-jmeno').textContent = deJmeno;
       document.getElementById('footer-info').textContent  = k.adresa + ', ' + k.mesto + '  ·  ' + k.tel1 + '  ·  ' + k.email;
 
       // --- Obst ---
@@ -455,7 +468,7 @@
               ${fotoHTMLWide}
               <div class="p-5 flex flex-col justify-center">
                 <h3 class="font-serif text-xl font-semibold text-brand-800 mb-1">${deNazevOvoce}</h3>
-                <span class="inline-block ${bg} ${text} text-xs font-medium px-2 py-0.5 rounded-full mb-2 w-fit">${o.sezona}</span>
+                <span class="inline-block ${bg} ${text} text-xs font-medium px-2 py-0.5 rounded-full mb-2 w-fit">${deSezona(o.sezona)}</span>
                 <p class="text-gray-500 text-sm">${dePopis}</p>
               </div>
             </div>
@@ -465,7 +478,7 @@
             ${fotoHTML}
             <div class="p-5">
               <h3 class="font-serif text-xl font-semibold text-brand-800 mb-1">${deNazevOvoce}</h3>
-              <span class="inline-block ${bg} ${text} text-xs font-medium px-2 py-0.5 rounded-full mb-2">${o.sezona}</span>
+              <span class="inline-block ${bg} ${text} text-xs font-medium px-2 py-0.5 rounded-full mb-2">${deSezona(o.sezona)}</span>
               <p class="text-gray-500 text-sm">${dePopis}</p>
             </div>
           </div>`;
