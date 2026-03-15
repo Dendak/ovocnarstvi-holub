@@ -54,19 +54,50 @@
 
   <!-- NAV -->
   <nav class="bg-brand-800 text-white sticky top-0 z-50 shadow-md">
-    <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+    <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
       <span id="nav-jmeno" class="font-serif font-bold text-base whitespace-nowrap">🍎</span>
-      <div class="flex items-center gap-3 sm:gap-6 text-sm font-medium text-brand-200">
+      <!-- Desktop menu -->
+      <div class="hidden md:flex gap-6 text-sm font-medium text-brand-200 items-center">
         <a href="#ovoce"   class="hover:text-white transition-colors">Obst</a>
         <a href="#galerie" class="hover:text-white transition-colors">Fotos</a>
         <a href="#kontakt" class="hover:text-white transition-colors">Kontakt</a>
-        <div class="flex items-center gap-1 ml-2 bg-brand-700 rounded-full px-1 py-0.5">
-          <a href="index.html" class="flex items-center gap-1 px-2 py-0.5 rounded-full text-brand-300 hover:text-white transition-colors text-xs">🇨🇿 CS</a>
-          <span class="flex items-center gap-1 px-2 py-0.5 rounded-full bg-white text-brand-800 font-semibold text-xs cursor-default">🇩🇪 DE</span>
+        <div class="flex items-center gap-1 ml-2">
+          <a href="index.html" class="text-2xl opacity-60 hover:opacity-100 transition-opacity" title="Čeština">🇨🇿</a>
+          <span class="text-2xl cursor-default" title="Deutsch">🇦🇹</span>
         </div>
       </div>
+      <!-- Mobile: flags + hamburger -->
+      <div class="flex md:hidden items-center gap-3">
+        <a href="index.html" class="text-2xl opacity-60" title="Čeština">🇨🇿</a>
+        <span class="text-2xl cursor-default" title="Deutsch">🇦🇹</span>
+        <button id="nav-toggle" class="text-white p-1" aria-label="Menu">
+          <svg id="nav-icon-open"  class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          <svg id="nav-icon-close" class="w-6 h-6 hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+    </div>
+    <!-- Mobile dropdown -->
+    <div id="nav-mobile" class="hidden md:hidden bg-brand-700 text-brand-100 text-sm font-medium">
+      <a href="#ovoce"   onclick="zavritNav()" class="block px-6 py-3 hover:bg-brand-600 hover:text-white border-b border-brand-600">Obst</a>
+      <a href="#galerie" onclick="zavritNav()" class="block px-6 py-3 hover:bg-brand-600 hover:text-white border-b border-brand-600">Fotos</a>
+      <a href="#kontakt" onclick="zavritNav()" class="block px-6 py-3 hover:bg-brand-600 hover:text-white">Kontakt</a>
     </div>
   </nav>
+  <script>
+    document.getElementById('nav-toggle').addEventListener('click', function() {
+      const menu = document.getElementById('nav-mobile');
+      const open = document.getElementById('nav-icon-open');
+      const close = document.getElementById('nav-icon-close');
+      menu.classList.toggle('hidden');
+      open.classList.toggle('hidden');
+      close.classList.toggle('hidden');
+    });
+    function zavritNav() {
+      document.getElementById('nav-mobile').classList.add('hidden');
+      document.getElementById('nav-icon-open').classList.remove('hidden');
+      document.getElementById('nav-icon-close').classList.add('hidden');
+    }
+  </script>
 
   <!-- HERO -->
   <header class="hero-photo text-white">
