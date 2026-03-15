@@ -68,12 +68,12 @@
     <line x1="18" y1="0" x2="85" y2="0" stroke="#5aaa5a" stroke-width="1" opacity="0.55"/>
   </g>
 
-  <!-- Tagline -->
+  <!-- Místo -->
   <text x="258" y="142"
         font-family="'Arial Narrow', Arial, sans-serif"
         font-size="10.5"
         fill="#7dca7d"
         letter-spacing="3.5"
         text-anchor="middle"
-        opacity="0.75">KRTELY · OD PŘÍRODY</text>
+        opacity="0.75">KRTELY</text>
 </svg>
