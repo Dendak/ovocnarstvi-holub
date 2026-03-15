@@ -56,8 +56,8 @@ const OBSAH = {
       foto:   "WhatsApp Image 2026-03-15 at 13.42.01.jpeg",
       sezona: "1. 8. – 15. 10.",
       barva:  "purple",
-      popis:  "Tradiční česká švestka – ideální na zavařování i do koláče.",
-      odrudy: ["Haganta", "Top King", "Topend Plus", "Čačanská"],
+      popis:  "Švestky přímo ze sadu – skvělé na zavařování i do koláče.",
+      odrudy: ["Haganta", "Top King", "Topend Plus", "Čačanská", "Stanley"],
     },
     {
       nazev:  "Hrušky",

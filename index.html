@@ -617,12 +617,11 @@
             ? `<span class="line-through">${pol.nazev}</span> <span class="ml-2 text-xs bg-gray-200 text-gray-500 px-2 py-0.5 rounded-full">nedostupné</span>`
             : pol.nazev;
 
-          let row = `<tr class="${borderTop} ${rowCls}"><td class="${tdCls}">${nazevHTML}</td>`;
-          if (prvni) {
-            row += `<td class="${priceCls}" rowspan="${sk.polozky.length}" style="vertical-align:middle">${sk.cena5l} Kč</td>`;
-            row += `<td class="${priceCls}" rowspan="${sk.polozky.length}" style="vertical-align:middle">${sk.cena3l} Kč</td>`;
-          }
-          row += '</tr>';
+          const priceHTML = prvni
+            ? `<td class="${priceCls}" rowspan="${sk.polozky.length}" style="vertical-align:middle">${sk.cena5l} Kč</td>
+               <td class="${priceCls}" rowspan="${sk.polozky.length}" style="vertical-align:middle">${sk.cena3l} Kč</td>`
+            : '';
+          const row = `<tr class="${rowCls}"><td class="${tdCls} ${borderTop}">${nazevHTML}</td>${priceHTML}</tr>`;
           tbody.insertAdjacentHTML('beforeend', row);
         });
       });
