@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 100" width="320" height="100">
+  <defs>
+    <linearGradient id="appleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2d8a2d;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#133e13;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Apple icon -->
+  <!-- Stem -->
+  <path d="M50 18 Q54 10 60 12" stroke="#133e13" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <!-- Leaf -->
+  <path d="M54 14 Q62 8 65 16 Q58 18 54 14Z" fill="#2d8a2d"/>
+  <!-- Apple body -->
+  <path d="M36 38 Q34 26 44 24 Q50 22 50 28 Q50 22 56 24 Q66 26 64 38 Q68 52 50 62 Q32 52 36 38Z" fill="url(#appleGrad)"/>
+  <!-- Apple shine -->
+  <ellipse cx="44" cy="33" rx="4" ry="6" fill="white" opacity="0.2" transform="rotate(-20 44 33)"/>
+
+  <!-- Text: Ovocnářství -->
+  <text x="82" y="46" font-family="Georgia, 'Times New Roman', serif" font-size="22" font-weight="700" fill="#133e13" letter-spacing="0.5">Ovocnářství</text>
+
+  <!-- Text: HOLUB -->
+  <text x="82" y="72" font-family="Georgia, 'Times New Roman', serif" font-size="30" font-weight="700" fill="#1a561a" letter-spacing="3">HOLUB</text>
+
+  <!-- Decorative line -->
+  <line x1="82" y1="79" x2="310" y2="79" stroke="#237023" stroke-width="1.5" opacity="0.4"/>
+
+  <!-- Tagline -->
+  <text x="82" y="93" font-family="'Arial', sans-serif" font-size="10" fill="#237023" letter-spacing="1.5" opacity="0.8">KRTELY · OD PŘÍRODY</text>
+</svg>
