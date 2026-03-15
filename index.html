@@ -59,7 +59,7 @@
   <!-- NAV -->
   <nav class="bg-brand-800 text-white sticky top-0 z-50 shadow-md">
     <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
-      <a href="#" class="flex-shrink-0"><img src="img/logo.png" alt="Ovocnářství Holub" class="h-10 w-auto"></a>
+      <a href="#" class="flex-shrink-0"><img src="img/logo.png" alt="Ovocnářství Holub" class="h-14 w-auto"></a>
       <!-- Desktop menu -->
       <div class="hidden md:flex gap-6 text-sm font-medium text-brand-200 items-center">
         <a href="#ovoce"     class="hover:text-white transition-colors">Ovoce</a>
@@ -131,9 +131,32 @@
       <div><div class="text-2xl font-bold font-serif">30 ha</div><div class="text-brand-300 text-xs mt-0.5">vlastního sadu</div></div>
       <div class="w-px bg-brand-600 hidden sm:block"></div>
       <div class="flex flex-col items-center gap-1">
-        <img src="img/sispo.gif" alt="Certifikace SISPO" class="h-10 object-contain" onerror="this.style.display='none';this.nextElementSibling.style.display='block'" />
-        <span style="display:none" class="text-brand-200 font-semibold text-sm">SISPO</span>
-        <div class="text-brand-300 text-xs">certifikace integrované produkce</div>
+        <a href="https://www.sispo.cz" target="_blank" rel="noopener" title="O certifikaci SISPO">
+          <img src="img/sispo.gif" alt="Certifikace SISPO" class="h-10 object-contain hover:opacity-80 transition-opacity" onerror="this.style.display='none';this.nextElementSibling.style.display='block'" />
+          <span style="display:none" class="text-brand-200 font-semibold text-sm">SISPO</span>
+        </a>
+        <button onclick="document.getElementById('sispo-info').classList.toggle('hidden')"
+                class="text-brand-300 text-xs hover:text-white transition-colors underline decoration-dotted">
+          certifikace integrované produkce ↓
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SISPO info panel -->
+  <div id="sispo-info" class="hidden bg-brand-700 border-t border-brand-600">
+    <div class="max-w-3xl mx-auto px-6 py-6 text-sm text-brand-100">
+      <div class="flex items-start gap-4">
+        <a href="https://www.sispo.cz" target="_blank" rel="noopener"><img src="img/sispo.gif" alt="SISPO" class="h-12 mt-1 flex-shrink-0"></a>
+        <div>
+          <h3 class="font-semibold text-white mb-2">Co je integrovaná produkce ovoce?</h3>
+          <p class="mb-3 leading-relaxed">Integrovaná produkce je ekonomická produkce ovoce <strong class="text-white">vysoké kvality</strong> při uplatnění ekologicky přijatelných metod pěstování a minimalizaci nežádoucích vedlejších účinků agrochemikálií. Klade důraz na <strong class="text-white">ochranu životního prostředí a lidského zdraví</strong>.</p>
+          <div class="grid sm:grid-cols-3 gap-4 text-xs text-brand-200">
+            <div><span class="text-white font-medium block mb-1">🌿 Příroda</span>Ochrana druhové rozmanitosti živočichů a rostlin v sadech a jejich okolí.</div>
+            <div><span class="text-white font-medium block mb-1">🧪 Kontrola</span>Přísný dohled nad používáním pesticidů – zakázané přípravky jsou vyloučeny.</div>
+            <div><span class="text-white font-medium block mb-1">✅ Záruka</span>Garantovaný snížený obsah reziduí – max. 75 % evropského limitu.</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
