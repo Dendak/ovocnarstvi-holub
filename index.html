@@ -187,25 +187,25 @@
     <h2 class="font-serif text-3xl sm:text-4xl font-bold text-brand-800 text-center mb-2">Ze sadu</h2>
     <p class="text-center text-gray-500 mb-10">Záběry z naší každodenní práce</p>
     <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-      <img src="img/504681257_4078182002327026_6055659733487249673_n.jpg" alt="Jarní sad v květu"
+      <img src="img/sad/504681257_4078182002327026_6055659733487249673_n.jpg" alt="Jarní sad v květu"
            class="w-full h-52 object-cover rounded-xl cursor-pointer hover:opacity-90 transition col-span-2 md:col-span-1" onclick="openLightbox(this.src)" />
-      <img src="img/tresne.jpg" alt="Třešně"
+      <img src="img/tresne/tresne.jpg" alt="Třešně"
            class="w-full h-52 object-cover rounded-xl cursor-pointer hover:opacity-90 transition" onclick="openLightbox(this.src)" />
-      <img src="img/119992725_2437457233066186_4983175529147161289_n.jpg" alt="Jablka na větvi"
+      <img src="img/jablka/119992725_2437457233066186_4983175529147161289_n.jpg" alt="Jablka na větvi"
            class="w-full h-52 object-cover rounded-xl cursor-pointer hover:opacity-90 transition" onclick="openLightbox(this.src)" />
-      <img src="img/119992199_2437457283066181_6907105438319047381_n.jpg" alt="Hrušky v sadu"
+      <img src="img/hrusky/119992199_2437457283066181_6907105438319047381_n.jpg" alt="Hrušky v sadu"
            class="w-full h-52 object-cover rounded-xl cursor-pointer hover:opacity-90 transition" onclick="openLightbox(this.src)" />
-      <img src="img/542007542_1218005136796557_6760772214935127534_n.jpg" alt="Sklizeň hrušek"
+      <img src="img/hrusky/542007542_1218005136796557_6760772214935127534_n.jpg" alt="Sklizeň hrušek"
            class="w-full h-52 object-cover rounded-xl cursor-pointer hover:opacity-90 transition" onclick="openLightbox(this.src)" />
-      <img src="img/hrusky.jpg" alt="Hrušky v bedně"
+      <img src="img/hrusky/hrusky.jpg" alt="Hrušky v bedně"
            class="w-full h-52 object-cover rounded-xl cursor-pointer hover:opacity-90 transition" onclick="openLightbox(this.src)" />
-      <img src="img/WhatsApp%20Image%202026-03-15%20at%2013.38.50.jpeg" alt="Meruňky a broskve"
+      <img src="img/broskve/WhatsApp%20Image%202026-03-15%20at%2013.38.50.jpeg" alt="Meruňky a broskve"
            class="w-full h-52 object-cover rounded-xl cursor-pointer hover:opacity-90 transition" onclick="openLightbox(this.src)" />
-      <img src="img/WhatsApp%20Image%202026-03-15%20at%2013.39.21.jpeg" alt="Meruňkový strom"
+      <img src="img/merunky/WhatsApp%20Image%202026-03-15%20at%2013.39.21.jpeg" alt="Meruňkový strom"
            class="w-full h-52 object-cover rounded-xl cursor-pointer hover:opacity-90 transition" onclick="openLightbox(this.src)" />
-      <img src="img/WhatsApp%20Image%202026-03-15%20at%2013.42.01.jpeg" alt="Švestky v bednách"
+      <img src="img/svestky/WhatsApp%20Image%202026-03-15%20at%2013.42.01.jpeg" alt="Švestky v bednách"
            class="w-full h-52 object-cover rounded-xl cursor-pointer hover:opacity-90 transition" onclick="openLightbox(this.src)" />
-      <img src="img/vi%C5%A1n%C4%9B.jpeg" alt="Višně v bednách"
+      <img src="img/visne/vi%C5%A1n%C4%9B.jpeg" alt="Višně v bednách"
            class="w-full h-52 object-cover rounded-xl cursor-pointer hover:opacity-90 transition" onclick="openLightbox(this.src)" />
     </div>
   </section>
@@ -641,10 +641,9 @@
             ? `<span class="line-through">${pol.nazev}</span> <span class="ml-2 text-xs bg-gray-200 text-gray-500 px-2 py-0.5 rounded-full">nedostupné</span>`
             : pol.nazev;
 
-          const priceHTML = prvni
-            ? `<td class="${priceCls}" rowspan="${sk.polozky.length}" style="vertical-align:middle">${sk.cena5l} Kč</td>
-               <td class="${priceCls}" rowspan="${sk.polozky.length}" style="vertical-align:middle">${sk.cena3l} Kč</td>`
-            : '';
+          const priceHTML = posledni
+            ? `<td class="${priceCls}">${sk.cena5l} Kč</td><td class="${priceCls}">${sk.cena3l} Kč</td>`
+            : `<td class="px-3 sm:px-5 py-3"></td><td class="px-3 sm:px-5 py-3"></td>`;
           const row = `<tr class="${rowCls}"><td class="${tdCls} ${borderTop}">${nazevHTML}</td>${priceHTML}</tr>`;
           tbody.insertAdjacentHTML('beforeend', row);
         });

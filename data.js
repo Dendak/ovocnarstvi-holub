@@ -24,7 +24,7 @@ const OBSAH = {
   ovoce: [
     {
       nazev:  "Třešně",
-      fotky:  ["tresne.jpg", "tresne v bedne.jpeg", "484803473_1088135826450156_1603854554852976317_n.jpg"],
+      fotky:  ["tresne/tresne.jpg", "tresne/tresne v bedne.jpeg", "tresne/484803473_1088135826450156_1603854554852976317_n.jpg"],
       sezona: "1. 7. – 25. 7.",
       barva:  "red",
       popis:  "Sladké letní třešně přímo ze stromu.",
@@ -32,28 +32,28 @@ const OBSAH = {
     },
     {
       nazev:  "Višně",
-      foto:   "višně.jpeg",
+      foto:   "visne/višně.jpeg",
       sezona: "15. 7. – 8. 8.",
       barva:  "red",
       popis:  "Ideální na džem, kompot nebo koláče.",
     },
     {
       nazev:  "Meruňky",
-      foto:   "WhatsApp Image 2026-03-15 at 13.39.21.jpeg",
+      foto:   "merunky/WhatsApp Image 2026-03-15 at 13.39.21.jpeg",
       sezona: "červenec – srpen",
       barva:  "orange",
       popis:  "Voňavé a šťavnaté, skvělé čerstvé i na zavařování.",
     },
     {
       nazev:  "Broskve",
-      foto:   "WhatsApp Image 2026-03-15 at 13.38.50.jpeg",
+      foto:   "broskve/WhatsApp Image 2026-03-15 at 13.38.50.jpeg",
       sezona: "srpen – září",
       barva:  "orange",
       popis:  "Šťavnaté broskve na vrcholu léta.",
     },
     {
       nazev:  "Švestky",
-      foto:   "WhatsApp Image 2026-03-15 at 13.42.01.jpeg",
+      foto:   "svestky/WhatsApp Image 2026-03-15 at 13.42.01.jpeg",
       sezona: "1. 8. – 15. 10.",
       barva:  "purple",
       popis:  "Švestky přímo ze sadu – skvělé na zavařování i do koláče.",
@@ -61,7 +61,7 @@ const OBSAH = {
     },
     {
       nazev:  "Hrušky",
-      fotky:  ["119992199_2437457283066181_6907105438319047381_n.jpg", "542007542_1218005136796557_6760772214935127534_n.jpg", "hrusky.jpg"],
+      fotky:  ["hrusky/119992199_2437457283066181_6907105438319047381_n.jpg", "hrusky/542007542_1218005136796557_6760772214935127534_n.jpg", "hrusky/hrusky.jpg"],
       sezona: "1. 8. – 31. 1.",
       barva:  "yellow",
       popis:  "Šťavnaté hrušky různých odrůd.",
@@ -69,7 +69,7 @@ const OBSAH = {
     },
     {
       nazev:  "Jablka",
-      foto:   "119992725_2437457233066186_4983175529147161289_n.jpg",
+      foto:   "jablka/119992725_2437457233066186_4983175529147161289_n.jpg",
       sezona: "15. 8. – 31. 3.",
       barva:  "green",
       popis:  "Více než 15 odrůd, sklizené z vlastního sadu a skladované pro vás.",
