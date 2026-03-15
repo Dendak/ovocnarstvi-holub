@@ -59,7 +59,7 @@
   <!-- NAV -->
   <nav class="bg-brand-800 text-white sticky top-0 z-50 shadow-md">
     <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
-      <span id="nav-jmeno" class="font-serif font-bold text-base whitespace-nowrap">🍎</span>
+      <a href="#" class="flex-shrink-0"><img src="img/logo.png" alt="Ovocnářství Holub" class="h-10 w-auto"></a>
       <!-- Desktop menu -->
       <div class="hidden md:flex gap-6 text-sm font-medium text-brand-200 items-center">
         <a href="#ovoce"     class="hover:text-white transition-colors">Ovoce</a>
@@ -479,7 +479,6 @@
       document.getElementById('wa-btn').href = 'https://wa.me/' + waNum + '?text=' + encodeURIComponent('Dobrý den, mám zájem o ovoce/mošty.');
 
       // nav + hero
-      document.getElementById('nav-jmeno').textContent  = '🍎 ' + k.jmeno;
       document.getElementById('hero-jmeno').textContent = k.jmeno;
       const tel1čistý = k.tel1.replace(/\s/g, '');
       document.getElementById('hero-tel').href          = 'tel:+420' + tel1čistý;
