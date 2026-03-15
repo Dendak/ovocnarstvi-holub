@@ -561,10 +561,15 @@
           : '';
 
         const wideClass = o.wide ? 'sm:col-span-2 lg:col-span-3' : '';
-        const imgCls    = o.wide ? 'w-full sm:w-64 h-44 object-cover cursor-pointer flex-shrink-0 transition-opacity duration-500' : 'w-full h-44 object-cover cursor-pointer transition-opacity duration-500';
+        const containerCls = o.wide ? 'relative w-full sm:w-64 h-44 flex-shrink-0 overflow-hidden cursor-pointer' : 'relative w-full h-44 overflow-hidden cursor-pointer';
         const imgAttr   = `data-fotky='${JSON.stringify(fotky)}'`;
+        // crossfade: dvě vrstvené fotky, druhá se preloaduje
+        const druhaFoto = fotky.length > 1 ? 'img/' + encodeURIComponent(fotky[1]) : prvniFoto;
         const fotoEl    = prvniFoto
-          ? `<img src="${prvniFoto}" alt="${o.nazev}" class="${imgCls}" ${imgAttr} onclick="openLightbox(this.src)" />`
+          ? `<div class="${containerCls}" ${imgAttr} onclick="openLightbox(this.querySelector('img.active').src)">
+               <img src="${prvniFoto}" alt="${o.nazev}" class="active absolute inset-0 w-full h-44 object-cover transition-opacity duration-700" style="opacity:1">
+               <img src="${druhaFoto}" alt="${o.nazev}" class="next absolute inset-0 w-full h-44 object-cover transition-opacity duration-700" style="opacity:0">
+             </div>`
           : `<div class="w-full h-44 ${bg} flex items-center justify-center text-5xl">🍎</div>`;
 
         let html;
@@ -594,19 +599,24 @@
         grid.insertAdjacentHTML('beforeend', html);
       });
 
-      // slideshow – rotace fotek na kartách
-      grid.querySelectorAll('img[data-fotky]').forEach(img => {
-        const fotky = JSON.parse(img.dataset.fotky);
+      // slideshow – preload + crossfade
+      grid.querySelectorAll('div[data-fotky]').forEach(wrap => {
+        const fotky = JSON.parse(wrap.dataset.fotky);
         if (fotky.length < 2) return;
+        const [a, b] = wrap.querySelectorAll('img');
         let idx = 0;
+
+        // preload všechny fotky dopředu
+        fotky.forEach(f => { const i = new Image(); i.src = 'img/' + encodeURIComponent(f); });
+
         setInterval(() => {
           idx = (idx + 1) % fotky.length;
-          img.style.opacity = '0';
-          setTimeout(() => {
-            img.src = 'img/' + encodeURIComponent(fotky[idx]);
-            img.style.opacity = '1';
-          }, 500);
-        }, 3500);
+          const next   = a.style.opacity === '0' ? a : b;
+          const current = a.style.opacity === '0' ? b : a;
+          next.src = 'img/' + encodeURIComponent(fotky[idx]);
+          next.style.opacity = '1';
+          current.style.opacity = '0';
+        }, 6000);
       });
 
       // --- mošty ---
