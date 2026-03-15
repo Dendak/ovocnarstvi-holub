@@ -14,7 +14,7 @@ const OBSAH = {
     tel2:      "+420 722 949 299",
     email:     "holous25@seznam.cz",
     facebook:  "https://www.facebook.com/OvoceHolub",
-    instagram: "https://www.instagram.com/ovoceholub",
+    instagram: "https://www.instagram.com/ovocnarstviholub",
   },
 
   // --- OVOCE ---
@@ -24,7 +24,7 @@ const OBSAH = {
   ovoce: [
     {
       nazev:  "Třešně",
-      foto:   "484803473_1088135826450156_1603854554852976317_n.jpg",
+      fotky:  ["tresne.jpg", "tresne v bedne.jpeg", "484803473_1088135826450156_1603854554852976317_n.jpg"],
       sezona: "1. 7. – 25. 7.",
       barva:  "red",
       popis:  "Sladké letní třešně přímo ze stromu.",
@@ -61,7 +61,7 @@ const OBSAH = {
     },
     {
       nazev:  "Hrušky",
-      foto:   "119992199_2437457283066181_6907105438319047381_n.jpg",
+      fotky:  ["119992199_2437457283066181_6907105438319047381_n.jpg", "542007542_1218005136796557_6760772214935127534_n.jpg", "hrusky.jpg"],
       sezona: "1. 8. – 31. 1.",
       barva:  "yellow",
       popis:  "Šťavnaté hrušky různých odrůd.",

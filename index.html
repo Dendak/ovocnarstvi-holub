@@ -189,7 +189,7 @@
     <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
       <img src="img/504681257_4078182002327026_6055659733487249673_n.jpg" alt="Jarní sad v květu"
            class="w-full h-52 object-cover rounded-xl cursor-pointer hover:opacity-90 transition col-span-2 md:col-span-1" onclick="openLightbox(this.src)" />
-      <img src="img/484803473_1088135826450156_1603854554852976317_n.jpg" alt="Sklizeň třešní"
+      <img src="img/tresne.jpg" alt="Třešně"
            class="w-full h-52 object-cover rounded-xl cursor-pointer hover:opacity-90 transition" onclick="openLightbox(this.src)" />
       <img src="img/119992725_2437457233066186_4983175529147161289_n.jpg" alt="Jablka na větvi"
            class="w-full h-52 object-cover rounded-xl cursor-pointer hover:opacity-90 transition" onclick="openLightbox(this.src)" />
@@ -550,29 +550,28 @@
 
       // --- ovoce ---
       const grid = document.getElementById('ovoce-grid');
+      const slideshowState = []; // {el, fotky, idx}
+
       OBSAH.ovoce.forEach(o => {
         const [bg, text] = BARVY[o.barva] || BARVY.green;
-        const fotoSrc = 'img/' + encodeURIComponent(o.foto);
-        const fotoHTML = o.foto
-          ? `<img src="${fotoSrc}" alt="${o.nazev}" class="w-full h-44 object-cover cursor-pointer" onclick="openLightbox(this.src)" />`
-          : `<div class="w-full h-44 ${bg} flex items-center justify-center text-5xl">🍎</div>`;
-
-        const wideClass = o.wide ? 'sm:col-span-2 lg:col-span-3' : '';
-        const innerClass = o.wide ? 'flex flex-col sm:flex-row' : '';
-        const imgClass   = o.wide ? 'w-full sm:w-64 h-44 object-cover cursor-pointer flex-shrink-0' : 'w-full h-44 object-cover cursor-pointer';
-        const fotoHTMLWide = o.foto
-          ? `<img src="${fotoSrc}" alt="${o.nazev}" class="${imgClass}" onclick="openLightbox(this.src)" />`
-          : '';
-
-        let html;
+        const fotky = o.fotky || (o.foto ? [o.foto] : []);
+        const prvniFoto = fotky.length ? 'img/' + encodeURIComponent(fotky[0]) : null;
         const odrudyHTML = o.odrudy && o.odrudy.length
           ? `<p class="text-xs text-gray-400 mt-2">${o.odrudy.join(' · ')}</p>`
           : '';
 
+        const wideClass = o.wide ? 'sm:col-span-2 lg:col-span-3' : '';
+        const imgCls    = o.wide ? 'w-full sm:w-64 h-44 object-cover cursor-pointer flex-shrink-0 transition-opacity duration-500' : 'w-full h-44 object-cover cursor-pointer transition-opacity duration-500';
+        const imgAttr   = `data-fotky='${JSON.stringify(fotky)}'`;
+        const fotoEl    = prvniFoto
+          ? `<img src="${prvniFoto}" alt="${o.nazev}" class="${imgCls}" ${imgAttr} onclick="openLightbox(this.src)" />`
+          : `<div class="w-full h-44 ${bg} flex items-center justify-center text-5xl">🍎</div>`;
+
+        let html;
         if (o.wide) {
           html = `<div class="card bg-white rounded-2xl overflow-hidden shadow-sm border border-brand-100 ${wideClass}">
-            <div class="${innerClass}">
-              ${fotoHTMLWide}
+            <div class="flex flex-col sm:flex-row">
+              ${fotoEl}
               <div class="p-5 flex flex-col justify-center">
                 <h3 class="font-serif text-xl font-semibold text-brand-800 mb-1">${o.nazev}</h3>
                 <span class="inline-block ${bg} ${text} text-xs font-medium px-2 py-0.5 rounded-full mb-2 w-fit">${o.sezona}</span>
@@ -583,7 +582,7 @@
           </div>`;
         } else {
           html = `<div class="card bg-white rounded-2xl overflow-hidden shadow-sm border border-brand-100">
-            ${fotoHTML}
+            ${fotoEl}
             <div class="p-5">
               <h3 class="font-serif text-xl font-semibold text-brand-800 mb-1">${o.nazev}</h3>
               <span class="inline-block ${bg} ${text} text-xs font-medium px-2 py-0.5 rounded-full mb-2">${o.sezona}</span>
@@ -593,6 +592,21 @@
           </div>`;
         }
         grid.insertAdjacentHTML('beforeend', html);
+      });
+
+      // slideshow – rotace fotek na kartách
+      grid.querySelectorAll('img[data-fotky]').forEach(img => {
+        const fotky = JSON.parse(img.dataset.fotky);
+        if (fotky.length < 2) return;
+        let idx = 0;
+        setInterval(() => {
+          idx = (idx + 1) % fotky.length;
+          img.style.opacity = '0';
+          setTimeout(() => {
+            img.src = 'img/' + encodeURIComponent(fotky[idx]);
+            img.style.opacity = '1';
+          }, 500);
+        }, 3500);
       });
 
       // --- mošty ---
