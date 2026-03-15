@@ -615,6 +615,11 @@
     }
     document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
 
+    // Správné kódování cesty – nekóduje lomítka (subfoldery)
+    function imgSrc(relPath) {
+      return 'img/' + relPath.split('/').map(encodeURIComponent).join('/');
+    }
+
     // --- barvy sezón ---
     const BARVY = {
       red:    ['bg-red-100',    'text-red-700'],
@@ -689,7 +694,7 @@
       OBSAH.ovoce.forEach(o => {
         const [bg, text] = BARVY[o.barva] || BARVY.green;
         const fotky = o.fotky || (o.foto ? [o.foto] : []);
-        const prvniFoto = fotky.length ? 'img/' + encodeURIComponent(fotky[0]) : null;
+        const prvniFoto = fotky.length ? imgSrc(fotky[0]) : null;
         const odrudyHTML = o.odrudy && o.odrudy.length
           ? `<p class="text-xs text-gray-400 mt-2">${o.odrudy.join(' · ')}</p>`
           : '';
@@ -699,7 +704,7 @@
           ? 'relative w-full sm:w-64 h-44 flex-shrink-0 overflow-hidden cursor-pointer'
           : 'relative w-full h-44 overflow-hidden cursor-pointer';
         const imgAttr = `data-fotky='${JSON.stringify(fotky)}'`;
-        const druhaFoto = fotky.length > 1 ? 'img/' + encodeURIComponent(fotky[1]) : prvniFoto;
+        const druhaFoto = fotky.length > 1 ? imgSrc(fotky[1]) : prvniFoto;
         const fotoEl = prvniFoto
           ? `<div class="${containerCls}" ${imgAttr} onclick="openLightbox(this.querySelector('img.active').src)">
                <img src="${prvniFoto}" alt="${o.nazev}" class="active absolute inset-0 w-full h-44 object-cover transition-opacity duration-700" style="opacity:1">
@@ -741,13 +746,13 @@
         const [a, b] = wrap.querySelectorAll('img');
         let idx = 0;
 
-        fotky.forEach(f => { const i = new Image(); i.src = 'img/' + encodeURIComponent(f); });
+        fotky.forEach(f => { const i = new Image(); i.src = imgSrc(f); });
 
         setInterval(() => {
           idx = (idx + 1) % fotky.length;
           const next    = a.style.opacity === '0' ? a : b;
           const current = a.style.opacity === '0' ? b : a;
-          next.src = 'img/' + encodeURIComponent(fotky[idx]);
+          next.src = imgSrc(fotky[idx]);
           next.style.opacity = '1';
           current.style.opacity = '0';
         }, 6000);
