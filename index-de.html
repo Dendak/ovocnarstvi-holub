@@ -378,8 +378,8 @@
     })();
 
     // whatsapp
-    const waNum = '+420' + OBSAH.kontakt.tel1.replace(/\s/g,'');
-    document.getElementById('wa-btn').href = 'https://wa.me/' + waNum.replace('+','') + '?text=' + encodeURIComponent('Guten Tag, ich interessiere mich für Obst/Säfte.');
+    const waNum = OBSAH.kontakt.tel1.replace(/\D/g, '');
+    document.getElementById('wa-btn').href = 'https://wa.me/' + waNum + '?text=' + encodeURIComponent('Guten Tag, ich interessiere mich für Obst/Säfte.');
 
     // --- Kontaktformular ---
     document.getElementById('kontakt-form').addEventListener('submit', async function(e) {

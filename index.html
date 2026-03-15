@@ -475,8 +475,8 @@
       const k = OBSAH.kontakt;
 
       // whatsapp
-      const waNum = '+420' + k.tel1.replace(/\s/g,'');
-      document.getElementById('wa-btn').href = 'https://wa.me/' + waNum.replace('+','') + '?text=' + encodeURIComponent('Dobrý den, mám zájem o ovoce/mošty.');
+      const waNum = k.tel1.replace(/\D/g, '');
+      document.getElementById('wa-btn').href = 'https://wa.me/' + waNum + '?text=' + encodeURIComponent('Dobrý den, mám zájem o ovoce/mošty.');
 
       // nav + hero
       document.getElementById('nav-jmeno').textContent  = '🍎 ' + k.jmeno;
