@@ -28,6 +28,7 @@ const OBSAH = {
       sezona: "1. 7. – 25. 7.",
       barva:  "red",
       popis:  "Sladké letní třešně přímo ze stromu.",
+      odrudy: ["Kordia", "Regina", "Tamara"],
     },
     {
       nazev:  "Višně",
@@ -56,6 +57,7 @@ const OBSAH = {
       sezona: "1. 8. – 15. 10.",
       barva:  "purple",
       popis:  "Tradiční česká švestka – ideální na zavařování i do koláče.",
+      odrudy: ["Haganta", "Top King", "Topend Plus", "Čačanská"],
     },
     {
       nazev:  "Hrušky",
@@ -63,13 +65,15 @@ const OBSAH = {
       sezona: "1. 8. – 31. 1.",
       barva:  "yellow",
       popis:  "Šťavnaté hrušky různých odrůd.",
+      odrudy: ["Konference", "Williams", "Lucasova", "Bohemica", "Packahams"],
     },
     {
       nazev:  "Jablka",
       foto:   "119992725_2437457233066186_4983175529147161289_n.jpg",
       sezona: "15. 8. – 31. 3.",
       barva:  "green",
-      popis:  "Více odrůd, sklizené z vlastního sadu a skladované pro vás.",
+      popis:  "Více než 15 odrůd, sklizené z vlastního sadu a skladované pro vás.",
+      odrudy: ["Bohemia", "Rubinola", "Topaz", "Golden", "Gala", "Rozela", "Idared", "Sirius", "Lucy", "Jonagold", "Jonaprince", "Fuji", "Braeburn"],
       wide:   true, // tato karta zabere celou šířku
     },
   ],

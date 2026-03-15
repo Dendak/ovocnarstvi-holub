@@ -132,8 +132,9 @@
       <div class="w-px bg-brand-600 hidden sm:block"></div>
       <div class="flex flex-col items-center gap-1">
         <button onclick="document.getElementById('sispo-info').classList.toggle('hidden')"
-                class="text-brand-300 text-xs hover:text-white transition-colors underline decoration-dotted">
-          certifikace integrované produkce ↓
+                class="flex flex-col items-center gap-1 group">
+          <img src="img/sispo.gif" alt="SISPO" class="h-10 object-contain opacity-80 group-hover:opacity-100 transition-opacity">
+          <span class="text-brand-300 text-xs group-hover:text-white transition-colors underline decoration-dotted">certifikace integrované produkce ↓</span>
         </button>
       </div>
     </div>
@@ -564,6 +565,10 @@
           : '';
 
         let html;
+        const odrudyHTML = o.odrudy && o.odrudy.length
+          ? `<p class="text-xs text-gray-400 mt-2">${o.odrudy.join(' · ')}</p>`
+          : '';
+
         if (o.wide) {
           html = `<div class="card bg-white rounded-2xl overflow-hidden shadow-sm border border-brand-100 ${wideClass}">
             <div class="${innerClass}">
@@ -572,6 +577,7 @@
                 <h3 class="font-serif text-xl font-semibold text-brand-800 mb-1">${o.nazev}</h3>
                 <span class="inline-block ${bg} ${text} text-xs font-medium px-2 py-0.5 rounded-full mb-2 w-fit">${o.sezona}</span>
                 <p class="text-gray-500 text-sm">${o.popis}</p>
+                ${odrudyHTML}
               </div>
             </div>
           </div>`;
@@ -582,6 +588,7 @@
               <h3 class="font-serif text-xl font-semibold text-brand-800 mb-1">${o.nazev}</h3>
               <span class="inline-block ${bg} ${text} text-xs font-medium px-2 py-0.5 rounded-full mb-2">${o.sezona}</span>
               <p class="text-gray-500 text-sm">${o.popis}</p>
+              ${odrudyHTML}
             </div>
           </div>`;
         }
