@@ -57,7 +57,7 @@
   </div>
 
   <!-- NAV -->
-  <nav class="bg-brand-800 text-white sticky top-0 z-50 shadow-md">
+  <nav id="main-nav" class="bg-brand-800 text-white sticky top-0 z-50 shadow-md transition-transform duration-300">
     <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
       <a href="#" class="flex-shrink-0"><img src="img/logo.png" alt="Ovocnářství Holub" class="h-14 w-auto"></a>
       <div class="hidden md:flex gap-6 text-sm font-medium text-brand-200 items-center">
@@ -102,6 +102,27 @@
       document.getElementById('nav-icon-open').classList.remove('hidden');
       document.getElementById('nav-icon-close').classList.add('hidden');
     }
+
+    // Hide nav on scroll down, show on scroll up (mobile only)
+    (function() {
+      const nav = document.getElementById('main-nav');
+      let lastY = 0;
+      window.addEventListener('scroll', function() {
+        const y = window.scrollY;
+        if (y > lastY && y > 80) {
+          // scrolling down – skrýt nav
+          nav.style.transform = 'translateY(-100%)';
+          // zavřít mobilní menu při schování
+          document.getElementById('nav-mobile').classList.add('hidden');
+          document.getElementById('nav-icon-open').classList.remove('hidden');
+          document.getElementById('nav-icon-close').classList.add('hidden');
+        } else {
+          // scrolling up – ukázat nav
+          nav.style.transform = 'translateY(0)';
+        }
+        lastY = y;
+      }, { passive: true });
+    })();
   </script>
 
   <!-- HERO -->
