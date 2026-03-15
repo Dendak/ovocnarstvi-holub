@@ -1,30 +1,79 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 100" width="320" height="100">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 160" width="420" height="160">
   <defs>
-    <linearGradient id="appleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#2d8a2d;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#133e13;stop-opacity:1" />
+    <linearGradient id="bg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e6b1e"/>
+      <stop offset="100%" style="stop-color:#133e13"/>
+    </linearGradient>
+    <linearGradient id="apple" x1="20%" y1="0%" x2="80%" y2="100%">
+      <stop offset="0%" style="stop-color:#6dd66d"/>
+      <stop offset="60%" style="stop-color:#2d8a2d"/>
+      <stop offset="100%" style="stop-color:#1a5c1a"/>
     </linearGradient>
   </defs>
 
+  <!-- Badge -->
+  <rect x="2" y="2" width="416" height="156" rx="14" fill="url(#bg)"/>
+  <rect x="2" y="2" width="416" height="156" rx="14" fill="none" stroke="#5aaa5a" stroke-width="1.5" opacity="0.5"/>
+  <rect x="9" y="9" width="402" height="142" rx="9" fill="none" stroke="#5aaa5a" stroke-width="0.7" opacity="0.25"/>
+
   <!-- Apple icon -->
-  <!-- Stem -->
-  <path d="M50 18 Q54 10 60 12" stroke="#133e13" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-  <!-- Leaf -->
-  <path d="M54 14 Q62 8 65 16 Q58 18 54 14Z" fill="#2d8a2d"/>
-  <!-- Apple body -->
-  <path d="M36 38 Q34 26 44 24 Q50 22 50 28 Q50 22 56 24 Q66 26 64 38 Q68 52 50 62 Q32 52 36 38Z" fill="url(#appleGrad)"/>
-  <!-- Apple shine -->
-  <ellipse cx="44" cy="33" rx="4" ry="6" fill="white" opacity="0.2" transform="rotate(-20 44 33)"/>
+  <g transform="translate(52, 80)">
+    <!-- Stem -->
+    <path d="M1 -40 C1 -50 8 -52 12 -46" stroke="#a8e0a8" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    <!-- Leaf -->
+    <path d="M5 -49 C12 -58 22 -54 18 -46 C12 -44 5 -49 5 -49Z" fill="#7dd87d"/>
+    <path d="M5 -49 C12 -51 18 -46 18 -46" stroke="#5ab85a" stroke-width="0.8" fill="none"/>
+    <!-- Apple: classic shape with top notch -->
+    <!-- Left lobe -->
+    <path d="
+      M1 -36
+      C-14 -38 -32 -28 -32 -8
+      C-32 14  -18 34   1  38
+      C20  34  32  14   32 -8
+      C32 -28  14 -38   1 -36Z
+    " fill="url(#apple)"/>
+    <!-- Top center notch -->
+    <path d="M1 -36 C-4 -42 -4 -38 1 -36 C6 -38 6 -42 1 -36Z" fill="url(#bg)"/>
+    <!-- Shine -->
+    <ellipse cx="-12" cy="-16" rx="7" ry="10" fill="white" opacity="0.18" transform="rotate(-15 -12 -16)"/>
+    <!-- Bottom shadow line -->
+    <path d="M-12 30 Q1 38 14 30" stroke="#1a5c1a" stroke-width="1" fill="none" opacity="0.4"/>
+  </g>
 
-  <!-- Text: Ovocnářství -->
-  <text x="82" y="46" font-family="Georgia, 'Times New Roman', serif" font-size="22" font-weight="700" fill="#133e13" letter-spacing="0.5">Ovocnářství</text>
+  <!-- Vertical divider -->
+  <line x1="96" y1="30" x2="96" y2="130" stroke="#5aaa5a" stroke-width="1" opacity="0.35"/>
 
-  <!-- Text: HOLUB -->
-  <text x="82" y="72" font-family="Georgia, 'Times New Roman', serif" font-size="30" font-weight="700" fill="#1a561a" letter-spacing="3">HOLUB</text>
+  <!-- OVOCNÁŘSTVÍ -->
+  <text x="258" y="54"
+        font-family="Georgia, 'Times New Roman', serif"
+        font-size="14"
+        fill="#9dd89d"
+        letter-spacing="5"
+        text-anchor="middle"
+        font-weight="400">OVOCNÁŘSTVÍ</text>
 
-  <!-- Decorative line -->
-  <line x1="82" y1="79" x2="310" y2="79" stroke="#237023" stroke-width="1.5" opacity="0.4"/>
+  <!-- HOLUB -->
+  <text x="258" y="106"
+        font-family="Georgia, 'Times New Roman', serif"
+        font-size="56"
+        fill="white"
+        letter-spacing="8"
+        text-anchor="middle"
+        font-weight="700">HOLUB</text>
+
+  <!-- Ornamental divider -->
+  <g transform="translate(258, 120)">
+    <line x1="-85" y1="0" x2="-18" y2="0" stroke="#5aaa5a" stroke-width="1" opacity="0.55"/>
+    <path d="M-10 0 L0 -5 L10 0 L0 5Z" fill="#5aaa5a" opacity="0.7"/>
+    <line x1="18" y1="0" x2="85" y2="0" stroke="#5aaa5a" stroke-width="1" opacity="0.55"/>
+  </g>
 
   <!-- Tagline -->
-  <text x="82" y="93" font-family="'Arial', sans-serif" font-size="10" fill="#237023" letter-spacing="1.5" opacity="0.8">KRTELY · OD PŘÍRODY</text>
+  <text x="258" y="142"
+        font-family="'Arial Narrow', Arial, sans-serif"
+        font-size="10.5"
+        fill="#7dca7d"
+        letter-spacing="3.5"
+        text-anchor="middle"
+        opacity="0.75">KRTELY · OD PŘÍRODY</text>
 </svg>
