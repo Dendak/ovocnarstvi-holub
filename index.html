@@ -131,10 +131,6 @@
       <div><div class="text-2xl font-bold font-serif">30 ha</div><div class="text-brand-300 text-xs mt-0.5">vlastního sadu</div></div>
       <div class="w-px bg-brand-600 hidden sm:block"></div>
       <div class="flex flex-col items-center gap-1">
-        <a href="https://www.sispo.cz" target="_blank" rel="noopener" title="O certifikaci SISPO">
-          <img src="img/sispo.gif" alt="Certifikace SISPO" class="h-10 object-contain hover:opacity-80 transition-opacity" onerror="this.style.display='none';this.nextElementSibling.style.display='block'" />
-          <span style="display:none" class="text-brand-200 font-semibold text-sm">SISPO</span>
-        </a>
         <button onclick="document.getElementById('sispo-info').classList.toggle('hidden')"
                 class="text-brand-300 text-xs hover:text-white transition-colors underline decoration-dotted">
           certifikace integrované produkce ↓
@@ -145,38 +141,11 @@
 
   <!-- SISPO info panel -->
   <div id="sispo-info" class="hidden bg-brand-700 border-t border-brand-600">
-    <div class="max-w-3xl mx-auto px-6 py-6 text-sm text-brand-100">
-      <div class="flex items-start gap-4">
-        <a href="https://www.sispo.cz" target="_blank" rel="noopener"><img src="img/sispo.gif" alt="SISPO" class="h-12 mt-1 flex-shrink-0"></a>
-        <div class="space-y-4">
-          <div>
-            <h3 class="font-semibold text-white mb-2">Co je integrovaná produkce?</h3>
-            <ul class="space-y-1 leading-relaxed text-brand-100">
-              <li>Ekonomická produkce ovoce vysoké kvality při uplatnění ekologicky přijatelných metod pěstování a minimalizaci nežádoucích vedlejších účinků agrochemikálií.</li>
-              <li>Koncept udržitelného zemědělství přispívající k udržitelným, odolným a robustním zemědělským systémům.</li>
-              <li>Klade důraz na <strong class="text-white">ochranu životního prostředí a lidského zdraví</strong>.</li>
-            </ul>
-          </div>
-          <div class="grid sm:grid-cols-2 gap-4 text-xs">
-            <div>
-              <p class="text-white font-medium mb-1">Vyžaduje</p>
-              <ul class="space-y-1 text-brand-200">
-                <li>· Důkladné znalosti cílů a zásad integrované produkce.</li>
-                <li>· Dodržování stanovené pěstitelské technologie.</li>
-                <li>· Kladný přístup pěstitelů k ochraně přírody.</li>
-              </ul>
-            </div>
-            <div>
-              <p class="text-white font-medium mb-1">Cílem je</p>
-              <ul class="space-y-1 text-brand-200">
-                <li>· Ochrana přírodního prostředí sadu a živých organismů.</li>
-                <li>· Neničení složek prostředí ovocného sadu.</li>
-                <li>· Zajištění druhové rozmanitosti živočichů a rostlin v sadech a okolí.</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div class="max-w-3xl mx-auto px-6 py-5 flex items-center gap-5">
+      <a href="https://www.sispo.cz" target="_blank" rel="noopener">
+        <img src="img/sispo.gif" alt="SISPO" class="h-16 flex-shrink-0">
+      </a>
+      <p class="text-brand-100 text-sm leading-relaxed">Pěstujeme podle přísných ekologických standardů s minimem pesticidů – s důrazem na ochranu přírody a zdraví zákazníků.</p>
     </div>
   </div>
 
