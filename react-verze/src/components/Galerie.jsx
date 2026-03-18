@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
 const FOTKY = [
-  { src: 'img/sad/504681257_4078182002327026_6055659733487249673_n.jpg',      alt: 'Jarní sad v květu',  wide: true },
+  { src: 'img/sad/504681257_4078182002327026_6055659733487249673_n.jpg',      alt: 'Jarní sad v květu',  tall: true },
   { src: 'img/tresne/tresne.jpg',                                              alt: 'Třešně' },
   { src: 'img/jablka/119992725_2437457233066186_4983175529147161289_n.jpg',   alt: 'Jablka na větvi' },
   { src: 'img/hrusky/119992199_2437457283066181_6907105438319047381_n.jpg',   alt: 'Hrušky v sadu' },
@@ -18,34 +18,44 @@ export default function Galerie() {
 
   return (
     <>
-      <section id="galerie" className="max-w-5xl mx-auto px-6 py-16">
-        <h2 className="font-serif text-3xl sm:text-4xl font-bold text-[#133e13] text-center mb-2">Ze sadu</h2>
-        <p className="text-center text-gray-500 mb-10 text-sm">Záběry z naší každodenní práce</p>
+      <section id="galerie" className="bg-[#0d1f0d] py-20">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center mb-12">
+            <p className="text-green-400/60 text-xs tracking-widest uppercase mb-3">Nahlédněte k nám</p>
+            <h2 className="font-serif text-3xl sm:text-4xl font-bold text-white">Ze sadu</h2>
+          </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-          {FOTKY.map((f, i) => (
-            <div
-              key={i}
-              className={`overflow-hidden rounded-xl cursor-pointer group ${f.wide ? 'col-span-2 md:col-span-1' : ''}`}
-              onClick={() => setLightbox(base + f.src)}
-            >
-              <img
-                src={base + f.src}
-                alt={f.alt}
-                className="w-full h-52 object-cover group-hover:scale-105 transition-transform duration-300"
-              />
-            </div>
-          ))}
+          <div className="grid grid-cols-2 md:grid-cols-3 auto-rows-[180px] md:auto-rows-[220px] gap-2 sm:gap-3">
+            {FOTKY.map((f, i) => (
+              <div
+                key={i}
+                className={`relative overflow-hidden rounded-xl cursor-pointer group ${f.tall ? 'row-span-2' : ''}`}
+                onClick={() => setLightbox(base + f.src)}
+              >
+                <img
+                  src={base + f.src}
+                  alt={f.alt}
+                  loading="lazy"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+                  <span className="text-white text-sm font-medium px-4 py-3 drop-shadow-lg">
+                    {f.alt}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
       {lightbox && (
         <div
-          className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 cursor-pointer"
+          className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4 cursor-pointer backdrop-blur-sm"
           onClick={() => setLightbox(null)}
         >
-          <button className="absolute top-4 right-5 text-white text-4xl leading-none">&times;</button>
-          <img src={lightbox} alt="" className="max-w-[90vw] max-h-[90vh] rounded-lg object-contain" />
+          <button className="absolute top-4 right-5 text-white/70 hover:text-white text-4xl leading-none transition-colors">&times;</button>
+          <img src={lightbox} alt="" className="max-w-[90vw] max-h-[90vh] rounded-lg object-contain shadow-2xl" />
         </div>
       )}
     </>

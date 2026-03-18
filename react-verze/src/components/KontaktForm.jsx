@@ -49,25 +49,30 @@ export default function KontaktForm() {
   const field = 'border border-gray-200 rounded-xl px-4 py-3 text-sm w-full focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent transition bg-white'
 
   return (
-    <section id="napiste" className="bg-green-50 border-t border-green-100 py-16">
+    <section id="napiste" className="bg-[#f7f4ef] py-20">
       <div className="max-w-xl mx-auto px-6">
-        <h2 className="font-serif text-3xl sm:text-4xl font-bold text-[#133e13] text-center mb-2">
-          Napište nám
-        </h2>
-        <p className="text-center text-gray-500 text-sm mb-1">
-          Objednávka, dotaz nebo zájem o rozvoz do Budějovic
-        </p>
-        <p className="text-center text-sm mb-8">
-          nebo napište přímo na{' '}
-          <a href={`mailto:${k.email}`} className="text-green-700 hover:underline font-medium">{k.email}</a>
-        </p>
+        <div className="text-center mb-10">
+          <p className="text-green-700 text-xs tracking-widest uppercase mb-3">Ozvěte se nám</p>
+          <h2 className="font-serif text-3xl sm:text-4xl font-bold text-[#133e13] mb-3">
+            Napište nám
+          </h2>
+          <p className="text-gray-500 text-sm">
+            Objednávka, dotaz nebo zájem o rozvoz do Budějovic
+          </p>
+          <p className="text-sm mt-1">
+            nebo přímo na{' '}
+            <a href={`mailto:${k.email}`} className="text-green-700 hover:underline font-medium">{k.email}</a>
+          </p>
+        </div>
 
         {status === 'ok' ? (
-          <div className="bg-white rounded-2xl border border-green-200 p-8 text-center text-green-700">
-            ✅ Zpráva odeslána! Ozveme se co nejdříve.
+          <div className="bg-white rounded-2xl border border-green-200 p-8 text-center text-green-700 shadow-sm">
+            <svg className="w-10 h-10 mx-auto mb-3 text-green-500" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+            <p className="font-semibold text-lg mb-1">Zpráva odeslána!</p>
+            <p className="text-sm text-gray-500">Ozveme se co nejdříve.</p>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-green-100 shadow-sm p-6 sm:p-8 space-y-4" noValidate>
+          <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-sm p-6 sm:p-8 space-y-4" noValidate>
             <div>
               <label className="text-xs font-medium text-gray-600 mb-1 block">Jméno</label>
               <input name="jmeno" value={form.jmeno} onChange={handleChange} onBlur={handleBlur}

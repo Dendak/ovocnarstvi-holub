@@ -1,10 +1,10 @@
 import { OBSAH } from '../data'
 
 const BENEFITY = [
-  { icon: '📦', text: 'Bag-in-box 3 l a 5 l' },
-  { icon: '🍃', text: 'Bez cukrů a konzervantů' },
-  { icon: '👨‍👩‍👧', text: 'Vhodné pro celou rodinu' },
-  { icon: '📅', text: 'Dostupné celoročně' },
+  { icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="m21 7.5-9-5.25L3 7.5m18 0-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9"/></svg>, text: 'Bag-in-box 3 l a 5 l' },
+  { icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z"/></svg>, text: 'Bez cukrů a konzervantů' },
+  { icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"/></svg>, text: 'Vhodné pro celou rodinu' },
+  { icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"/></svg>, text: 'Dostupné celoročně' },
 ]
 
 export default function Mosty() {
@@ -32,7 +32,7 @@ export default function Mosty() {
           <div className="space-y-3">
             {BENEFITY.map(b => (
               <div key={b.text} className="flex items-center gap-3 bg-white rounded-2xl px-5 py-4 shadow-sm">
-                <span className="text-2xl">{b.icon}</span>
+                <span className="text-green-700 shrink-0">{b.icon}</span>
                 <span className="text-sm font-medium text-gray-700">{b.text}</span>
               </div>
             ))}
@@ -53,43 +53,28 @@ export default function Mosty() {
               <span className="text-right w-16">3 l</span>
             </div>
 
-            {skupiny.map((sk, i) => {
-              const isSpecial = !!sk.special
-              return (
+            {skupiny.map((sk, i) => (
                 <div
                   key={i}
-                  className={`grid grid-cols-[1fr_auto_auto] gap-x-6 items-center px-6 py-4 border-b border-gray-100 last:border-0 transition-colors
-                    ${isSpecial ? 'bg-amber-50 hover:bg-amber-100' : 'hover:bg-green-50'}`}
+                  className="grid grid-cols-[1fr_auto_auto] gap-x-6 items-center px-6 py-4 border-b border-gray-100 last:border-0 transition-colors hover:bg-green-50"
                 >
-                  {/* Flavor tags */}
                   <div className="flex flex-wrap gap-1.5">
                     {sk.polozky.map(p => (
                       p.dostupne === false
                         ? <span key={p.nazev} className="inline-flex items-center gap-1 bg-gray-100 text-gray-400 text-xs px-3 py-1 rounded-full line-through">{p.nazev}</span>
-                        : <span key={p.nazev}
-                            className={`inline-flex items-center text-xs font-medium px-3 py-1 rounded-full
-                              ${isSpecial ? 'bg-amber-100 text-amber-800' : 'bg-green-100 text-green-800'}`}>
-                            {p.nazev}
-                          </span>
+                        : <span key={p.nazev} className="inline-flex items-center text-xs font-medium px-3 py-1 rounded-full bg-green-100 text-green-800">{p.nazev}</span>
                     ))}
                   </div>
 
-                  {/* 5 l price */}
                   <div className="text-right w-20">
-                    <span className={`font-bold text-lg tabular-nums ${isSpecial ? 'text-amber-700' : 'text-[#133e13]'}`}>
-                      {sk.cena5l} Kč
-                    </span>
+                    <span className="font-bold text-lg tabular-nums text-[#133e13]">{sk.cena5l} Kč</span>
                   </div>
 
-                  {/* 3 l price */}
                   <div className="text-right w-16">
-                    <span className={`font-semibold text-sm tabular-nums ${isSpecial ? 'text-amber-600' : 'text-green-600'}`}>
-                      {sk.cena3l} Kč
-                    </span>
+                    <span className="font-semibold text-sm tabular-nums text-green-600">{sk.cena3l} Kč</span>
                   </div>
                 </div>
-              )
-            })}
+            ))}
           </div>
         </div>
 

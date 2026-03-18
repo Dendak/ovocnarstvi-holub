@@ -2,11 +2,11 @@ import { useState, useEffect, useRef } from 'react'
 import { imgSrc } from '../data'
 
 const BADGE = {
-  red:    'bg-red-500 text-white',
-  orange: 'bg-orange-500 text-white',
-  yellow: 'bg-amber-500 text-white',
-  purple: 'bg-purple-600 text-white',
-  green:  'bg-green-600 text-white',
+  red:    'bg-red-400/90 text-white',
+  orange: 'bg-amber-400/90 text-white',
+  yellow: 'bg-yellow-400/90 text-gray-900',
+  purple: 'bg-purple-400/90 text-white',
+  green:  'bg-green-500/90 text-white',
 }
 
 function Slideshow({ fotky, nazev }) {
