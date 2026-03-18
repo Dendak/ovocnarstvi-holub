@@ -20,7 +20,7 @@ const DUVODY = [
 export default function App() {
   const [sispoOpen, setSispoOpen] = useState(false)
   const k = OBSAH.kontakt
-  const waUrl = `https://wa.me/${k.tel1.replace(/\D/g, '')}`
+  const waUrl = `https://wa.me/${k.tel1.replace(/\D/g, '')}?text=${encodeURIComponent('Dobrý den, rád/a bych se zeptal/a na dostupnost ovoce nebo moštů.')}`
 
   return (
     <>
