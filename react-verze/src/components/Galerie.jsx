@@ -1,19 +1,20 @@
 import { useState } from 'react'
 
 const FOTKY = [
-  { src: '/img/sad/504681257_4078182002327026_6055659733487249673_n.jpg',      alt: 'Jarní sad v květu',     wide: true },
-  { src: '/img/tresne/tresne.jpg',                                              alt: 'Třešně' },
-  { src: '/img/jablka/119992725_2437457233066186_4983175529147161289_n.jpg',   alt: 'Jablka na větvi' },
-  { src: '/img/hrusky/119992199_2437457283066181_6907105438319047381_n.jpg',   alt: 'Hrušky v sadu' },
-  { src: '/img/hrusky/hrusky.jpg',                                              alt: 'Hrušky v bedně' },
-  { src: '/img/merunky/WhatsApp%20Image%202026-03-15%20at%2013.39.21.jpeg',   alt: 'Meruňky' },
-  { src: '/img/svestky/WhatsApp%20Image%202026-03-15%20at%2013.42.01.jpeg',   alt: 'Švestky' },
-  { src: '/img/broskve/WhatsApp%20Image%202026-03-15%20at%2013.38.50.jpeg',   alt: 'Broskve' },
-  { src: '/img/visne/vi%C5%A1n%C4%9B.jpeg',                                    alt: 'Višně' },
+  { src: 'img/sad/504681257_4078182002327026_6055659733487249673_n.jpg',      alt: 'Jarní sad v květu',  wide: true },
+  { src: 'img/tresne/tresne.jpg',                                              alt: 'Třešně' },
+  { src: 'img/jablka/119992725_2437457233066186_4983175529147161289_n.jpg',   alt: 'Jablka na větvi' },
+  { src: 'img/hrusky/119992199_2437457283066181_6907105438319047381_n.jpg',   alt: 'Hrušky v sadu' },
+  { src: 'img/hrusky/hrusky.jpg',                                              alt: 'Hrušky v bedně' },
+  { src: 'img/merunky/WhatsApp%20Image%202026-03-15%20at%2013.39.21.jpeg',   alt: 'Meruňky' },
+  { src: 'img/svestky/WhatsApp%20Image%202026-03-15%20at%2013.42.01.jpeg',   alt: 'Švestky' },
+  { src: 'img/broskve/WhatsApp%20Image%202026-03-15%20at%2013.38.50.jpeg',   alt: 'Broskve' },
+  { src: 'img/visne/vi%C5%A1n%C4%9B.jpeg',                                    alt: 'Višně' },
 ]
 
 export default function Galerie() {
   const [lightbox, setLightbox] = useState(null)
+  const base = import.meta.env.BASE_URL
 
   return (
     <>
@@ -26,10 +27,10 @@ export default function Galerie() {
             <div
               key={i}
               className={`overflow-hidden rounded-xl cursor-pointer group ${f.wide ? 'col-span-2 md:col-span-1' : ''}`}
-              onClick={() => setLightbox(f.src)}
+              onClick={() => setLightbox(base + f.src)}
             >
               <img
-                src={f.src}
+                src={base + f.src}
                 alt={f.alt}
                 className="w-full h-52 object-cover group-hover:scale-105 transition-transform duration-300"
               />
@@ -38,7 +39,6 @@ export default function Galerie() {
         </div>
       </section>
 
-      {/* Lightbox */}
       {lightbox && (
         <div
           className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 cursor-pointer"

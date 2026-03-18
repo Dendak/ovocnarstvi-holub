@@ -28,7 +28,7 @@ export const OBSAH = {
       { polozky: [{ nazev: 'Hruška',           dostupne: true }, { nazev: 'Červená řepa', dostupne: true }, { nazev: 'Mrkev',   dostupne: true }],              cena5l: 170, cena3l: 120 },
       { polozky: [{ nazev: 'Skořice',          dostupne: true }, { nazev: 'Červený rybíz', dostupne: true }, { nazev: 'Limetka', dostupne: true }, { nazev: 'Zázvor', dostupne: true }], cena5l: 180, cena3l: 125 },
       { polozky: [{ nazev: 'Višeň',            dostupne: true }, { nazev: 'Černý rybíz',  dostupne: true }],                                                    cena5l: 190, cena3l: 130 },
-      { polozky: [{ nazev: 'Rakytník',         dostupne: true }, { nazev: '🎄 Vánoční mošt', dostupne: true }],                                                 cena5l: 240, cena3l: 170, special: true },
+      { polozky: [{ nazev: 'Rakytník',         dostupne: true }, { nazev: '🎄 Vánoční mošt', dostupne: true }],                                                 cena5l: 240, cena3l: 170 },
     ],
   },
 }
