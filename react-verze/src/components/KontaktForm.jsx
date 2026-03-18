@@ -300,9 +300,9 @@ export default function KontaktForm() {
             {/* --- 3. POZNÁMKA --- */}
             <div className="bg-white rounded-2xl shadow-sm p-6 sm:p-8 space-y-4">
               <div>
-                <label className="text-xs font-medium text-gray-600 mb-1 block">Poznámka</label>
+                <label className="text-xs font-medium text-gray-600 mb-1 block">Dotaz nebo poznámka</label>
                 <textarea name="zprava" value={form.zprava} onChange={handleChange} onBlur={handleBlur}
-                  rows={3} placeholder="Preferované datum rozvozu, speciální požadavky..."
+                  rows={3} placeholder="Máte dotaz? Chcete domluvit rozvoz? Napište cokoliv..."
                   className={field + ' resize-none'} />
               </div>
             </div>

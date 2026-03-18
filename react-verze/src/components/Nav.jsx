@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 const LINKS = [
   { label: 'Ovoce',     href: '#ovoce'    },
@@ -11,17 +11,27 @@ const LINKS = [
 export default function Nav() {
   const [open, setOpen]     = useState(false)
   const [hidden, setHidden] = useState(false)
-  const [lastY, setLastY]   = useState(0)
+  const lastY = useRef(0)
+  const skipUntil = useRef(0)
+
+  const handleNavClick = () => {
+    setOpen(false)
+    skipUntil.current = Date.now() + 800
+  }
 
   useEffect(() => {
     const onScroll = () => {
       const y = window.scrollY
-      setHidden(y > lastY && y > 80)
-      setLastY(y)
+      if (Date.now() < skipUntil.current) {
+        lastY.current = y
+        return
+      }
+      setHidden(y > lastY.current && y > 80)
+      lastY.current = y
     }
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
-  }, [lastY])
+  }, [])
 
   return (
     <nav
@@ -36,7 +46,7 @@ export default function Nav() {
         {/* Desktop links */}
         <div className="hidden md:flex items-center gap-6">
           {LINKS.map(l => (
-            <a key={l.href} href={l.href}
+            <a key={l.href} href={l.href} onClick={handleNavClick}
               className="text-white/80 hover:text-white text-base font-medium transition-colors">
               {l.label}
             </a>
@@ -60,7 +70,7 @@ export default function Nav() {
       {open && (
         <div className="md:hidden bg-[#1a561a] border-t border-white/10 px-4 py-3 flex flex-col gap-3">
           {LINKS.map(l => (
-            <a key={l.href} href={l.href} onClick={() => setOpen(false)}
+            <a key={l.href} href={l.href} onClick={handleNavClick}
               className="text-white/90 hover:text-white text-sm font-medium py-1 transition-colors">
               {l.label}
             </a>
