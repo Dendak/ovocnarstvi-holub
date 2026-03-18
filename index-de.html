@@ -134,6 +134,24 @@
     <div id="ovoce-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
   </section>
 
+  <!-- LIEFERUNG NACH ÖSTERREICH -->
+  <section id="rakusko" class="hidden bg-brand-800 text-white py-10 border-t border-brand-700">
+    <div class="max-w-5xl mx-auto px-6 flex flex-col sm:flex-row items-center gap-6 sm:gap-12">
+      <div class="flex-1 text-center sm:text-left">
+        <p class="text-brand-400 text-xs font-semibold uppercase tracking-widest mb-2">🇦🇹 Direktlieferung</p>
+        <h2 class="font-serif text-2xl sm:text-3xl font-bold mb-1">Lieferung nach Österreich</h2>
+        <p class="text-brand-300 text-sm mb-3">Dodávky do Horního Rakouska a Salzkammergut.</p>
+        <p class="text-white/70 text-sm leading-relaxed">
+          Wir beliefern regelmäßig Schnapsbrenner in
+          <strong class="text-white">Oberösterreich</strong> und im
+          <strong class="text-white">Salzkammergut</strong> –
+          direkt vom Erzeuger.
+        </p>
+      </div>
+      <div id="rakusko-vlastnosti" class="flex flex-wrap gap-3 justify-center sm:justify-end"></div>
+    </div>
+  </section>
+
   <!-- FOTOS -->
   <section id="galerie" class="max-w-5xl mx-auto px-6 py-16">
     <h2 class="font-serif text-3xl sm:text-4xl font-bold text-brand-800 text-center mb-2">Aus dem Obstgarten</h2>
@@ -439,6 +457,21 @@
       // footer
       document.getElementById('footer-jmeno').textContent = deJmeno;
       document.getElementById('footer-info').textContent  = k.adresa + ', ' + k.mesto + '  ·  ' + k.tel1 + '  ·  ' + k.email;
+
+      // --- Lieferung nach Österreich ---
+      const r = OBSAH.rakusko;
+      if (r && r.aktivni) {
+        document.getElementById('rakusko').classList.remove('hidden');
+        const el = document.getElementById('rakusko-vlastnosti');
+        r.vlastnosti.forEach(v => {
+          el.insertAdjacentHTML('beforeend',
+            `<div class="bg-white/10 rounded-xl px-5 py-3 text-center min-w-[100px]">
+               <p class="font-semibold text-sm">${v.de}</p>
+               <p class="text-brand-400 text-xs mt-0.5">${v.cs}</p>
+             </div>`
+          );
+        });
+      }
 
       // --- Obst ---
       const grid = document.getElementById('ovoce-grid');
