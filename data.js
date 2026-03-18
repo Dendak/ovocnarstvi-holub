@@ -140,18 +140,4 @@ const OBSAH = {
     ],
   },
 
-  // --- DODÁVKY DO RAKOUSKA ---
-  // Zobrazí se jako banner pod mošty
-  // aktivni: true = zobrazit, false = skrýt
-  rakusko: {
-    aktivni: true,
-    region:  "Oberösterreich & Salzkammergut",
-    vlastnosti: [
-      { cs: "Čerstvé",    de: "Frisch"        },
-      { cs: "Bez plísně", de: "Ohne Schimmel" },
-      { cs: "Bez větví",  de: "Ohne Äste"     },
-      { cs: "Čisté",      de: "Sauber"        },
-    ],
-  },
-
 };
