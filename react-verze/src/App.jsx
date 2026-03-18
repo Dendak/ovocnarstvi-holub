@@ -11,7 +11,7 @@ import Kontakt      from './components/Kontakt'
 import Footer       from './components/Footer'
 
 const DUVODY = [
-  { num: '30 ha', label: 'vlastního sadu',     text: 'Přes 8 000 stromů – ovoce sklízíme sami' },
+  { num: '30 ha', label: 'vlastního sadu',     text: 'Přes 15 000 stromů – ovoce sklízíme sami' },
   { num: '6+',    label: 'druhů ovoce',         text: 'Třešně, višně, meruňky, hrušky, švestky, jablka' },
   { num: '15+',   label: 'odrůd jablek',        text: 'Bohemia, Topaz, Golden, Gala a další' },
   { num: '100%',  label: 'přímý prodej',        text: 'Žádný prostředník – vy víte, odkud jídlo pochází' },
