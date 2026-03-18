@@ -2,7 +2,7 @@ import { OBSAH } from '../data'
 
 const BENEFITY = [
   { icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="m21 7.5-9-5.25L3 7.5m18 0-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9"/></svg>, text: 'Bag-in-box 3 l a 5 l' },
-  { icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z"/></svg>, text: 'Bez cukrů a konzervantů' },
+  { icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>, text: 'Bez cukrů a konzervantů' },
   { icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"/></svg>, text: 'Dostupné celoročně' },
 ]
 
@@ -15,11 +15,11 @@ export default function Mosty() {
 
         {/* Header */}
         <div className="text-center mb-14">
-          <p className="text-green-700 text-xs tracking-widest uppercase mb-3">100% přírodní · bez přidaných cukrů</p>
+          <p className="text-green-700 text-sm tracking-widest uppercase mb-3">100% přírodní · bez přidaných cukrů</p>
           <h2 className="font-serif text-4xl sm:text-5xl font-bold text-[#133e13] mb-4">
             Domácí mošty
           </h2>
-          <p className="text-gray-500 text-sm">
+          <p className="text-gray-500 text-base">
             Základem je čerstvá jablečná šťáva z vlastního sadu &nbsp;·&nbsp;
             <span className="text-green-700 font-medium">Ceník od {platnostOd}</span>
           </p>
@@ -32,12 +32,12 @@ export default function Mosty() {
             {BENEFITY.map(b => (
               <div key={b.text} className="flex items-center gap-3 bg-white rounded-2xl px-5 py-4 shadow-sm">
                 <span className="text-green-700 shrink-0">{b.icon}</span>
-                <span className="text-sm font-medium text-gray-700">{b.text}</span>
+                <span className="text-base font-medium text-gray-700">{b.text}</span>
               </div>
             ))}
             <div className="bg-[#133e13] text-white rounded-2xl px-5 py-5 mt-2">
               <p className="font-serif text-lg font-semibold mb-1">Objednávky</p>
-              <p className="text-green-300 text-xs leading-relaxed">
+              <p className="text-green-300 text-sm leading-relaxed">
                 Zavolejte nebo napište – domluvíme předání přímo nebo rozvoz do Budějovic.
               </p>
             </div>
@@ -77,7 +77,7 @@ export default function Mosty() {
           </div>
         </div>
 
-        <p className="text-center text-gray-400 text-xs mt-8">
+        <p className="text-center text-gray-400 text-sm mt-8">
           Ceny jsou za bag-in-box balení včetně obalu. Minimální objednávka 1 kus.
         </p>
       </div>

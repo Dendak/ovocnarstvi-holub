@@ -8,7 +8,7 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-8">
           <div className="text-center md:text-left">
             <p className="font-serif text-white text-xl font-bold mb-0.5">{k.jmeno}</p>
-            <p className="text-green-400/70 text-sm">Pavel Holub</p>
+            <p className="text-green-400/70">Pavel Holub</p>
           </div>
           <div className="flex items-center gap-4">
             <a href={k.facebook} target="_blank" rel="noopener noreferrer"
@@ -22,7 +22,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-green-800/50 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-green-500/70">
+        <div className="border-t border-green-800/50 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-green-500/70">
           <p>{k.adresa}, {k.mesto} · {k.tel1} · {k.email}</p>
           <p>
             © {new Date().getFullYear()} {k.jmeno} ·{' '}

@@ -17,7 +17,7 @@ export default function Hero() {
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10" />
 
         <div className="relative z-10 max-w-6xl mx-auto px-8 pb-32 w-full">
-          <p className="text-green-300 text-xs font-medium tracking-[0.25em] uppercase mb-5">
+          <p className="text-green-300 text-sm font-medium tracking-[0.25em] uppercase mb-5">
             Rodinné ovocnářství · Krtely u Netolic
           </p>
           <h1 className="font-serif font-bold leading-none mb-6"
@@ -26,7 +26,7 @@ export default function Hero() {
             <em className="not-italic text-green-300">přímo</em><br />
             ze sadu.
           </h1>
-          <p className="text-white/70 text-base sm:text-lg font-light max-w-md mb-10 leading-relaxed">
+          <p className="text-white/70 text-lg sm:text-xl font-light max-w-md mb-10 leading-relaxed">
             Třešně, višně, meruňky, hrušky, švestky, jablka<br className="hidden sm:block" /> a domácí mošty. Přímý prodej z Krtel u Netolic.
           </p>
           <div className="flex flex-col sm:flex-row gap-3">
@@ -60,14 +60,9 @@ export default function Hero() {
               <span className="font-serif text-2xl font-bold text-white">8 000+</span>
               <span className="text-white/50 text-xs ml-2">ovocných stromů</span>
             </div>
-            <div className="w-px h-5 bg-white/20" />
-            <div className="flex items-center gap-2">
-              <img src={`${import.meta.env.BASE_URL}img/sispo.gif`} alt="SISPO" className="h-6 opacity-80" />
-              <span className="text-white/50 text-xs">integrovaná produkce</span>
-            </div>
-            <div className="ml-auto hidden md:flex items-center gap-2 text-white/50 text-xs">
+            <div className="ml-auto hidden md:flex items-center gap-2 text-white/50 text-sm">
               <svg className="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" /></svg>
-              Rozvoz CB po–st–pá
+              Rozvoz do Č. Budějovic po–st–pá
             </div>
           </div>
         </div>

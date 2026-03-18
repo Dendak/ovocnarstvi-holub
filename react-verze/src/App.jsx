@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { OBSAH } from './data'
 import Nav          from './components/Nav'
 import Hero         from './components/Hero'
@@ -17,48 +18,78 @@ const DUVODY = [
 ]
 
 export default function App() {
+  const [sispoOpen, setSispoOpen] = useState(false)
   const k = OBSAH.kontakt
   const waUrl = `https://wa.me/${k.tel1.replace(/\D/g, '')}?text=${encodeURIComponent('Dobrý den, mám zájem o ovoce/mošty.')}`
 
   return (
     <>
       <Nav />
-      <div className="h-14" />
+      <div className="h-16" />
       <Hero />
 
       {/* Numbers strip */}
       <section className="bg-[#1a561a] py-16">
         <div className="max-w-6xl mx-auto px-6">
-          <p className="text-green-300 text-xs tracking-widest uppercase mb-10 text-center">Proč nakoupit u nás</p>
+          <p className="text-green-300 text-sm tracking-widest uppercase mb-10 text-center">Proč nakoupit u nás</p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {DUVODY.map(d => (
               <div key={d.num} className="text-center">
                 <p className="font-serif text-5xl font-bold text-white mb-1">{d.num}</p>
-                <p className="text-green-300 text-sm font-medium mb-2">{d.label}</p>
-                <p className="text-green-400/60 text-xs leading-relaxed">{d.text}</p>
+                <p className="text-green-300 text-base font-medium mb-2">{d.label}</p>
+                <p className="text-green-400/60 text-sm leading-relaxed">{d.text}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* SISPO trust bar */}
-      <div className="bg-green-950 border-y border-green-900 py-5">
-        <div className="max-w-6xl mx-auto px-6 flex flex-wrap items-center justify-center gap-8 text-green-400 text-sm">
-          <div className="flex items-center gap-3">
-            <img src={`${import.meta.env.BASE_URL}img/sispo.gif`} alt="SISPO" className="h-8 opacity-80" />
-            <span>SISPO certifikace – integrovaná produkce</span>
+      {/* SISPO certifikace */}
+      <div className="bg-green-950 border-y border-green-900 py-6">
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="flex flex-col sm:flex-row items-center gap-5">
+            <a href="https://www.sispo.cz/integrovana-produkce/" target="_blank" rel="noopener noreferrer" className="shrink-0">
+              <img src={`${import.meta.env.BASE_URL}img/sispo.gif`} alt="SISPO" className="h-14 hover:opacity-100 opacity-90 transition-opacity" />
+            </a>
+            <div className="text-center sm:text-left flex-1">
+              <a href="https://www.sispo.cz/integrovana-produkce/" target="_blank" rel="noopener noreferrer"
+                className="text-green-300 font-semibold text-base hover:text-green-200 transition-colors">
+                Certifikace SISPO – Integrovaná produkce
+              </a>
+              <div className="flex items-center gap-4 mt-1.5 flex-wrap justify-center sm:justify-start">
+                <span className="text-green-400/70 text-sm flex items-center gap-1.5">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+                  Kontrolované pěstování
+                </span>
+                <span className="text-green-400/70 text-sm flex items-center gap-1.5">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+                  Šetrné k přírodě
+                </span>
+                <button
+                  onClick={() => setSispoOpen(o => !o)}
+                  className="text-green-500 text-sm hover:text-green-300 transition-colors cursor-pointer flex items-center gap-1"
+                >
+                  {sispoOpen ? 'Skrýt' : 'Více info'}
+                  <svg className={`w-3.5 h-3.5 transition-transform ${sispoOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
+                </button>
+              </div>
+            </div>
           </div>
-          <span className="hidden md:inline text-green-700">·</span>
-          <span className="flex items-center gap-1.5">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" /></svg>
-            Rozvoz do Českých Budějovic po–st–pá
-          </span>
-          <span className="hidden md:inline text-green-700">·</span>
-          <span className="flex items-center gap-1.5">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 0 0 2.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 0 1-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 0 0-1.091-.852H4.5A2.25 2.25 0 0 0 2.25 4.5v2.25Z" /></svg>
-            Prodej po telefonické domluvě
-          </span>
+          {sispoOpen && (
+            <div className="mt-5 bg-green-900/40 rounded-xl p-5 text-green-300/90 text-sm leading-relaxed max-w-3xl mx-auto sm:ml-[calc(3.5rem+1.25rem)]">
+              <p>
+                Integrovaná produkce je systém pěstování, který kombinuje moderní zemědělské postupy s ohledem na přírodu.
+                Ovoce je pěstováno s minimálním použitím chemických přípravků – přednost mají přírodní metody ochrany rostlin.
+              </p>
+              <p className="mt-2">
+                Pro vás to znamená ovoce s nižším obsahem reziduí pesticidů a vyšší nutriční hodnotou – čerstvé, bezpečné a kvalitní.
+              </p>
+              <a href="https://www.sispo.cz/integrovana-produkce/" target="_blank" rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-green-400 hover:text-green-200 font-medium mt-3 transition-colors">
+                Více na sispo.cz →
+              </a>
+            </div>
+          )}
         </div>
       </div>
 

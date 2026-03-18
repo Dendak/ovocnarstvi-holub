@@ -9,12 +9,12 @@ export default function OvoceSection() {
       <div className="max-w-6xl mx-auto px-6">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
           <div>
-            <p className="text-green-400 text-xs tracking-widest uppercase mb-2">Sezónní nabídka 2026</p>
+            <p className="text-green-400 text-sm tracking-widest uppercase mb-2">Sezónní nabídka 2026</p>
             <h2 className="font-serif text-4xl sm:text-5xl font-bold text-white leading-tight">
               Naše ovoce
             </h2>
           </div>
-          <p className="text-white/40 text-sm max-w-xs text-right">
+          <p className="text-white/40 text-base max-w-xs text-right">
             Přesné termíny dostupnosti závisí na počasí a ročníku
           </p>
         </div>
