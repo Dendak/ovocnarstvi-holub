@@ -22,7 +22,7 @@ const IconShare = () => (
   </svg>
 )
 
-export default function Kontakt() {
+export default function Kontakt({ cookiesAccepted }) {
   const k = OBSAH.kontakt
   const mapUrl = 'https://www.google.com/maps/place/Ovocn%C3%A1%C5%99stv%C3%AD+Holub/@49.0826258,14.1677963,17z/data=!4m6!3m5!1s0x4774ad0019e39f15:0xf1e2281c3b44a6c7!8m2!3d49.0826258!4d14.1703712!16s%2Fg%2F11xfhkf620'
   const mapEmbed = `https://maps.google.com/maps?q=${encodeURIComponent('Ovocnářství Holub')}&hl=cs&z=14&output=embed`
@@ -110,14 +110,28 @@ export default function Kontakt() {
               Otevřít v mapách →
             </a>
           </div>
-          <iframe
-            src={mapEmbed}
-            className="w-full h-80 border-0"
-            allowFullScreen
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-            title="Mapa – Ovocnářství Holub"
-          />
+          {cookiesAccepted ? (
+            <iframe
+              src={mapEmbed}
+              className="w-full h-80 border-0"
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="Mapa – Ovocnářství Holub"
+            />
+          ) : (
+            <div className="w-full h-80 bg-gray-100 flex flex-col items-center justify-center gap-3 text-gray-500">
+              <svg className="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+              </svg>
+              <p className="text-sm text-center px-4">Pro zobrazení mapy je potřeba přijmout cookies.</p>
+              <a href={mapUrl} target="_blank" rel="noopener noreferrer"
+                className="text-green-700 text-sm font-medium hover:underline">
+                Otevřít v Google Maps →
+              </a>
+            </div>
+          )}
         </div>
       </div>
     </section>

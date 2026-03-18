@@ -9,6 +9,7 @@ import Aktuality    from './components/Aktuality'
 import KontaktForm  from './components/KontaktForm'
 import Kontakt      from './components/Kontakt'
 import Footer       from './components/Footer'
+import CookieConsent, { useCookieConsent } from './components/CookieConsent'
 
 const DUVODY = [
   { num: '30 ha', label: 'vlastního sadu',     text: 'Přes 15 000 stromů – ovoce sklízíme sami' },
@@ -19,6 +20,7 @@ const DUVODY = [
 
 export default function App() {
   const [sispoOpen, setSispoOpen] = useState(false)
+  const { consent, accept, reject, accepted } = useCookieConsent()
   const k = OBSAH.kontakt
   const waUrl = `https://wa.me/${k.tel1.replace(/\D/g, '')}?text=${encodeURIComponent('Dobrý den, rád/a bych se zeptal/a na dostupnost ovoce nebo moštů.')}`
 
@@ -98,8 +100,11 @@ export default function App() {
       <Galerie />
       <Aktuality />
       <KontaktForm />
-      <Kontakt />
+      <Kontakt cookiesAccepted={accepted} />
       <Footer />
+
+      {/* Cookie consent */}
+      {consent === null && <CookieConsent onAccept={accept} onReject={reject} />}
 
       {/* WhatsApp FAB */}
       <a
