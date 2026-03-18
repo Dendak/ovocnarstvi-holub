@@ -24,7 +24,7 @@ const IconShare = () => (
 
 export default function Kontakt() {
   const k = OBSAH.kontakt
-  const mapUrl = `https://maps.google.com/?q=${encodeURIComponent(k.adresa + ', ' + k.mesto)}`
+  const mapUrl = 'https://www.google.com/maps/place/Ovocn%C3%A1%C5%99stv%C3%AD+Holub/@49.0826258,14.1677963,17z/data=!4m6!3m5!1s0x4774ad0019e39f15:0xf1e2281c3b44a6c7!8m2!3d49.0826258!4d14.1703712!16s%2Fg%2F11xfhkf620'
   const mapEmbed = `https://maps.google.com/maps?q=${encodeURIComponent('Ovocnářství Holub')}&hl=cs&z=14&output=embed`
 
   const cards = [
