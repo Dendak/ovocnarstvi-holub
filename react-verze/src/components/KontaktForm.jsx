@@ -36,6 +36,9 @@ export default function KontaktForm() {
   const [mosty5l, setMosty5l] = useState({})
   const [mosty3l, setMosty3l] = useState({})
   const [showMosty, setShowMosty] = useState(false)
+  const [doruceni, setDoruceni] = useState('')  // 'vyzvednuti' | 'dovoz'
+  const [vyzvednuti, setVyzvednuti] = useState({ datum: '', cas: '' })
+  const [dovoz, setDovoz] = useState({ adresa: '', termin: '' })
   const [errors, setErrors] = useState({})
   const [touched, setTouched] = useState({})
   const [status, setStatus] = useState(null)
@@ -97,6 +100,15 @@ export default function KontaktForm() {
     for (const [nazev, qty] of Object.entries(mosty3l)) {
       const m = mostyList.find(x => x.nazev === nazev)
       lines.push(`Mošt ${nazev} 3L: ${qty}x (${qty * (m?.cena3l || 0)} Kč)`)
+    }
+    if (doruceni === 'vyzvednuti') {
+      lines.push(`\nZpůsob: Osobní vyzvednutí`)
+      if (vyzvednuti.datum) lines.push(`Datum: ${vyzvednuti.datum}`)
+      if (vyzvednuti.cas) lines.push(`Čas: ${vyzvednuti.cas}`)
+    } else if (doruceni === 'dovoz') {
+      lines.push(`\nZpůsob: Dovoz`)
+      if (dovoz.adresa) lines.push(`Adresa: ${dovoz.adresa}`)
+      if (dovoz.termin) lines.push(`Termín dovozu: ${dovoz.termin}`)
     }
     return lines.length ? 'Nezávazná poptávka:\n' + lines.map(l => '- ' + l).join('\n') : ''
   }
@@ -297,12 +309,86 @@ export default function KontaktForm() {
               <p className="text-gray-400 text-xs -mt-2">Stačí vyplnit telefon nebo e-mail.</p>
             </div>
 
-            {/* --- 3. POZNÁMKA --- */}
+            {/* --- 3. ZPŮSOB DORUČENÍ --- */}
+            <div className="bg-white rounded-2xl shadow-sm p-6 sm:p-8 space-y-4">
+              <h3 className="font-semibold text-[#133e13] text-lg mb-1">Způsob převzetí</h3>
+              <div className="grid grid-cols-2 gap-3">
+                <button type="button"
+                  onClick={() => setDoruceni(d => d === 'vyzvednuti' ? '' : 'vyzvednuti')}
+                  className={`rounded-xl border-2 px-4 py-4 text-center transition ${
+                    doruceni === 'vyzvednuti'
+                      ? 'border-green-500 bg-green-50 text-green-800'
+                      : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                  }`}
+                >
+                  <svg className="w-6 h-6 mx-auto mb-1.5" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
+                  </svg>
+                  <span className="text-sm font-medium">Osobní vyzvednutí</span>
+                  <span className="text-xs text-gray-400 block mt-0.5">Krtely 70, Netolice</span>
+                </button>
+                <button type="button"
+                  onClick={() => setDoruceni(d => d === 'dovoz' ? '' : 'dovoz')}
+                  className={`rounded-xl border-2 px-4 py-4 text-center transition ${
+                    doruceni === 'dovoz'
+                      ? 'border-green-500 bg-green-50 text-green-800'
+                      : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                  }`}
+                >
+                  <svg className="w-6 h-6 mx-auto mb-1.5" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0H21M3.375 14.25h.008M21 12.75V6.375c0-.621-.504-1.125-1.125-1.125H5.25c-.621 0-1.125.504-1.125 1.125v7.875m16.875 0h-2.25m-13.5-4.5h13.5" />
+                  </svg>
+                  <span className="text-sm font-medium">Dovoz</span>
+                  <span className="text-xs text-gray-400 block mt-0.5">Po, St, Pá – Č. Budějovice</span>
+                </button>
+              </div>
+
+              {doruceni === 'vyzvednuti' && (
+                <div className="space-y-3 pt-2">
+                  <p className="text-xs text-gray-500">Kdy byste chtěli přijet?</p>
+                  <div className="grid sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-xs font-medium text-gray-600 mb-1 block">Datum</label>
+                      <input type="date" value={vyzvednuti.datum}
+                        onChange={e => setVyzvednuti(v => ({ ...v, datum: e.target.value }))}
+                        className={field} />
+                    </div>
+                    <div>
+                      <label className="text-xs font-medium text-gray-600 mb-1 block">Přibližný čas</label>
+                      <input type="time" value={vyzvednuti.cas}
+                        onChange={e => setVyzvednuti(v => ({ ...v, cas: e.target.value }))}
+                        className={field} />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {doruceni === 'dovoz' && (
+                <div className="space-y-3 pt-2">
+                  <div>
+                    <label className="text-xs font-medium text-gray-600 mb-1 block">Adresa dovozu</label>
+                    <input type="text" value={dovoz.adresa} placeholder="Ulice, město, PSČ"
+                      onChange={e => setDovoz(d => ({ ...d, adresa: e.target.value }))}
+                      className={field} />
+                  </div>
+                  <div>
+                    <label className="text-xs font-medium text-gray-600 mb-1 block">Kdy vám to můžeme dovézt?</label>
+                    <input type="text" value={dovoz.termin} placeholder="Např. pondělí odpoledne, středa dopoledne..."
+                      onChange={e => setDovoz(d => ({ ...d, termin: e.target.value }))}
+                      className={field} />
+                    <p className="text-xs text-gray-400 mt-1">Rozvážíme po Č. Budějovicích v Po, St a Pá.</p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* --- 4. POZNÁMKA --- */}
             <div className="bg-white rounded-2xl shadow-sm p-6 sm:p-8 space-y-4">
               <div>
                 <label className="text-xs font-medium text-gray-600 mb-1 block">Dotaz nebo poznámka</label>
                 <textarea name="zprava" value={form.zprava} onChange={handleChange} onBlur={handleBlur}
-                  rows={3} placeholder="Máte dotaz? Chcete domluvit rozvoz? Napište cokoliv..."
+                  rows={3} placeholder="Cokoliv dalšího – speciální požadavky, dotazy..."
                   className={field + ' resize-none'} />
               </div>
             </div>
