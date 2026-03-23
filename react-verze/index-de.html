@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Obstgut Holub – Verarbeitungsobst für Edelbrände</title>
+    <meta name="description" content="Frisches Verarbeitungsobst aus eigenem 30-ha-Obstgarten in Südböhmen. Weichsel, Zwetschken, Birnen, Äpfel. Lieferung nach Oberösterreich und Salzburg." />
+  </head>
+  <body>
+    <script>
+      if (!sessionStorage.getItem('lang_chosen')) {
+        var lang = (navigator.language || navigator.userLanguage || '').toLowerCase();
+        if (lang.startsWith('cs') || lang.startsWith('sk')) {
+          sessionStorage.setItem('lang_chosen', 'cs');
+          window.location.replace('index.html');
+        } else {
+          sessionStorage.setItem('lang_chosen', 'de');
+        }
+      }
+    </script>
+    <div id="root"></div>
+    <script type="module" src="/src/main-de.jsx"></script>
+  </body>
+</html>

@@ -37,9 +37,6 @@ jobs:
       - name: Copy images into dist
         run: cp -r img react-verze/dist/
 
-      - name: Copy static pages into dist
-        run: cp react-verze/public/index-de.html react-verze/dist/
-
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
