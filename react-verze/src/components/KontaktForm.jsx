@@ -373,11 +373,11 @@ export default function KontaktForm() {
                       className={field} />
                   </div>
                   <div>
-                    <label className="text-xs font-medium text-gray-600 mb-1 block">Kdy vám to můžeme dovézt?</label>
-                    <input type="text" value={dovoz.termin} placeholder="Např. pondělí odpoledne, středa dopoledne..."
+                    <label className="text-xs font-medium text-gray-600 mb-1 block">Který den preferujete?</label>
+                    <input type="text" value={dovoz.termin} placeholder="Např. pondělí, středa..."
                       onChange={e => setDovoz(d => ({ ...d, termin: e.target.value }))}
                       className={field} />
-                    <p className="text-xs text-gray-400 mt-1">Rozvážíme po Č. Budějovicích v Po, St a Pá.</p>
+                    <p className="text-xs text-gray-400 mt-1">Rozvážíme po Č. Budějovicích v Po, St a Pá, vždy ráno/dopoledne.</p>
                   </div>
                 </div>
               )}
