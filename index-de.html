@@ -35,6 +35,18 @@
   </style>
 </head>
 <body class="bg-brand-50 text-gray-800">
+  <script>
+    // Auto-redirect Czech visitors to Czech page (once per session)
+    if (!sessionStorage.getItem('lang_chosen')) {
+      var lang = (navigator.language || navigator.userLanguage || '').toLowerCase();
+      if (lang.startsWith('cs') || lang.startsWith('sk')) {
+        sessionStorage.setItem('lang_chosen', 'cs');
+        window.location.replace('index.html');
+      } else {
+        sessionStorage.setItem('lang_chosen', 'de');
+      }
+    }
+  </script>
 
   <!-- NAV -->
   <nav class="bg-brand-800/95 backdrop-blur-md text-white fixed top-0 left-0 right-0 z-50 shadow-lg">
@@ -47,12 +59,12 @@
         <a href="#anfrage" class="hover:text-white transition-colors">Anfrage</a>
         <a href="#kontakt" class="hover:text-white transition-colors">Kontakt</a>
         <div class="flex items-center gap-2 ml-2">
-          <a href="index.html" title="Čeština"><img src="img/flag-cz.png" alt="CZ" class="h-5 rounded-sm opacity-60 hover:opacity-100 transition-opacity" /></a>
+          <a href="index.html" title="Čeština" onclick="sessionStorage.setItem('lang_chosen','cs')"><img src="img/flag-cz.png" alt="CZ" class="h-5 rounded-sm opacity-60 hover:opacity-100 transition-opacity" /></a>
           <img src="img/flag-at.png" alt="AT" title="Deutsch" class="h-5 rounded-sm" />
         </div>
       </div>
       <div class="flex md:hidden items-center gap-3">
-        <a href="index.html"><img src="img/flag-cz.png" alt="CZ" class="h-5 rounded-sm opacity-60" /></a>
+        <a href="index.html" onclick="sessionStorage.setItem('lang_chosen','cs')"><img src="img/flag-cz.png" alt="CZ" class="h-5 rounded-sm opacity-60" /></a>
         <img src="img/flag-at.png" alt="AT" class="h-5 rounded-sm" />
         <button id="nav-toggle" class="text-white p-1" aria-label="Menu">
           <svg id="nav-open" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>

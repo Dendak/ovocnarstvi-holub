@@ -52,8 +52,8 @@ export default function Nav() {
             </a>
           ))}
           <div className="flex gap-1 ml-2">
-            <a href={`${import.meta.env.BASE_URL}index.html`}><img src={`${import.meta.env.BASE_URL}img/flag-cz.png`} alt="CZ" className="h-5 rounded-sm opacity-80 hover:opacity-100" /></a>
-            <a href={`${import.meta.env.BASE_URL}index-de.html`}><img src={`${import.meta.env.BASE_URL}img/flag-at.png`} alt="AT" className="h-5 rounded-sm opacity-60 hover:opacity-100" /></a>
+            <a href={`${import.meta.env.BASE_URL}index.html`} onClick={() => sessionStorage.setItem('lang_chosen','cs')}><img src={`${import.meta.env.BASE_URL}img/flag-cz.png`} alt="CZ" className="h-5 rounded-sm opacity-80 hover:opacity-100" /></a>
+            <a href={`${import.meta.env.BASE_URL}index-de.html`} onClick={() => sessionStorage.setItem('lang_chosen','de')}><img src={`${import.meta.env.BASE_URL}img/flag-at.png`} alt="AT" className="h-5 rounded-sm opacity-60 hover:opacity-100" /></a>
           </div>
         </div>
 
@@ -76,8 +76,8 @@ export default function Nav() {
             </a>
           ))}
           <div className="flex gap-2 pt-1">
-            <a href={`${import.meta.env.BASE_URL}index.html`}><img src={`${import.meta.env.BASE_URL}img/flag-cz.png`} alt="CZ" className="h-5 rounded-sm" /></a>
-            <a href={`${import.meta.env.BASE_URL}index-de.html`}><img src={`${import.meta.env.BASE_URL}img/flag-at.png`} alt="AT" className="h-5 rounded-sm opacity-60" /></a>
+            <a href={`${import.meta.env.BASE_URL}index.html`} onClick={() => sessionStorage.setItem('lang_chosen','cs')}><img src={`${import.meta.env.BASE_URL}img/flag-cz.png`} alt="CZ" className="h-5 rounded-sm" /></a>
+            <a href={`${import.meta.env.BASE_URL}index-de.html`} onClick={() => sessionStorage.setItem('lang_chosen','de')}><img src={`${import.meta.env.BASE_URL}img/flag-at.png`} alt="AT" className="h-5 rounded-sm opacity-60" /></a>
           </div>
         </div>
       )}
