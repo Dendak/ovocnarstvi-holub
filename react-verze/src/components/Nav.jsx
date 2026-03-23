@@ -57,13 +57,23 @@ export default function Nav() {
           </div>
         </div>
 
-        {/* Mobile hamburger */}
-        <button onClick={() => setOpen(o => !o)} className="md:hidden text-white p-1" aria-label="Menu">
-          {open
-            ? <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-            : <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
-          }
-        </button>
+        {/* Mobile: flags + hamburger */}
+        <div className="flex md:hidden items-center gap-3">
+          <div className="flex gap-1.5">
+            <a href={`${import.meta.env.BASE_URL}index.html`} onClick={() => sessionStorage.setItem('lang_chosen','cs')}>
+              <img src={`${import.meta.env.BASE_URL}img/flag-cz.png`} alt="CZ" className="h-5 rounded-sm opacity-80 hover:opacity-100" />
+            </a>
+            <a href={`${import.meta.env.BASE_URL}index-de.html`} onClick={() => sessionStorage.setItem('lang_chosen','de')}>
+              <img src={`${import.meta.env.BASE_URL}img/flag-at.png`} alt="AT" className="h-5 rounded-sm opacity-60 hover:opacity-100" />
+            </a>
+          </div>
+          <button onClick={() => setOpen(o => !o)} className="text-white p-1" aria-label="Menu">
+            {open
+              ? <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+              : <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+            }
+          </button>
+        </div>
       </div>
 
       {/* Mobile menu */}
@@ -75,10 +85,6 @@ export default function Nav() {
               {l.label}
             </a>
           ))}
-          <div className="flex gap-2 pt-1">
-            <a href={`${import.meta.env.BASE_URL}index.html`} onClick={() => sessionStorage.setItem('lang_chosen','cs')}><img src={`${import.meta.env.BASE_URL}img/flag-cz.png`} alt="CZ" className="h-5 rounded-sm" /></a>
-            <a href={`${import.meta.env.BASE_URL}index-de.html`} onClick={() => sessionStorage.setItem('lang_chosen','de')}><img src={`${import.meta.env.BASE_URL}img/flag-at.png`} alt="AT" className="h-5 rounded-sm opacity-60" /></a>
-          </div>
         </div>
       )}
     </nav>

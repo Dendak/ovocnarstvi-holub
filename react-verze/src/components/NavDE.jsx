@@ -48,12 +48,20 @@ export default function NavDE() {
             <img src={`${import.meta.env.BASE_URL}img/flag-at.png`} alt="AT" className="h-5 rounded-sm opacity-80" />
           </div>
         </div>
-        <button onClick={() => setOpen(o => !o)} className="md:hidden text-white p-1" aria-label="Menu">
-          {open
-            ? <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-            : <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
-          }
-        </button>
+        <div className="flex md:hidden items-center gap-3">
+          <div className="flex gap-1.5">
+            <a href={`${import.meta.env.BASE_URL}index.html`} onClick={() => sessionStorage.setItem('lang_chosen','cs')}>
+              <img src={`${import.meta.env.BASE_URL}img/flag-cz.png`} alt="CZ" className="h-5 rounded-sm opacity-60 hover:opacity-100" />
+            </a>
+            <img src={`${import.meta.env.BASE_URL}img/flag-at.png`} alt="AT" className="h-5 rounded-sm opacity-80" />
+          </div>
+          <button onClick={() => setOpen(o => !o)} className="text-white p-1" aria-label="Menu">
+            {open
+              ? <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+              : <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+            }
+          </button>
+        </div>
       </div>
       {open && (
         <div className="md:hidden bg-[#1a561a] border-t border-white/10 px-4 py-3 flex flex-col gap-3">
@@ -63,12 +71,6 @@ export default function NavDE() {
               {l.label}
             </a>
           ))}
-          <div className="flex gap-2 pt-1">
-            <a href={`${import.meta.env.BASE_URL}index.html`} onClick={() => sessionStorage.setItem('lang_chosen','cs')}>
-              <img src={`${import.meta.env.BASE_URL}img/flag-cz.png`} alt="CZ" className="h-5 rounded-sm opacity-60" />
-            </a>
-            <img src={`${import.meta.env.BASE_URL}img/flag-at.png`} alt="AT" className="h-5 rounded-sm" />
-          </div>
         </div>
       )}
     </nav>

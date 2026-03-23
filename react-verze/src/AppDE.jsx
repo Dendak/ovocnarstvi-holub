@@ -10,7 +10,7 @@ const OBST = [
 ]
 
 export default function AppDE() {
-  const waUrl = 'https://wa.me/436787916433'
+  const waUrl = 'https://wa.me/420775047010'
   const base = import.meta.env.BASE_URL
 
   return (
