@@ -36,15 +36,7 @@ jobs:
 
       - name: Add .htaccess
         run: |
-          cat > react-verze/dist/.htaccess << 'EOF'
-          DirectoryIndex index.html
-          RewriteEngine On
-          RewriteBase /
-          RewriteRule ^index\.html$ - [L]
-          RewriteCond %{REQUEST_FILENAME} !-f
-          RewriteCond %{REQUEST_FILENAME} !-d
-          RewriteRule . /index.html [L]
-          EOF
+          printf 'DirectoryIndex index.html\n' > react-verze/dist/.htaccess
 
       - name: Deploy via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
