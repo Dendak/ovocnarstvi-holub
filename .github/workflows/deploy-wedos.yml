@@ -36,7 +36,7 @@ jobs:
 
       - name: Add .htaccess
         run: |
-          printf 'DirectoryIndex index.html\n' > react-verze/dist/.htaccess
+          printf 'DirectoryIndex index.html\nRewriteEngine On\nRewriteCond %%{HTTPS} off\nRewriteRule ^(.*)$ https://%%{HTTP_HOST}%%{REQUEST_URI} [L,R=301]\n' > react-verze/dist/.htaccess
 
       - name: Deploy via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
