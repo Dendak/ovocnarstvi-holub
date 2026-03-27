@@ -32,7 +32,7 @@ export default function NavDE() {
     <nav className={`fixed top-0 left-0 right-0 z-50 bg-[#133e13]/95 backdrop-blur-md shadow-lg transition-transform duration-300 ${hidden ? '-translate-y-full' : 'translate-y-0'}`}>
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
         <a href="#" className="flex items-center gap-2 shrink-0">
-          <img src={`${import.meta.env.BASE_URL}img/logo.png`} alt="Obstgut Holub" className="h-12 w-auto" />
+          <img src={`${import.meta.env.BASE_URL}img/logo.png`} alt="Obstbauernhof Holub" className="h-12 w-auto" />
         </a>
         <div className="hidden md:flex items-center gap-6">
           {LINKS.map(l => (

@@ -30,7 +30,7 @@ export default function AppDE() {
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/30" />
         <div className="relative z-10 max-w-4xl mx-auto px-8 text-center py-20">
           <p className="text-green-300 text-xs tracking-[0.25em] uppercase mb-5">
-            Familien-Obstgut · Südböhmen
+            Familien-Obstbauernhof · Südböhmen
           </p>
           <h1 className="font-serif font-bold leading-tight mb-6"
               style={{ fontSize: 'clamp(2.5rem, 8vw, 5rem)' }}>
@@ -162,7 +162,7 @@ export default function AppDE() {
           </div>
           <div className="mt-8 bg-[#f7f4ef] rounded-2xl border border-green-100 p-5 flex items-center justify-between flex-wrap gap-4">
             <div>
-              <p className="font-semibold text-[#133e13]">Obstgut Holub</p>
+              <p className="font-semibold text-[#133e13]">Obstbauernhof Holub</p>
               <p className="text-gray-500 text-sm">Krtely 70, Netolice, 384 11</p>
             </div>
             <a href="https://maps.google.com/?q=Krtely+70,+Netolice,+384+11" target="_blank" rel="noopener noreferrer"
