@@ -6,7 +6,7 @@ import autoprefixer from 'autoprefixer'
 
 export default defineConfig(({ command }) => ({
   plugins: [react()],
-  base: '/ovocnarstvi-holub/',
+  base: process.env.DEPLOY_TARGET === 'wedos' ? '/' : '/ovocnarstvi-holub/',
   // In dev, serve parent dir so /img/... works. In build, images are copied by CI.
   publicDir: command === 'build' ? false : '../',
   build: {
