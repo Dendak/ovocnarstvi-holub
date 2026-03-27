@@ -34,6 +34,18 @@ jobs:
       - name: Copy images into dist
         run: cp -r img react-verze/dist/
 
+      - name: Add .htaccess
+        run: |
+          cat > react-verze/dist/.htaccess << 'EOF'
+          DirectoryIndex index.html
+          RewriteEngine On
+          RewriteBase /
+          RewriteRule ^index\.html$ - [L]
+          RewriteCond %{REQUEST_FILENAME} !-f
+          RewriteCond %{REQUEST_FILENAME} !-d
+          RewriteRule . /index.html [L]
+          EOF
+
       - name: Deploy via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
