@@ -59,7 +59,7 @@ export default function AnfrageForm() {
     const fullMsg = [orderText, form.zprava].filter(Boolean).join('\n\n')
 
     try {
-      const res = await fetch('https://formsubmit.co/ajax/holubdenis@seznam.cz', {
+      const res = await fetch('https://formsubmit.co/ajax/holous25@seznam.cz', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify({ ...form, zprava: fullMsg }),
