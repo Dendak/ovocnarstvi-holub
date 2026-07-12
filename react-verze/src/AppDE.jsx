@@ -1,13 +1,26 @@
 import NavDE from './components/NavDE'
 import GalerieDE from './components/GalerieDE'
 import AnfrageForm from './components/AnfrageForm'
+import OvoceKarta from './components/OvoceKarta'
 import Footer from './components/Footer'
+import { OBSAH } from './data'
+
+// German fruit cards reuse the Czech OvoceKarta (rotating slideshow),
+// so the photo lists come straight from the shared data.
+const fotkyOf = nazev => OBSAH.ovoce.find(o => o.nazev === nazev)?.fotky || []
 
 const OBST = [
-  { name: 'Weichsel / Sauerkirschen', season: 'Juli – August', img: 'visne/višně.jpeg', desc: 'Aromatische Sauerkirschen – perfekte Grundlage für hochwertige Kirschbrände.' },
-  { name: 'Zwetschken', season: 'August – Oktober', img: 'svestky/IMG_2471.JPEG', desc: 'Haganta, Top King, Topend Plus, Čačanská, Stanley. Ideale Brennfrüchte mit hohem Zuckergehalt.', varieties: ['Haganta', 'Top King', 'Topend Plus', 'Čačanská', 'Stanley'] },
-  { name: 'Birnen', season: 'August – Januar', img: 'hrusky/hrusky.jpg', desc: 'Williams, Alex Lucas, Conference und weitere Sorten. Hervorragend für Birnenbrand und Williams.', varieties: ['Williams', 'Alex Lucas', 'Conference'] },
-  { name: 'Äpfel', season: 'August – März', img: 'jablka/IMG_2866.JPEG', desc: 'Über 15 Sorten: Bohemia, Topaz, Golden, Gala, Idared und viele mehr. Für Apfelbrand und Cider.' },
+  { nazev: 'Weichsel / Sauerkirschen', fotky: fotkyOf('Višně'), sezona: 'Juli – August', barva: 'red', popis: 'Aromatische Sauerkirschen – perfekte Grundlage für hochwertige Kirschbrände.' },
+  { nazev: 'Zwetschken', fotky: fotkyOf('Švestky'), sezona: 'August – Oktober', barva: 'purple', popis: 'Ideale Brennfrüchte mit hohem Zuckergehalt.', odrudy: ['Haganta', 'Top King', 'Topend Plus', 'Čačanská', 'Stanley'] },
+  { nazev: 'Birnen', fotky: fotkyOf('Hrušky'), sezona: 'August – Januar', barva: 'yellow', popis: 'Hervorragend für Birnenbrand und Williams.', odrudy: ['Williams', 'Alex Lucas', 'Conference'] },
+  { nazev: 'Äpfel', fotky: fotkyOf('Jablka'), sezona: 'August – März', barva: 'green', popis: 'Über 15 Sorten – für Apfelbrand und Cider.', odrudy: ['Bohemia', 'Topaz', 'Golden', 'Gala', 'Idared'] },
+]
+
+const GRUENDE = [
+  { num: '30 ha', label: 'eigener Obstgarten', text: 'Über 15 000 Bäume – wir ernten selbst' },
+  { num: '200 kg', label: 'Mindestabnahme', text: 'Flexibel für kleine und große Brennereien' },
+  { num: '4', label: 'Obstsorten', text: 'Weichsel, Zwetschken, Birnen, Äpfel' },
+  { num: '100%', label: 'Direktlieferung', text: 'Vom Obstgarten direkt zu Ihrer Brennerei' },
 ]
 
 export default function AppDE() {
@@ -20,7 +33,7 @@ export default function AppDE() {
       <div className="h-16" />
 
       {/* HERO */}
-      <header className="relative min-h-[85vh] flex flex-col justify-center text-white overflow-hidden">
+      <header className="relative h-screen flex flex-col justify-end text-white overflow-hidden">
         <img
           src={`${base}img/sad/504681257_4078182002327026_6055659733487249673_n.jpg`}
           alt=""
@@ -29,78 +42,124 @@ export default function AppDE() {
           className="absolute inset-0 w-full h-full object-cover"
           style={{ objectPosition: 'center 40%' }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/30" />
-        <div className="relative z-10 max-w-4xl mx-auto px-8 text-center py-20">
-          <p className="text-green-300 text-xs tracking-[0.25em] uppercase mb-5">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10" />
+
+        <div className="relative z-10 max-w-6xl mx-auto px-8 pb-32 w-full">
+          <p className="text-green-300 text-sm font-medium tracking-[0.25em] uppercase mb-5">
             Familien-Obstbauernhof · Südböhmen
           </p>
-          <h1 className="font-serif font-bold leading-tight mb-6"
-              style={{ fontSize: 'clamp(2.5rem, 8vw, 5rem)' }}>
-            Verarbeitungsobst<br />
-            <em className="not-italic text-green-300">für Edelbrände</em>
+          <h1 className="font-serif font-bold leading-none mb-6"
+              style={{ fontSize: 'clamp(3rem, 9vw, 7rem)' }}>
+            Obst<br />
+            <em className="not-italic text-green-300">direkt</em><br />
+            vom Bauern.
           </h1>
-          <p className="text-white/70 text-lg sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
-            Erstklassiges Obst aus eigenem 30-ha-Obstgarten für Brennereien in Oberösterreich und Salzburg.
+          <p className="text-white/70 text-lg sm:text-xl font-light max-w-md mb-10 leading-relaxed">
+            Weichsel, Zwetschken, Birnen und Äpfel<br className="hidden sm:block" /> für Edelbrände. Lieferung nach Oberösterreich und Salzburg.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <div className="flex flex-col sm:flex-row gap-3">
             <a href="#anfrage"
-              className="inline-flex items-center gap-2 bg-white text-[#133e13] font-semibold px-8 py-4 rounded-full hover:bg-green-50 transition-colors text-base shadow-xl">
+              className="inline-flex items-center justify-center gap-2 bg-white text-[#133e13] font-semibold px-8 py-4 rounded-full hover:bg-green-50 transition-colors text-sm shadow-xl">
               Anfrage stellen →
             </a>
-            <a href={waUrl} target="_blank" rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-[#25d366] hover:bg-[#20bd5a] text-white font-semibold px-8 py-4 rounded-full transition-colors text-base shadow-xl">
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.625.846 5.059 2.284 7.034L.789 23.492a.5.5 0 00.612.638l4.67-1.227A11.944 11.944 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-2.387 0-4.591-.826-6.326-2.209l-.352-.29-3.053.803.818-2.987-.318-.505A9.955 9.955 0 012 12C2 6.486 6.486 2 12 2s10 4.486 10 10-4.486 10-10 10z"/></svg>
-              WhatsApp
+            <a href="#obst"
+              className="inline-flex items-center justify-center gap-2 border border-white/40 bg-white/10 backdrop-blur-sm text-white font-medium px-8 py-4 rounded-full hover:bg-white/20 transition-colors text-sm">
+              Unser Sortiment
             </a>
+          </div>
+        </div>
+
+        {/* Stats strip — glassmorphism */}
+        <div className="absolute bottom-0 left-0 right-0 bg-black/40 backdrop-blur-md border-t border-white/10">
+          <div className="max-w-6xl mx-auto px-8 py-5 flex flex-wrap gap-8 items-center">
+            <div>
+              <span className="font-serif text-2xl font-bold text-white">30 ha</span>
+              <span className="text-white/50 text-xs ml-2">eigener Obstgarten</span>
+            </div>
+            <div className="w-px h-5 bg-white/20" />
+            <div>
+              <span className="font-serif text-2xl font-bold text-white">200 kg</span>
+              <span className="text-white/50 text-xs ml-2">Mindestabnahme</span>
+            </div>
+            <div className="w-px h-5 bg-white/20 hidden md:block" />
+            <div className="ml-auto flex items-center gap-2.5 bg-white/10 backdrop-blur-sm rounded-full px-4 py-1.5 border border-white/15">
+              <svg className="w-5 h-5 text-green-300 shrink-0" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" /></svg>
+              <span className="text-white text-sm font-medium">Lieferung nach Oberösterreich &amp; Salzburg</span>
+            </div>
           </div>
         </div>
       </header>
 
-      {/* Stats */}
-      <div className="bg-[#133e13] text-white">
-        <div className="max-w-4xl mx-auto px-6 py-5 flex flex-wrap justify-center gap-8 sm:gap-14 text-center text-sm">
-          <div>
-            <span className="font-serif text-2xl font-bold">30 ha</span>
-            <span className="text-green-400/60 text-xs ml-2">eigener Obstgarten</span>
+      {/* Numbers strip */}
+      <section className="bg-[#1a561a] py-16">
+        <div className="max-w-6xl mx-auto px-6">
+          <p className="text-green-300 text-sm tracking-widest uppercase mb-10 text-center">Warum bei uns kaufen</p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            {GRUENDE.map(d => (
+              <div key={d.num} className="text-center">
+                <p className="font-serif text-5xl font-bold text-white mb-1">{d.num}</p>
+                <p className="text-green-300 text-base font-medium mb-2">{d.label}</p>
+                <p className="text-green-400/60 text-sm leading-relaxed">{d.text}</p>
+              </div>
+            ))}
           </div>
-          <div className="w-px h-8 bg-white/20 hidden sm:block" />
-          <div>
-            <span className="font-serif text-2xl font-bold">200 kg</span>
-            <span className="text-green-400/60 text-xs ml-2">Mindestabnahme</span>
-          </div>
-          <div className="w-px h-8 bg-white/20 hidden sm:block" />
-          <div className="flex items-center gap-3">
-            <img src={`${base}img/sispo.gif`} alt="SISPO" className="h-10" />
-            <span className="text-green-400/60 text-xs">Integrierte Produktion</span>
+        </div>
+      </section>
+
+      {/* SISPO Zertifizierung */}
+      <div className="bg-green-950 border-y border-green-900 py-6">
+        <div className="max-w-5xl mx-auto px-6">
+          <div className="flex flex-col sm:flex-row items-center gap-5">
+            <a href="https://www.sispo.cz/integrovana-produkce/" target="_blank" rel="noopener noreferrer" className="shrink-0">
+              <img src={`${base}img/sispo.gif`} alt="SISPO" className="h-14 hover:opacity-100 opacity-90 transition-opacity" />
+            </a>
+            <div className="text-center sm:text-left flex-1">
+              <p className="text-green-300 font-semibold text-base">
+                SISPO-Zertifizierung – Integrierte Produktion
+              </p>
+              <div className="flex items-center gap-4 mt-1.5 flex-wrap justify-center sm:justify-start">
+                <span className="text-green-400/70 text-sm flex items-center gap-1.5">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+                  Kontrollierter Anbau
+                </span>
+                <span className="text-green-400/70 text-sm flex items-center gap-1.5">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+                  Schonend zur Natur
+                </span>
+                <a href="https://www.sispo.cz/integrovana-produkce/" target="_blank" rel="noopener noreferrer"
+                  className="text-green-500 text-sm hover:text-green-300 transition-colors">
+                  Mehr auf sispo.cz →
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
       {/* SORTIMENT */}
-      <section id="obst" className="bg-[#f7f4ef] py-20">
-        <div className="max-w-5xl mx-auto px-6">
-          <div className="text-center mb-14">
-            <p className="text-green-700 text-xs tracking-widest uppercase mb-3">Unser Sortiment</p>
-            <h2 className="font-serif text-3xl sm:text-4xl font-bold text-[#133e13] mb-3">
-              Obst für die Verarbeitung
-            </h2>
-            <p className="text-gray-500 text-sm max-w-xl mx-auto">
-              Erstklassiges Obst aus kontrolliertem Anbau – ideal für Edelbrände, Destillate und andere Verarbeitungszwecke.
+      <section id="obst" className="bg-[#0d1f0d] py-20">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4">
+            <div>
+              <p className="text-green-400 text-sm tracking-widest uppercase mb-2">Unser Sortiment</p>
+              <h2 className="font-serif text-4xl sm:text-5xl font-bold text-white leading-tight">
+                Obst für die Verarbeitung
+              </h2>
+            </div>
+            <p className="text-white/40 text-base max-w-xs sm:text-right">
+              Ideal für Edelbrände, Destillate und andere Verarbeitungszwecke
             </p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {OBST.map(o => (
-              <div key={o.name} className="group bg-white rounded-2xl border border-green-100 overflow-hidden shadow-sm hover:shadow-md transition">
-                <div className="h-48 overflow-hidden">
-                  <img src={`${base}img/${o.img}`} alt={o.name} loading="lazy" decoding="async"
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                </div>
-                <div className="p-6">
-                  <h3 className="font-serif text-xl font-bold text-[#133e13] mb-1">{o.name}</h3>
-                  <p className="text-gray-400 text-sm mb-3">{o.season}</p>
-                  <p className="text-gray-600 text-sm">{o.desc}</p>
-                </div>
-              </div>
+
+          {/* Featured card — Weichsel */}
+          <div className="mb-5">
+            <OvoceKarta item={OBST[0]} featured />
+          </div>
+
+          {/* Grid of remaining */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {OBST.slice(1).map(item => (
+              <OvoceKarta key={item.nazev} item={item} />
             ))}
           </div>
         </div>
