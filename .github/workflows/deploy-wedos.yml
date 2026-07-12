@@ -31,8 +31,11 @@ jobs:
         env:
           DEPLOY_TARGET: wedos
 
-      - name: Copy images into dist
-        run: cp -r img react-verze/dist/
+      - name: Copy images and static files into dist
+        run: |
+          cp -r img react-verze/dist/
+          cp robots.txt sitemap.xml react-verze/dist/
+          cp react-verze/public/favicon.svg react-verze/dist/
 
       - name: Add .htaccess
         run: |

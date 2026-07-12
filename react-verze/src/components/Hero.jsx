@@ -5,14 +5,15 @@ export default function Hero() {
 
   return (
     <>
-      <header
-        className="relative h-screen flex flex-col justify-end text-white"
-        style={{
-          backgroundImage: `url('${import.meta.env.BASE_URL}img/sad/504681257_4078182002327026_6055659733487249673_n.jpg')`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center 40%',
-        }}
-      >
+      <header className="relative h-screen flex flex-col justify-end text-white overflow-hidden">
+        <img
+          src={`${import.meta.env.BASE_URL}img/sad/504681257_4078182002327026_6055659733487249673_n.jpg`}
+          alt=""
+          fetchPriority="high"
+          decoding="async"
+          className="absolute inset-0 w-full h-full object-cover"
+          style={{ objectPosition: 'center 40%' }}
+        />
         {/* Dark gradient — heavier at bottom */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10" />
 

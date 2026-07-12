@@ -40,7 +40,7 @@ export default function Nav() {
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
         {/* Logo */}
         <a href="#" className="flex items-center gap-2 shrink-0">
-          <img src={`${import.meta.env.BASE_URL}img/logo.png`} alt="Ovocnářství Holub" className="h-12 w-auto" />
+          <img src={`${import.meta.env.BASE_URL}img/logo.svg`} alt="Ovocnářství Holub" className="h-12 w-auto" width="126" height="48" />
         </a>
 
         {/* Desktop links */}

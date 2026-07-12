@@ -1,6 +1,6 @@
 import { OBSAH } from '../data'
 
-export default function Aktuality() {
+export default function Aktuality({ cookiesAccepted }) {
   const { skladem } = OBSAH.aktuality
   const k = OBSAH.kontakt
   const igHandle = k.instagram.split('/').pop()
@@ -45,14 +45,28 @@ export default function Aktuality() {
               </svg>
               <span className="text-sm font-semibold text-gray-700">Facebook</span>
             </div>
-            <iframe
-              src={`https://www.facebook.com/plugins/page.php?href=${encodeURIComponent(k.facebook)}&tabs=timeline&width=400&height=360&small_header=true&adapt_container_width=true&hide_cover=true&show_facepile=false`}
-              className="w-full"
-              height="360"
-              style={{ border: 'none', overflow: 'hidden' }}
-              allowFullScreen
-              allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
-            />
+            {cookiesAccepted ? (
+              <iframe
+                src={`https://www.facebook.com/plugins/page.php?href=${encodeURIComponent(k.facebook)}&tabs=timeline&width=400&height=360&small_header=true&adapt_container_width=true&hide_cover=true&show_facepile=false`}
+                className="w-full"
+                height="360"
+                style={{ border: 'none', overflow: 'hidden' }}
+                allowFullScreen
+                allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                title="Facebook – Ovocnářství Holub"
+              />
+            ) : (
+              <div className="h-[360px] flex flex-col items-center justify-center gap-3 text-gray-500 px-6">
+                <svg className="w-10 h-10 text-gray-300" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                </svg>
+                <p className="text-sm text-center">Pro zobrazení příspěvků z Facebooku je potřeba přijmout cookies.</p>
+                <a href={k.facebook} target="_blank" rel="noopener noreferrer"
+                  className="text-green-700 text-sm font-medium hover:underline">
+                  Otevřít Facebook →
+                </a>
+              </div>
+            )}
           </div>
 
           {/* Instagram */}

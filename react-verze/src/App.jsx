@@ -98,7 +98,7 @@ export default function App() {
       <OvoceSection />
       <Mosty />
       <Galerie />
-      <Aktuality />
+      <Aktuality cookiesAccepted={accepted} />
       <KontaktForm />
       <Kontakt cookiesAccepted={accepted} />
       <Footer />

@@ -20,14 +20,15 @@ export default function AppDE() {
       <div className="h-16" />
 
       {/* HERO */}
-      <header
-        className="relative min-h-[85vh] flex flex-col justify-center text-white"
-        style={{
-          backgroundImage: `url('${base}img/sad/504681257_4078182002327026_6055659733487249673_n.jpg')`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center 40%',
-        }}
-      >
+      <header className="relative min-h-[85vh] flex flex-col justify-center text-white overflow-hidden">
+        <img
+          src={`${base}img/sad/504681257_4078182002327026_6055659733487249673_n.jpg`}
+          alt=""
+          fetchPriority="high"
+          decoding="async"
+          className="absolute inset-0 w-full h-full object-cover"
+          style={{ objectPosition: 'center 40%' }}
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/30" />
         <div className="relative z-10 max-w-4xl mx-auto px-8 text-center py-20">
           <p className="text-green-300 text-xs tracking-[0.25em] uppercase mb-5">
@@ -89,8 +90,11 @@ export default function AppDE() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             {OBST.map(o => (
-              <div key={o.name} className="bg-white rounded-2xl border border-green-100 overflow-hidden shadow-sm hover:shadow-md transition">
-                <img src={`${base}img/${o.img}`} alt={o.name} className="w-full h-48 object-cover" />
+              <div key={o.name} className="group bg-white rounded-2xl border border-green-100 overflow-hidden shadow-sm hover:shadow-md transition">
+                <div className="h-48 overflow-hidden">
+                  <img src={`${base}img/${o.img}`} alt={o.name} loading="lazy" decoding="async"
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                </div>
                 <div className="p-6">
                   <h3 className="font-serif text-xl font-bold text-[#133e13] mb-1">{o.name}</h3>
                   <p className="text-gray-400 text-sm mb-3">{o.season}</p>
@@ -177,7 +181,11 @@ export default function AppDE() {
         </div>
       </section>
 
-      <Footer />
+      <Footer
+        name="Obstbauernhof Holub"
+        gdprLabel="Datenschutzerklärung"
+        links={[['#obst', 'Sortiment'], ['#galerie', 'Fotos'], ['#anfrage', 'Anfrage'], ['#kontakt', 'Kontakt']]}
+      />
 
       {/* WhatsApp FAB */}
       <a href={waUrl} target="_blank" rel="noopener noreferrer"

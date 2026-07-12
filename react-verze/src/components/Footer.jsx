@@ -1,13 +1,16 @@
 import { OBSAH } from '../data'
 
-export default function Footer() {
+const LINKS_CS = [['#ovoce', 'Ovoce'], ['#mosty', 'Mošty'], ['#galerie', 'Fotky'], ['#aktuality', 'Aktuality'], ['#kontakt', 'Kontakt']]
+
+export default function Footer({ links = LINKS_CS, gdprLabel = 'Zásady ochrany osobních údajů', name }) {
   const k = OBSAH.kontakt
+  const jmeno = name || k.jmeno
   return (
     <footer className="bg-[#0d2b0d] text-green-300 py-12">
       <div className="max-w-5xl mx-auto px-6">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-8">
           <div className="text-center md:text-left">
-            <p className="font-serif text-white text-xl font-bold mb-0.5">{k.jmeno}</p>
+            <p className="font-serif text-white text-xl font-bold mb-0.5">{jmeno}</p>
             <p className="text-green-400/70">Pavel Holub</p>
           </div>
           <div className="flex items-center gap-4">
@@ -22,11 +25,17 @@ export default function Footer() {
           </div>
         </div>
 
+        <nav aria-label="Footer" className="flex flex-wrap justify-center md:justify-start gap-x-6 gap-y-2 mb-8 text-sm">
+          {links.map(([href, label]) => (
+            <a key={href} href={href} className="text-green-400/70 hover:text-white transition-colors">{label}</a>
+          ))}
+        </nav>
+
         <div className="border-t border-green-800/50 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-green-500/70">
           <p>{k.adresa}, {k.mesto} · {k.tel1} · {k.email}</p>
           <p>
-            © {new Date().getFullYear()} {k.jmeno} ·{' '}
-            <a href={`${import.meta.env.BASE_URL}gdpr.html`} className="hover:text-green-300 underline">Zásady ochrany osobních údajů</a>
+            © {new Date().getFullYear()} {jmeno} ·{' '}
+            <a href={`${import.meta.env.BASE_URL}gdpr.html`} className="hover:text-green-300 underline">{gdprLabel}</a>
           </p>
         </div>
       </div>

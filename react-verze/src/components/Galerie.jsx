@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import Lightbox from './Lightbox'
 
 const FOTKY = [
   { src: 'img/sad/504681257_4078182002327026_6055659733487249673_n.jpg',      alt: 'Jarní sad v květu',  tall: true },
@@ -15,6 +16,7 @@ const FOTKY = [
 export default function Galerie() {
   const [lightbox, setLightbox] = useState(null)
   const base = import.meta.env.BASE_URL
+  const fotos = FOTKY.map(f => ({ ...f, src: base + f.src }))
 
   return (
     <>
@@ -26,16 +28,19 @@ export default function Galerie() {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 auto-rows-[180px] md:auto-rows-[220px] gap-2 sm:gap-3">
-            {FOTKY.map((f, i) => (
-              <div
+            {fotos.map((f, i) => (
+              <button
                 key={i}
+                type="button"
                 className={`relative overflow-hidden rounded-xl cursor-pointer group ${f.tall ? 'row-span-2' : ''}`}
-                onClick={() => setLightbox(base + f.src)}
+                onClick={() => setLightbox(i)}
+                aria-label={`Zvětšit fotku: ${f.alt}`}
               >
                 <img
-                  src={base + f.src}
+                  src={f.src}
                   alt={f.alt}
                   loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
@@ -43,20 +48,14 @@ export default function Galerie() {
                     {f.alt}
                   </span>
                 </div>
-              </div>
+              </button>
             ))}
           </div>
         </div>
       </section>
 
-      {lightbox && (
-        <div
-          className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4 cursor-pointer backdrop-blur-sm"
-          onClick={() => setLightbox(null)}
-        >
-          <button className="absolute top-4 right-5 text-white/70 hover:text-white text-4xl leading-none transition-colors">&times;</button>
-          <img src={lightbox} alt="" className="max-w-[90vw] max-h-[90vh] rounded-lg object-contain shadow-2xl" />
-        </div>
+      {lightbox !== null && (
+        <Lightbox fotos={fotos} index={lightbox} onClose={() => setLightbox(null)} onNavigate={setLightbox} />
       )}
     </>
   )
