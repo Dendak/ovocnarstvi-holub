@@ -1,4 +1,5 @@
 import NavDE from './components/NavDE'
+import GalerieDE from './components/GalerieDE'
 import AnfrageForm from './components/AnfrageForm'
 import Footer from './components/Footer'
 
@@ -133,6 +134,9 @@ export default function AppDE() {
           </div>
         </div>
       </section>
+
+      {/* GALERIE */}
+      <GalerieDE />
 
       {/* ANFRAGE */}
       <AnfrageForm />
