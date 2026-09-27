@@ -90,7 +90,7 @@ export default function ProduktKarta({ produkt }) {
                 ))}
               </div>
             )}
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-3">
               <div className="flex items-center border border-gray-200 rounded-lg">
                 <button type="button" onClick={() => zmenit(-1)} aria-label="Méně"
                   className="w-9 h-10 text-gray-600 hover:text-green-700 cursor-pointer">−</button>
@@ -104,7 +104,7 @@ export default function ProduktKarta({ produkt }) {
                   className="w-9 h-10 text-gray-600 hover:text-green-700 cursor-pointer">+</button>
               </div>
               <button type="button" onClick={doKosiku}
-                className={`flex-1 h-10 rounded-lg font-semibold text-sm transition-colors cursor-pointer ${
+                className={`flex-1 min-w-[9.5rem] h-10 rounded-lg font-semibold text-sm transition-colors cursor-pointer ${
                   pridano ? 'bg-green-100 text-green-800' : 'bg-[#1a561a] hover:bg-[#133e13] text-white'
                 }`}>
                 {pridano ? '✓ Přidáno' : `Do košíku${varianta.cena != null ? ` · ${formatKc(varianta.cena * pocet)}` : ''}`}

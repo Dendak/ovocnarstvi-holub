@@ -5,11 +5,12 @@ import { KosikProvider, useKosik } from './kosik'
 import ProduktKarta from './ProduktKarta'
 import Pokladna from './Pokladna'
 import Footer from '../components/Footer'
+import { nacistObjednavky, smazatVse } from './mujUcet'
 
 const BASE = import.meta.env.BASE_URL
 
 function useHashView() {
-  const read = () => (location.hash === '#pokladna' ? 'pokladna' : location.hash === '#hotovo' ? 'hotovo' : 'katalog')
+  const read = () => ({ '#pokladna': 'pokladna', '#hotovo': 'hotovo', '#objednavky': 'objednavky' }[location.hash] || 'katalog')
   const [view, setView] = useState(read)
   useEffect(() => {
     const onHash = () => { setView(read()); window.scrollTo({ top: 0, behavior: 'instant' }) }
@@ -36,7 +37,8 @@ function Hlavicka({ onKosik }) {
           <span className="hidden sm:block text-white/90 font-serif text-lg">E-shop</span>
         </a>
         <div className="flex items-center gap-5">
-          <a href={`${BASE}index.html`} className="hidden sm:block text-white/80 hover:text-white text-sm font-medium">← Hlavní stránka</a>
+          <a href={`${BASE}index.html`} className="hidden md:block text-white/80 hover:text-white text-sm font-medium">← Hlavní stránka</a>
+          <a href="#objednavky" className="text-white/80 hover:text-white text-sm font-medium"><span className="hidden sm:inline">Moje </span>objednávky</a>
           <button onClick={onKosik} className="relative flex items-center gap-2 bg-white text-[#133e13] font-semibold text-sm px-4 py-2 rounded-full hover:bg-green-50 transition-colors cursor-pointer" aria-label={`Košík, ${pocetKusu} položek`}>
             <KosikIcon />
             <span>Košík</span>
@@ -104,7 +106,7 @@ function KosikPanel({ open, onClose, onPokladna }) {
               <button onClick={onPokladna} className="w-full bg-[#1a561a] hover:bg-[#133e13] text-white font-semibold py-3.5 rounded-xl transition-colors cursor-pointer">
                 Pokračovat k objednávce →
               </button>
-              <p className="text-xs text-gray-400 text-center">Platíte až při převzetí nebo po telefonickém potvrzení.</p>
+              <p className="text-xs text-gray-400 text-center">Platíte až při převzetí. Doprava je v ceně.</p>
             </div>
           </>
         )}
@@ -136,7 +138,7 @@ function Katalog() {
           <p className="text-green-400 text-sm tracking-widest uppercase mb-3">E-shop · přímo ze sadu</p>
           <h1 className="font-serif text-4xl sm:text-5xl font-bold leading-tight mb-4">Objednejte si ovoce a mošty</h1>
           <p className="text-white/70 text-lg max-w-2xl mb-8">
-            Naklikejte si, kolik kilo chcete. Ceny jsou včetně dovozu až domů – objednávku potvrdíme telefonicky a přivezeme ji.
+            Naklikejte si, kolik kilo chcete. Ceny jsou včetně dovozu až domů, potvrzení vám hned přijde e-mailem a platíte až při převzetí.
           </p>
           <div className="flex flex-wrap gap-3 text-sm">
             {['Dovoz až domů v ceně – Č. Budějovice, po, st, pá', DORUCENI.odber.label + ' v Krtelích', 'Libovolné množství od 1 kg', 'Platba při převzetí'].map(t => (
@@ -189,16 +191,83 @@ function Katalog() {
 
 function Hotovo({ info, onZpet }) {
   return (
-    <div className="max-w-2xl mx-auto px-6 py-20 text-center">
+    <div className="max-w-2xl mx-auto px-6 py-16 text-center">
       <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-green-100 flex items-center justify-center text-green-600 text-3xl">✓</div>
-      <h1 className="font-serif text-3xl sm:text-4xl font-bold text-[#133e13] mb-3">Děkujeme za objednávku!</h1>
+      <h1 className="font-serif text-3xl sm:text-4xl font-bold text-[#133e13] mb-3">Objednávka je přijatá</h1>
       {info?.cislo && <p className="text-gray-600 mb-2">Číslo objednávky: <strong>{info.cislo}</strong></p>}
-      <p className="text-gray-600 mb-8">
-        Brzy se vám ozveme a objednávku potvrdíme telefonicky.
-        {info?.email && <> Shrnutí jsme poslali na <strong>{info.email}</strong>.</>}
-        {' '}Kdybyste cokoli potřebovali, volejte {OBSAH.kontakt.tel1}.
+      <p className="text-gray-600 mb-6">
+        {info?.email ? <>Potvrzení jsme poslali na <strong>{info.email}</strong>. </> : null}
+        Nic dalšího potvrzovat nemusíte – ozveme se jen tehdy, kdyby něco nebylo k dispozici.
       </p>
-      <button onClick={onZpet} className="bg-[#1a561a] hover:bg-[#133e13] text-white font-semibold px-6 py-3 rounded-full cursor-pointer">Zpět do obchodu</button>
+      {info?.souhrn && (
+        <pre className="text-left whitespace-pre-wrap font-sans text-sm text-gray-700 bg-white rounded-2xl shadow-sm p-5 mb-8">{info.souhrn}</pre>
+      )}
+      <div className="flex flex-wrap gap-3 justify-center">
+        <button onClick={onZpet} className="bg-[#1a561a] hover:bg-[#133e13] text-white font-semibold px-6 py-3 rounded-full cursor-pointer">Zpět do obchodu</button>
+        <a href="#objednavky" className="border border-gray-300 text-gray-700 hover:border-green-600 font-semibold px-6 py-3 rounded-full">Moje objednávky</a>
+      </div>
+    </div>
+  )
+}
+
+function MojeObjednavky({ onKosik }) {
+  const { pridat } = useKosik()
+  const [objednavky, setObjednavky] = useState(nacistObjednavky)
+  const [info, setInfo] = useState(null)
+
+  const znovu = o => {
+    let pridano = 0
+    for (const { key, pocet } of o.polozky || []) {
+      const [produktId, variantaId] = key.split('|')
+      const p = PRODUKTY.find(x => x.id === produktId)
+      if (p?.dostupne && p.varianty.some(v => v.id === variantaId)) { pridat(produktId, variantaId, pocet); pridano++ }
+    }
+    if (pridano) onKosik()
+    else setInfo('Z této objednávky teď nic není k dispozici (mimo sezónu nebo vyprodáno).')
+  }
+
+  return (
+    <div className="max-w-3xl mx-auto px-6 py-10">
+      <h1 className="font-serif text-3xl sm:text-4xl font-bold text-[#133e13] mb-2">Moje objednávky</h1>
+      <p className="text-gray-500 text-sm mb-8">
+        Objednávky odeslané z tohoto zařízení. Údaje jsou uložené jen ve vašem prohlížeči, na jiném zařízení je neuvidíte.
+      </p>
+      {info && <p className="text-sm text-amber-800 bg-amber-50 rounded-xl px-4 py-3 mb-6">{info}</p>}
+      {objednavky.length === 0 ? (
+        <div className="text-center py-16 text-gray-500">
+          <p className="mb-3">Zatím tu nejsou žádné objednávky.</p>
+          <a href="#" className="text-green-700 font-medium hover:underline">Vybrat ovoce →</a>
+        </div>
+      ) : (
+        <ul className="space-y-4">
+          {objednavky.map(o => (
+            <li key={o.cislo} className="bg-white rounded-2xl shadow-sm p-5">
+              <div className="flex flex-wrap items-baseline justify-between gap-2 mb-3">
+                <p className="font-semibold text-[#133e13]">{o.cislo}</p>
+                <p className="text-sm text-gray-500">
+                  objednáno {new Date(o.datum).toLocaleDateString('cs-CZ')} · {o.termin}
+                </p>
+              </div>
+              <ul className="text-sm text-gray-700 space-y-0.5 mb-3">
+                {(o.radky || []).map(r => <li key={r}>{r}</li>)}
+              </ul>
+              <div className="flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 pt-3">
+                <p className="font-bold text-[#133e13]">Celkem {o.celkem}</p>
+                <button onClick={() => znovu(o)}
+                  className="bg-[#1a561a] hover:bg-[#133e13] text-white text-sm font-semibold px-4 py-2 rounded-full cursor-pointer">
+                  Objednat znovu
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+      {objednavky.length > 0 && (
+        <button onClick={() => { smazatVse(); setObjednavky([]) }}
+          className="mt-8 text-xs text-gray-400 hover:text-red-600 cursor-pointer">
+          Smazat historii a uložené údaje z tohoto zařízení
+        </button>
+      )}
     </div>
   )
 }
@@ -220,6 +289,7 @@ function Obchod() {
         {aktualni === 'katalog' && <Katalog />}
         {aktualni === 'pokladna' && <Pokladna onZpet={() => go('katalog')} onHotovo={info => { setHotovo(info); go('#hotovo') }} />}
         {aktualni === 'hotovo' && <Hotovo info={hotovo} onZpet={() => go('katalog')} />}
+        {aktualni === 'objednavky' && <MojeObjednavky onKosik={() => setKosikOpen(true)} />}
       </main>
       <Footer links={[[`${BASE}index.html#ovoce`, 'Ovoce'], [`${BASE}index.html#mosty`, 'Mošty'], [`${BASE}index.html#kontakt`, 'Kontakt']]} />
       <KosikPanel open={kosikOpen} onClose={() => setKosikOpen(false)} onPokladna={() => { setKosikOpen(false); go('#pokladna') }} />

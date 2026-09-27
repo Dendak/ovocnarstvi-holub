@@ -15,7 +15,7 @@ const ovoce = nazev => OBSAH.ovoce.find(o => o.nazev === nazev)
 
 const DRUHY_OVOCE = [
   {
-    id: 'jablka', nazev: 'Jablka', zdroj: ovoce('Jablka'), cenaKg: 35,
+    id: 'jablka', nazev: 'Jablka', zdroj: ovoce('Jablka'), cenaKg: 40,
     sklizen: 'září – říjen, ze skladu do března',
     odrudy: [
       { id: 'bohemia', nazev: 'Bohemia', chut: 'sladkonavinulá', popis: 'Česká odrůda s velkými, sytě červenými plody a šťavnatou dužinou.', hodiSe: ['přímá konzumace', 'mošt'] },
@@ -34,7 +34,7 @@ const DRUHY_OVOCE = [
     ],
   },
   {
-    id: 'hrusky', nazev: 'Hrušky', zdroj: ovoce('Hrušky'), cenaKg: 45,
+    id: 'hrusky', nazev: 'Hrušky', zdroj: ovoce('Hrušky'), cenaKg: 50,
     sklizen: 'srpen – říjen, ze skladu do ledna',
     odrudy: [
       { id: 'konference', nazev: 'Konference', chut: 'sladká, máslová', popis: 'Protáhlé plody s rezavou slupkou a sladkou, máslově jemnou dužinou. Dobře skladovatelná.', hodiSe: ['přímá konzumace', 'skladování'] },
@@ -45,7 +45,7 @@ const DRUHY_OVOCE = [
     ],
   },
   {
-    id: 'svestky', nazev: 'Švestky', zdroj: ovoce('Švestky'), cenaKg: 45,
+    id: 'svestky', nazev: 'Švestky', zdroj: ovoce('Švestky'), cenaKg: 50,
     sklizen: 'srpen – polovina října',
     odrudy: [
       { id: 'haganta', nazev: 'Haganta', chut: 'sladká', popis: 'Velké tmavomodré švestky, které dobře jdou od pecky.', hodiSe: ['knedlíky a koláče', 'sušení', 'přímá konzumace'] },
@@ -120,7 +120,11 @@ const produktyOvoce = DRUHY_OVOCE.flatMap(d => {
 })
 
 // Mošty: ceny a příchutě bere e-shop přímo z ceníku hlavního webu.
-const MOSTY_FOTO = 'jablka/IMG_2863.JPEG'
+const MOSTY_FOTO = {
+  foto: 'mosty/most-sklenice.jpg', fit: 'cover',
+  autor: 'Flunse (Patrick Geltinger)', licence: 'CC BY-SA 3.0',
+  zdroj: 'https://commons.wikimedia.org/wiki/File:Apple_juice_with_3apples.jpg',
+}
 const produktyMosty = OBSAH.mosty.skupiny.flatMap(sk => sk.polozky.map(p => ({
   id: `most-${p.nazev.replace(/[^\p{L}\p{N}]+/gu, '-').toLowerCase()}`,
   druh: 'mosty',
@@ -130,8 +134,9 @@ const produktyMosty = OBSAH.mosty.skupiny.flatMap(sk => sk.polozky.map(p => ({
   popis: 'Domácí mošt z jablek z vlastního sadu, bez přidaných cukrů a konzervantů. Balení bag-in-box vydrží po otevření několik týdnů.',
   hodiSe: [],
   sklizen: 'celoročně',
-  foto: MOSTY_FOTO,
-  fotoIlustracni: true,
+  foto: MOSTY_FOTO.foto,
+  fotoIlustracni: false,
+  fotoInfo: MOSTY_FOTO,
   vSezone: true,
   dostupne: p.dostupne !== false,
   jednotka: 'ks',
@@ -150,14 +155,10 @@ export const KATEGORIE = [
 ]
 
 export const DORUCENI = {
-  odber: { label: 'Osobní odběr', detail: 'Krtely 70, Netolice – po telefonické domluvě' },
+  odber: { label: 'Osobní odběr', detail: 'Krtely 70, Netolice – ve zvolený den' },
   rozvoz: { label: 'Dovoz až domů – České Budějovice', detail: 'doprava v ceně · pondělí, středa, pátek dopoledne' },
 }
 
-export const PLATBA = {
-  prevzeti: 'Hotově nebo kartou při převzetí',
-  prevod: 'Převodem na účet (pošleme údaje v potvrzení)',
-}
 
 // „5 kg“ u ovoce na váhu, „2× 5 l“ u moštů.
 export function formatMnozstvi(produkt, varianta, pocet) {

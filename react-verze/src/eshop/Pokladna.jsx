@@ -1,21 +1,34 @@
 import { useState } from 'react'
 import { OBSAH } from '../data'
-import { DORUCENI, PLATBA, formatKc, formatMnozstvi } from './katalog'
+import { DORUCENI, formatKc, formatMnozstvi } from './katalog'
 import { useKosik } from './kosik'
+import { nacistUdaje, ulozitObjednavku } from './mujUcet'
+
+// ============================================================
+//  PRAVIDLA OBJEDNÁVEK
+//  Objednávka platí hned po odeslání, zákazník dostane automatické
+//  potvrzení e-mailem. Farma se ozve jen když něco není k dispozici.
+// ============================================================
+const UZAVERKA_HODINA = 18          // objednat nejpozději den předem do 18:00
+const DNY_ROZVOZU = [1, 3, 5]       // po, st, pá
+const DNY_ODBERU = [1, 2, 3, 4, 5, 6] // po–so
 
 const DNY = ['neděle', 'pondělí', 'úterý', 'středa', 'čtvrtek', 'pátek', 'sobota']
 
-// Next delivery days (Mon / Wed / Fri). Tomorrow is skipped so there is time
-// to confirm the order by phone.
-function terminyRozvozu(pocet = 6, od = new Date()) {
+// Upcoming days on the given weekdays that can still be ordered for
+// (order deadline is the previous day at UZAVERKA_HODINA).
+function terminy(dny, pocet = 6, now = new Date()) {
   const out = []
-  const d = new Date(od)
-  d.setDate(d.getDate() + 1)
-  while (out.length < pocet) {
-    d.setDate(d.getDate() + 1)
-    if ([1, 3, 5].includes(d.getDay())) {
-      out.push(`${DNY[d.getDay()]} ${d.getDate()}. ${d.getMonth() + 1}.`)
-    }
+  for (let i = 1; out.length < pocet && i < 60; i++) {
+    const den = new Date(now)
+    den.setHours(12, 0, 0, 0)
+    den.setDate(den.getDate() + i)
+    if (!dny.includes(den.getDay())) continue
+    const uzaverka = new Date(den)
+    uzaverka.setDate(den.getDate() - 1)
+    uzaverka.setHours(UZAVERKA_HODINA, 0, 0, 0)
+    if (now >= uzaverka) continue
+    out.push(`${DNY[den.getDay()]} ${den.getDate()}. ${den.getMonth() + 1}.`)
   }
   return out
 }
@@ -46,10 +59,15 @@ function Volba({ name, value, current, onChange, label, detail }) {
 
 export default function Pokladna({ onZpet, onHotovo }) {
   const kosik = useKosik()
-  const terminy = terminyRozvozu()
-  const [f, setF] = useState({
-    jmeno: '', telefon: '', email: '', doruceni: 'rozvoz', adresa: '', termin: terminy[0], datumOdberu: '',
-    platba: 'prevzeti', poznamka: '', souhlas: false,
+  const [terminyRozvozu] = useState(() => terminy(DNY_ROZVOZU))
+  const [terminyOdberu] = useState(() => terminy(DNY_ODBERU))
+  const [f, setF] = useState(() => {
+    const u = nacistUdaje()
+    return {
+      jmeno: u?.jmeno || '', telefon: u?.telefon || '', email: u?.email || '', adresa: u?.adresa || '',
+      doruceni: u?.doruceni || 'rozvoz', termin: terminyRozvozu[0], terminOdberu: terminyOdberu[0],
+      poznamka: '', souhlas: false, zapamatovat: true,
+    }
   })
   const [chyby, setChyby] = useState({})
   const [stav, setStav] = useState(null)
@@ -58,9 +76,9 @@ export default function Pokladna({ onZpet, onHotovo }) {
   const validovat = () => {
     const e = {}
     if (!f.jmeno.trim()) e.jmeno = 'Vyplňte jméno.'
-    if (!/^[+\d\s\-()]{9,}$/.test(f.telefon.trim())) e.telefon = 'Vyplňte telefon, ať vám můžeme objednávku potvrdit.'
-    if (f.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email)) e.email = 'Neplatný formát e-mailu.'
-    if (f.doruceni === 'rozvoz' && !f.adresa.trim()) e.adresa = 'Vyplňte adresu pro rozvoz.'
+    if (!/^[+\d\s\-()]{9,}$/.test(f.telefon.trim())) e.telefon = 'Vyplňte telefon – hodí se při předání objednávky.'
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email.trim())) e.email = 'Vyplňte e-mail – pošleme na něj potvrzení objednávky.'
+    if (f.doruceni === 'rozvoz' && !f.adresa.trim()) e.adresa = 'Vyplňte adresu pro dovoz.'
     if (!f.souhlas) e.souhlas = 'Bez souhlasu nemůžeme objednávku zpracovat.'
     return e
   }
@@ -72,48 +90,64 @@ export default function Pokladna({ onZpet, onHotovo }) {
     if (Object.keys(e).length) return
     setStav('odesilam')
 
+    const k = OBSAH.kontakt
     const cislo = cisloObjednavky()
     const radky = kosik.polozky.map(p =>
       `${formatMnozstvi(p.produkt, p.varianta, p.pocet)} ${p.produkt.nazev} (${p.produkt.druhNazev}) – ${p.cena == null ? 'cena na dotaz' : formatKc(p.cena)}`)
-    const doruceni = f.doruceni === 'rozvoz'
-      ? `${DORUCENI.rozvoz.label}, termín: ${f.termin}, adresa: ${f.adresa}`
-      : `${DORUCENI.odber.label}${f.datumOdberu ? `, preferovaný den: ${f.datumOdberu}` : ''}`
+    const rozvoz = f.doruceni === 'rozvoz'
+    const den = rozvoz ? f.termin : f.terminOdberu
+    const prevzeti = rozvoz
+      ? `Dovoz až domů: ${den} dopoledne, ${f.adresa.trim()}, České Budějovice`
+      : `Osobní odběr: ${den}, ${k.adresa}, ${k.mesto}`
     const celkem = `${formatKc(kosik.soucet)}${kosik.bezCeny ? ' + položky s cenou na dotaz' : ''}`
     const souhrn = [
-      `Objednávka ${cislo}`, '', ...radky, '', `Celkem: ${celkem}`,
-      `Převzetí: ${doruceni}`, `Platba: ${PLATBA[f.platba]}`,
-      f.poznamka && `Poznámka: ${f.poznamka}`,
-    ].filter(x => x !== false && x !== '' || x === '').join('\n')
+      ...radky, '',
+      `Celkem: ${celkem}${rozvoz ? ' (doprava v ceně)' : ''}`,
+      prevzeti,
+      'Platba: při převzetí',
+      ...(f.poznamka.trim() ? [`Poznámka: ${f.poznamka.trim()}`] : []),
+    ].join('\n')
 
     const payload = {
-      _subject: `Nová objednávka ${cislo} – e-shop (${celkem})`,
+      // The subject starts with the day so the day's orders sort together in the inbox.
+      _subject: `${rozvoz ? 'ROZVOZ' : 'ODBĚR'} ${den} | ${cislo} | ${f.jmeno.trim()} | ${celkem}`,
       _template: 'box',
+      _replyto: f.email.trim(),
       objednavka: cislo,
-      jmeno: f.jmeno,
-      telefon: f.telefon,
-      email: f.email || '(nevyplněn)',
+      termin: `${rozvoz ? 'Rozvoz' : 'Osobní odběr'} – ${den}`,
+      jmeno: f.jmeno.trim(),
+      telefon: f.telefon.trim(),
+      email: f.email.trim(),
+      adresa: rozvoz ? f.adresa.trim() : '— (osobní odběr)',
       polozky: radky.join('\n'),
       celkem,
-      prevzeti: doruceni,
-      platba: PLATBA[f.platba],
-      poznamka: f.poznamka || '—',
-    }
-    if (f.email) {
-      payload._replyto = f.email
-      payload._autoresponse =
-        `Děkujeme za objednávku ${cislo}!\n\n${souhrn}\n\nObjednávku vám brzy potvrdíme telefonicky. ` +
-        `V případě dotazů volejte ${OBSAH.kontakt.tel1}.\n\nOvocnářství Holub, Krtely 70, Netolice`
+      poznamka: f.poznamka.trim() || '—',
+      _autoresponse:
+        `Dobrý den,\n\nděkujeme – vaše objednávka ${cislo} je přijatá a platí. Nic dalšího potvrzovat nemusíte.\n\n` +
+        `${souhrn}\n\n` +
+        `Pokud by něco z objednávky nebylo k dispozici, ozveme se vám. ` +
+        `Změnu nebo zrušení nám prosím pošlete nejpozději den před termínem do ${UZAVERKA_HODINA}:00 ` +
+        `na ${k.email} nebo zavolejte ${k.tel1}.\n\nOvocnářství Holub, ${k.adresa}, ${k.mesto}`,
     }
 
     try {
-      const res = await fetch(`https://formsubmit.co/ajax/${OBSAH.kontakt.email}`, {
+      const res = await fetch(`https://formsubmit.co/ajax/${k.email}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify(payload),
       })
       if (!res.ok) throw new Error()
+      ulozitObjednavku(
+        {
+          cislo, datum: new Date().toISOString(), termin: `${rozvoz ? 'Dovoz' : 'Odběr'} ${den}`, celkem,
+          radky, polozky: kosik.polozky.map(p => ({ key: p.key, pocet: p.pocet })),
+        },
+        f.zapamatovat
+          ? { jmeno: f.jmeno.trim(), telefon: f.telefon.trim(), email: f.email.trim(), adresa: f.adresa.trim(), doruceni: f.doruceni }
+          : null,
+      )
       kosik.vyprazdnit()
-      onHotovo({ cislo, souhrn, email: f.email })
+      onHotovo({ cislo, souhrn, email: f.email.trim() })
     } catch {
       setStav('chyba')
     }
@@ -136,14 +170,14 @@ export default function Pokladna({ onZpet, onHotovo }) {
             </div>
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
+                <label htmlFor="email" className="text-xs font-medium text-gray-600 mb-1 block">E-mail * (přijde na něj potvrzení)</label>
+                <input id="email" type="email" autoComplete="email" value={f.email} onChange={e => set('email', e.target.value)} className={field} />
+                <Chyba text={chyby.email} />
+              </div>
+              <div>
                 <label htmlFor="telefon" className="text-xs font-medium text-gray-600 mb-1 block">Telefon *</label>
                 <input id="telefon" type="tel" autoComplete="tel" value={f.telefon} onChange={e => set('telefon', e.target.value)} placeholder="+420 …" className={field} />
                 <Chyba text={chyby.telefon} />
-              </div>
-              <div>
-                <label htmlFor="email" className="text-xs font-medium text-gray-600 mb-1 block">E-mail (pošleme potvrzení)</label>
-                <input id="email" type="email" autoComplete="email" value={f.email} onChange={e => set('email', e.target.value)} className={field} />
-                <Chyba text={chyby.email} />
               </div>
             </div>
           </div>
@@ -154,15 +188,17 @@ export default function Pokladna({ onZpet, onHotovo }) {
             <Volba name="doruceni" current={f.doruceni} onChange={set} value="odber" label={DORUCENI.odber.label} detail={DORUCENI.odber.detail} />
             {f.doruceni === 'odber' ? (
               <div className="pt-2">
-                <label htmlFor="datumOdberu" className="text-xs font-medium text-gray-600 mb-1 block">Kdy byste chtěli přijet? (nepovinné)</label>
-                <input id="datumOdberu" value={f.datumOdberu} onChange={e => set('datumOdberu', e.target.value)} placeholder="např. sobota dopoledne" className={field} />
+                <label htmlFor="terminOdberu" className="text-xs font-medium text-gray-600 mb-1 block">Den vyzvednutí</label>
+                <select id="terminOdberu" value={f.terminOdberu} onChange={e => set('terminOdberu', e.target.value)} className={field}>
+                  {terminyOdberu.map(t => <option key={t}>{t}</option>)}
+                </select>
               </div>
             ) : (
               <div className="pt-2 space-y-3">
                 <div>
-                  <label htmlFor="termin" className="text-xs font-medium text-gray-600 mb-1 block">Termín rozvozu</label>
+                  <label htmlFor="termin" className="text-xs font-medium text-gray-600 mb-1 block">Den dovozu (dopoledne)</label>
                   <select id="termin" value={f.termin} onChange={e => set('termin', e.target.value)} className={field}>
-                    {terminy.map(t => <option key={t}>{t}</option>)}
+                    {terminyRozvozu.map(t => <option key={t}>{t}</option>)}
                   </select>
                 </div>
                 <div>
@@ -172,17 +208,13 @@ export default function Pokladna({ onZpet, onHotovo }) {
                 </div>
               </div>
             )}
-          </div>
-
-          <div className="bg-white rounded-2xl shadow-sm p-6 space-y-3">
-            <h2 className="font-semibold text-lg text-[#133e13]">Platba</h2>
-            <Volba name="platba" current={f.platba} onChange={set} value="prevzeti" label={PLATBA.prevzeti} />
-            <Volba name="platba" current={f.platba} onChange={set} value="prevod" label={PLATBA.prevod} />
+            <p className="text-xs text-gray-400">Objednávky přijímáme nejpozději den předem do {UZAVERKA_HODINA}:00.</p>
           </div>
 
           <div className="bg-white rounded-2xl shadow-sm p-6">
             <label htmlFor="poznamka" className="text-xs font-medium text-gray-600 mb-1 block">Poznámka k objednávce</label>
-            <textarea id="poznamka" rows={3} value={f.poznamka} onChange={e => set('poznamka', e.target.value)} className={field + ' resize-none'} />
+            <textarea id="poznamka" rows={3} value={f.poznamka} onChange={e => set('poznamka', e.target.value)}
+              placeholder="Např. zvonit na Novákovi, 2. patro" className={field + ' resize-none'} />
           </div>
         </div>
 
@@ -202,7 +234,7 @@ export default function Pokladna({ onZpet, onHotovo }) {
             <span className="font-bold text-xl text-[#133e13] tabular-nums">{formatKc(kosik.soucet)}</span>
           </div>
           <p className="text-xs text-gray-400 mb-5">
-            Doprava až domů je v ceně. U ovoce se konečná cena může mírně lišit podle skutečné váhy.
+            Doprava až domů je v ceně. Platíte až při převzetí.
           </p>
 
           <label className="flex items-start gap-2 text-xs text-gray-600 mb-1 cursor-pointer">
@@ -212,15 +244,19 @@ export default function Pokladna({ onZpet, onHotovo }) {
             </span>
           </label>
           <Chyba text={chyby.souhlas} />
+          <label className="flex items-start gap-2 text-xs text-gray-600 mt-2 cursor-pointer">
+            <input type="checkbox" checked={f.zapamatovat} onChange={e => set('zapamatovat', e.target.checked)} className="mt-0.5 accent-green-600" />
+            <span>Zapamatovat mé údaje na tomto zařízení pro příští objednávku</span>
+          </label>
 
           {stav === 'chyba' && (
             <p className="text-red-600 text-sm mt-3">Objednávku se nepodařilo odeslat. Zkuste to prosím znovu, nebo zavolejte {OBSAH.kontakt.tel1}.</p>
           )}
           <button type="submit" disabled={stav === 'odesilam' || kosik.polozky.length === 0}
             className="w-full mt-4 bg-[#1a561a] hover:bg-[#133e13] text-white font-semibold py-3.5 rounded-xl transition-colors disabled:opacity-60 cursor-pointer">
-            {stav === 'odesilam' ? 'Odesílám…' : 'Odeslat objednávku'}
+            {stav === 'odesilam' ? 'Odesílám…' : `Objednat za ${formatKc(kosik.soucet)}`}
           </button>
-          <p className="text-xs text-gray-400 mt-3 text-center">Objednávku vám potvrdíme telefonicky. Platíte až při převzetí nebo po potvrzení.</p>
+          <p className="text-xs text-gray-400 mt-3 text-center">Potvrzení vám hned přijde e-mailem. Ozveme se jen tehdy, kdyby něco nebylo k dispozici.</p>
         </aside>
       </form>
     </div>
