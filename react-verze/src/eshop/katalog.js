@@ -7,7 +7,7 @@ import { FOTO_ODRUD } from './fotoOdrud'
 //  cenaKg:   cena za 1 kg v Kč u druhu (platí pro všechny odrůdy);
 //            odrůda může mít vlastní cenaKg. Bez ceny = „cena na dotaz“
 //  dostupne: false = odrůda se v e-shopu ukáže jako vyprodaná
-//  baleni:   jaká množství (kg) si zákazník může vybrat
+//  Zákazník si volí libovolný počet kg (min. 1 kg); doprava je v ceně.
 // ============================================================
 
 // Fotky a sezóna se berou ze stejných dat jako hlavní web.
@@ -15,7 +15,7 @@ const ovoce = nazev => OBSAH.ovoce.find(o => o.nazev === nazev)
 
 const DRUHY_OVOCE = [
   {
-    id: 'jablka', nazev: 'Jablka', zdroj: ovoce('Jablka'), baleni: [1, 5, 10], cenaKg: 40,
+    id: 'jablka', nazev: 'Jablka', zdroj: ovoce('Jablka'), cenaKg: 35,
     sklizen: 'září – říjen, ze skladu do března',
     odrudy: [
       { id: 'bohemia', nazev: 'Bohemia', chut: 'sladkonavinulá', popis: 'Česká odrůda s velkými, sytě červenými plody a šťavnatou dužinou.', hodiSe: ['přímá konzumace', 'mošt'] },
@@ -34,7 +34,7 @@ const DRUHY_OVOCE = [
     ],
   },
   {
-    id: 'hrusky', nazev: 'Hrušky', zdroj: ovoce('Hrušky'), baleni: [1, 5, 10], cenaKg: 50,
+    id: 'hrusky', nazev: 'Hrušky', zdroj: ovoce('Hrušky'), cenaKg: 45,
     sklizen: 'srpen – říjen, ze skladu do ledna',
     odrudy: [
       { id: 'konference', nazev: 'Konference', chut: 'sladká, máslová', popis: 'Protáhlé plody s rezavou slupkou a sladkou, máslově jemnou dužinou. Dobře skladovatelná.', hodiSe: ['přímá konzumace', 'skladování'] },
@@ -45,7 +45,7 @@ const DRUHY_OVOCE = [
     ],
   },
   {
-    id: 'svestky', nazev: 'Švestky', zdroj: ovoce('Švestky'), baleni: [1, 5, 10], cenaKg: 60,
+    id: 'svestky', nazev: 'Švestky', zdroj: ovoce('Švestky'), cenaKg: 45,
     sklizen: 'srpen – polovina října',
     odrudy: [
       { id: 'haganta', nazev: 'Haganta', chut: 'sladká', popis: 'Velké tmavomodré švestky, které dobře jdou od pecky.', hodiSe: ['knedlíky a koláče', 'sušení', 'přímá konzumace'] },
@@ -56,7 +56,7 @@ const DRUHY_OVOCE = [
     ],
   },
   {
-    id: 'tresne', nazev: 'Třešně', zdroj: ovoce('Třešně'), baleni: [1, 2, 5], cenaKg: 150,
+    id: 'tresne', nazev: 'Třešně', zdroj: ovoce('Třešně'), cenaKg: 150,
     sklizen: 'červenec',
     odrudy: [
       { id: 'kordia', nazev: 'Kordia', chut: 'sladká', popis: 'Tmavě červená pevná chrupka, méně náchylná k praskání.', hodiSe: ['přímá konzumace'] },
@@ -65,21 +65,21 @@ const DRUHY_OVOCE = [
     ],
   },
   {
-    id: 'visne', nazev: 'Višně', zdroj: ovoce('Višně'), baleni: [1, 5, 10], cenaKg: 70,
+    id: 'visne', nazev: 'Višně', zdroj: ovoce('Višně'), cenaKg: 80,
     sklizen: 'polovina července – začátek srpna',
     odrudy: [
       { id: 'visne', nazev: 'Višně', chut: 'kyselkavá, aromatická', popis: 'Aromatické višně přímo ze sadu.', hodiSe: ['džem a kompoty', 'koláče', 'pálenka'] },
     ],
   },
   {
-    id: 'merunky', nazev: 'Meruňky', zdroj: ovoce('Meruňky'), baleni: [1, 5, 10], cenaKg: 80,
+    id: 'merunky', nazev: 'Meruňky', zdroj: ovoce('Meruňky'), cenaKg: 80,
     sklizen: 'červenec – srpen',
     odrudy: [
       { id: 'merunky', nazev: 'Meruňky', chut: 'sladká, voňavá', popis: 'Voňavé a šťavnaté meruňky ze sadu.', hodiSe: ['přímá konzumace', 'zavařování', 'knedlíky'] },
     ],
   },
   {
-    id: 'broskve', nazev: 'Broskve', zdroj: ovoce('Broskve'), baleni: [1, 5], cenaKg: 80,
+    id: 'broskve', nazev: 'Broskve', zdroj: ovoce('Broskve'), cenaKg: 70,
     sklizen: 'srpen – září',
     odrudy: [
       { id: 'broskve', nazev: 'Broskve', chut: 'sladká, šťavnatá', popis: 'Šťavnaté broskve na vrcholu léta.', hodiSe: ['přímá konzumace', 'zavařování'] },
@@ -114,7 +114,7 @@ const produktyOvoce = DRUHY_OVOCE.flatMap(d => {
     vSezone,
     dostupne: vSezone && o.dostupne !== false,
     jednotka: 'kg',
-    varianty: d.baleni.map(kg => ({ id: `${kg}kg`, label: `${kg} kg`, cena: cenaKg == null ? null : cenaKg * kg })),
+    varianty: [{ id: 'kg', label: '1 kg', cena: cenaKg }],
     cenaZaJednotku: cenaKg,
   }})
 })
@@ -151,12 +151,17 @@ export const KATEGORIE = [
 
 export const DORUCENI = {
   odber: { label: 'Osobní odběr', detail: 'Krtely 70, Netolice – po telefonické domluvě' },
-  rozvoz: { label: 'Rozvoz – České Budějovice', detail: 'pondělí, středa, pátek dopoledne' },
+  rozvoz: { label: 'Dovoz až domů – České Budějovice', detail: 'doprava v ceně · pondělí, středa, pátek dopoledne' },
 }
 
 export const PLATBA = {
   prevzeti: 'Hotově nebo kartou při převzetí',
   prevod: 'Převodem na účet (pošleme údaje v potvrzení)',
+}
+
+// „5 kg“ u ovoce na váhu, „2× 5 l“ u moštů.
+export function formatMnozstvi(produkt, varianta, pocet) {
+  return produkt.jednotka === 'kg' ? `${pocet} kg` : `${pocet}× ${varianta.label}`
 }
 
 export function formatKc(n) {

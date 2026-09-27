@@ -6,13 +6,19 @@ import { useKosik } from './kosik'
 export default function ProduktKarta({ produkt }) {
   const { pridat } = useKosik()
   const [variantaId, setVariantaId] = useState(produkt.varianty[0].id)
-  const [pocet, setPocet] = useState(1)
+  const [pocetText, setPocetText] = useState('1')
   const [pridano, setPridano] = useState(false)
   const varianta = produkt.varianty.find(v => v.id === variantaId)
   const info = produkt.fotoInfo
+  const naKg = produkt.jednotka === 'kg'
+  const max = naKg ? 500 : 99
+  // The field may be empty while typing; anything invalid counts as the minimum 1.
+  const pocet = Math.min(max, Math.max(1, parseInt(pocetText, 10) || 1))
+  const zmenit = d => setPocetText(String(Math.min(max, Math.max(1, pocet + d))))
 
   const doKosiku = () => {
     pridat(produkt.id, variantaId, pocet)
+    setPocetText(String(pocet))
     setPridano(true)
     setTimeout(() => setPridano(false), 1600)
   }
@@ -53,7 +59,7 @@ export default function ProduktKarta({ produkt }) {
           {produkt.cenaZaJednotku != null && (
             <p className="text-right shrink-0">
               <span className="font-bold text-lg text-[#133e13] tabular-nums">{formatKc(produkt.cenaZaJednotku)}</span>
-              <span className="text-gray-400 text-xs block -mt-0.5">za 1 {produkt.jednotka}</span>
+              <span className="text-gray-400 text-xs block -mt-0.5">{naKg ? 'za 1 kg vč. dovozu' : `za 1 ${produkt.jednotka}`}</span>
             </p>
           )}
         </div>
@@ -70,24 +76,31 @@ export default function ProduktKarta({ produkt }) {
 
         {produkt.dostupne ? (
           <div className="mt-auto space-y-3">
-            <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Balení">
-              {produkt.varianty.map(v => (
-                <button key={v.id} type="button" role="radio" aria-checked={v.id === variantaId}
-                  onClick={() => setVariantaId(v.id)}
-                  className={`text-sm px-3 py-1.5 rounded-lg border transition cursor-pointer ${
-                    v.id === variantaId ? 'border-green-600 bg-green-600 text-white' : 'border-gray-200 text-gray-700 hover:border-green-400'
-                  }`}>
-                  {v.label}
-                  {v.cena != null && <span className={`ml-1.5 ${v.id === variantaId ? 'text-green-100' : 'text-gray-400'}`}>{formatKc(v.cena)}</span>}
-                </button>
-              ))}
-            </div>
+            {!naKg && (
+              <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Balení">
+                {produkt.varianty.map(v => (
+                  <button key={v.id} type="button" role="radio" aria-checked={v.id === variantaId}
+                    onClick={() => setVariantaId(v.id)}
+                    className={`text-sm px-3 py-1.5 rounded-lg border transition cursor-pointer ${
+                      v.id === variantaId ? 'border-green-600 bg-green-600 text-white' : 'border-gray-200 text-gray-700 hover:border-green-400'
+                    }`}>
+                    {v.label}
+                    {v.cena != null && <span className={`ml-1.5 ${v.id === variantaId ? 'text-green-100' : 'text-gray-400'}`}>{formatKc(v.cena)}</span>}
+                  </button>
+                ))}
+              </div>
+            )}
             <div className="flex items-center gap-3">
               <div className="flex items-center border border-gray-200 rounded-lg">
-                <button type="button" onClick={() => setPocet(p => Math.max(1, p - 1))} aria-label="Méně"
+                <button type="button" onClick={() => zmenit(-1)} aria-label="Méně"
                   className="w-9 h-10 text-gray-600 hover:text-green-700 cursor-pointer">−</button>
-                <span className="w-8 text-center tabular-nums font-medium" aria-live="polite">{pocet}</span>
-                <button type="button" onClick={() => setPocet(p => Math.min(99, p + 1))} aria-label="Více"
+                <input type="number" inputMode="numeric" min="1" max={max} value={pocetText}
+                  onChange={e => setPocetText(e.target.value.replace(/\D/g, '').slice(0, 3))}
+                  onBlur={() => setPocetText(String(pocet))}
+                  aria-label={naKg ? 'Množství v kg' : 'Počet kusů'}
+                  className="w-10 h-10 text-center tabular-nums font-medium focus:outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none" />
+                {naKg && <span className="text-sm text-gray-500 pr-1">kg</span>}
+                <button type="button" onClick={() => zmenit(1)} aria-label="Více"
                   className="w-9 h-10 text-gray-600 hover:text-green-700 cursor-pointer">+</button>
               </div>
               <button type="button" onClick={doKosiku}

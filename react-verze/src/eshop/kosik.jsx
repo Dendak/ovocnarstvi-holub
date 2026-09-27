@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useMemo, useReducer } from 'react
 import { PRODUKTY } from './katalog'
 
 const STORAGE_KEY = 'ovoce-holub-kosik'
+const MAX = 500
 const KosikContext = createContext(null)
 
 function reducer(state, action) {
@@ -9,12 +10,12 @@ function reducer(state, action) {
     case 'pridat': {
       const key = `${action.produktId}|${action.variantaId}`
       const qty = (state[key] || 0) + action.pocet
-      return { ...state, [key]: Math.min(qty, 99) }
+      return { ...state, [key]: Math.min(qty, MAX) }
     }
     case 'nastavit': {
       const next = { ...state }
       if (action.pocet <= 0) delete next[action.key]
-      else next[action.key] = Math.min(action.pocet, 99)
+      else next[action.key] = Math.min(action.pocet, MAX)
       return next
     }
     case 'vyprazdnit':

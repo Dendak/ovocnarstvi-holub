@@ -82,11 +82,11 @@ function KosikPanel({ open, onClose, onPokladna }) {
                 <li key={p.key} className="py-4 flex gap-3">
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-gray-800">{p.produkt.nazev}</p>
-                    <p className="text-xs text-gray-500">{p.produkt.druhNazev} · {p.varianta.label}{p.varianta.cena != null && ` · ${formatKc(p.varianta.cena)} ${p.produkt.jednotka === 'kg' ? 'za balení' : 'za kus'}`}</p>
+                    <p className="text-xs text-gray-500">{p.produkt.druhNazev}{p.produkt.jednotka === 'kg' ? '' : ` · ${p.varianta.label}`}{p.varianta.cena != null && ` · ${formatKc(p.varianta.cena)} ${p.produkt.jednotka === 'kg' ? 'za kg' : 'za kus'}`}</p>
                     <div className="flex items-center gap-3 mt-2">
                       <div className="flex items-center border border-gray-200 rounded-lg">
                         <button onClick={() => kosik.nastavit(p.key, p.pocet - 1)} aria-label="Méně" className="w-8 h-8 text-gray-600 cursor-pointer">−</button>
-                        <span className="w-7 text-center text-sm tabular-nums">{p.pocet}</span>
+                        <span className="min-w-7 px-1 text-center text-sm tabular-nums">{p.pocet}{p.produkt.jednotka === 'kg' ? ' kg' : ''}</span>
                         <button onClick={() => kosik.nastavit(p.key, p.pocet + 1)} aria-label="Více" className="w-8 h-8 text-gray-600 cursor-pointer">+</button>
                       </div>
                       <button onClick={() => kosik.nastavit(p.key, 0)} className="text-xs text-gray-400 hover:text-red-600 cursor-pointer">Odebrat</button>
@@ -136,10 +136,10 @@ function Katalog() {
           <p className="text-green-400 text-sm tracking-widest uppercase mb-3">E-shop · přímo ze sadu</p>
           <h1 className="font-serif text-4xl sm:text-5xl font-bold leading-tight mb-4">Objednejte si ovoce a mošty</h1>
           <p className="text-white/70 text-lg max-w-2xl mb-8">
-            Vyberte odrůdy a množství, my objednávku potvrdíme telefonicky a připravíme ji k odběru nebo přivezeme.
+            Naklikejte si, kolik kilo chcete. Ceny jsou včetně dovozu až domů – objednávku potvrdíme telefonicky a přivezeme ji.
           </p>
           <div className="flex flex-wrap gap-3 text-sm">
-            {[DORUCENI.odber.label + ' v Krtelích', 'Rozvoz do Č. Budějovic – po, st, pá', 'Platba při převzetí'].map(t => (
+            {['Dovoz až domů v ceně – Č. Budějovice, po, st, pá', DORUCENI.odber.label + ' v Krtelích', 'Libovolné množství od 1 kg', 'Platba při převzetí'].map(t => (
               <span key={t} className="bg-white/10 border border-white/15 rounded-full px-4 py-1.5">✓ {t}</span>
             ))}
           </div>

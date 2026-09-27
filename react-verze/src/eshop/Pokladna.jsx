@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { OBSAH } from '../data'
-import { DORUCENI, PLATBA, formatKc } from './katalog'
+import { DORUCENI, PLATBA, formatKc, formatMnozstvi } from './katalog'
 import { useKosik } from './kosik'
 
 const DNY = ['neděle', 'pondělí', 'úterý', 'středa', 'čtvrtek', 'pátek', 'sobota']
@@ -48,7 +48,7 @@ export default function Pokladna({ onZpet, onHotovo }) {
   const kosik = useKosik()
   const terminy = terminyRozvozu()
   const [f, setF] = useState({
-    jmeno: '', telefon: '', email: '', doruceni: 'odber', adresa: '', termin: terminy[0], datumOdberu: '',
+    jmeno: '', telefon: '', email: '', doruceni: 'rozvoz', adresa: '', termin: terminy[0], datumOdberu: '',
     platba: 'prevzeti', poznamka: '', souhlas: false,
   })
   const [chyby, setChyby] = useState({})
@@ -74,7 +74,7 @@ export default function Pokladna({ onZpet, onHotovo }) {
 
     const cislo = cisloObjednavky()
     const radky = kosik.polozky.map(p =>
-      `${p.pocet}× ${p.produkt.nazev} (${p.produkt.druhNazev}), ${p.varianta.label} – ${p.cena == null ? 'cena na dotaz' : formatKc(p.cena)}`)
+      `${formatMnozstvi(p.produkt, p.varianta, p.pocet)} ${p.produkt.nazev} (${p.produkt.druhNazev}) – ${p.cena == null ? 'cena na dotaz' : formatKc(p.cena)}`)
     const doruceni = f.doruceni === 'rozvoz'
       ? `${DORUCENI.rozvoz.label}, termín: ${f.termin}, adresa: ${f.adresa}`
       : `${DORUCENI.odber.label}${f.datumOdberu ? `, preferovaný den: ${f.datumOdberu}` : ''}`
@@ -150,8 +150,8 @@ export default function Pokladna({ onZpet, onHotovo }) {
 
           <div className="bg-white rounded-2xl shadow-sm p-6 space-y-3">
             <h2 className="font-semibold text-lg text-[#133e13]">Převzetí</h2>
-            <Volba name="doruceni" current={f.doruceni} onChange={set} value="odber" label={DORUCENI.odber.label} detail={DORUCENI.odber.detail} />
             <Volba name="doruceni" current={f.doruceni} onChange={set} value="rozvoz" label={DORUCENI.rozvoz.label} detail={DORUCENI.rozvoz.detail} />
+            <Volba name="doruceni" current={f.doruceni} onChange={set} value="odber" label={DORUCENI.odber.label} detail={DORUCENI.odber.detail} />
             {f.doruceni === 'odber' ? (
               <div className="pt-2">
                 <label htmlFor="datumOdberu" className="text-xs font-medium text-gray-600 mb-1 block">Kdy byste chtěli přijet? (nepovinné)</label>
@@ -192,7 +192,7 @@ export default function Pokladna({ onZpet, onHotovo }) {
           <ul className="divide-y divide-gray-100 mb-4">
             {kosik.polozky.map(p => (
               <li key={p.key} className="py-2 flex justify-between gap-3 text-sm">
-                <span className="text-gray-700">{p.pocet}× {p.produkt.nazev} <span className="text-gray-400">({p.varianta.label})</span></span>
+                <span className="text-gray-700">{formatMnozstvi(p.produkt, p.varianta, p.pocet)} {p.produkt.nazev}</span>
                 <span className="tabular-nums font-medium whitespace-nowrap">{p.cena == null ? 'na dotaz' : formatKc(p.cena)}</span>
               </li>
             ))}
@@ -202,8 +202,7 @@ export default function Pokladna({ onZpet, onHotovo }) {
             <span className="font-bold text-xl text-[#133e13] tabular-nums">{formatKc(kosik.soucet)}</span>
           </div>
           <p className="text-xs text-gray-400 mb-5">
-            {f.doruceni === 'rozvoz' ? 'Cenu rozvozu potvrdíme telefonicky. ' : ''}
-            U ovoce se konečná cena může mírně lišit podle skutečné váhy.
+            Doprava až domů je v ceně. U ovoce se konečná cena může mírně lišit podle skutečné váhy.
           </p>
 
           <label className="flex items-start gap-2 text-xs text-gray-600 mb-1 cursor-pointer">
