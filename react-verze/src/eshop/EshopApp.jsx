@@ -6,11 +6,14 @@ import ProduktKarta from './ProduktKarta'
 import Pokladna from './Pokladna'
 import Footer from '../components/Footer'
 import { nacistObjednavky, smazatVse } from './mujUcet'
+import { AuthProvider, useAuth } from './auth'
+import { nacistZUctu, STAVY } from './objednavkyDb'
+import Ucet from './Ucet'
 
 const BASE = import.meta.env.BASE_URL
 
 function useHashView() {
-  const read = () => ({ '#pokladna': 'pokladna', '#hotovo': 'hotovo', '#objednavky': 'objednavky' }[location.hash] || 'katalog')
+  const read = () => ({ '#pokladna': 'pokladna', '#hotovo': 'hotovo', '#objednavky': 'objednavky', '#ucet': 'ucet', '#nove-heslo': 'ucet' }[location.hash] || 'katalog')
   const [view, setView] = useState(read)
   useEffect(() => {
     const onHash = () => { setView(read()); window.scrollTo({ top: 0, behavior: 'instant' }) }
@@ -29,6 +32,7 @@ function KosikIcon({ className = 'w-5 h-5' }) {
 
 function Hlavicka({ onKosik }) {
   const { pocetKusu } = useKosik()
+  const auth = useAuth()
   return (
     <nav className="fixed top-0 left-0 right-0 z-40 bg-[#133e13]/95 backdrop-blur-md shadow-lg">
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
@@ -39,6 +43,12 @@ function Hlavicka({ onKosik }) {
         <div className="flex items-center gap-5">
           <a href={`${BASE}index.html`} className="hidden md:block text-white/80 hover:text-white text-sm font-medium">← Hlavní stránka</a>
           <a href="#objednavky" className="text-white/80 hover:text-white text-sm font-medium"><span className="hidden sm:inline">Moje </span>objednávky</a>
+          {auth.zapnuto && (
+            <a href="#ucet" className="text-white/80 hover:text-white text-sm font-medium flex items-center gap-1.5" aria-label={auth.uzivatel ? 'Můj účet' : 'Přihlásit se'}>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" /></svg>
+              <span className="hidden sm:inline">{auth.uzivatel ? 'Můj účet' : 'Přihlásit'}</span>
+            </a>
+          )}
           <button onClick={onKosik} className="relative flex items-center gap-2 bg-white text-[#133e13] font-semibold text-sm px-4 py-2 rounded-full hover:bg-green-50 transition-colors cursor-pointer" aria-label={`Košík, ${pocetKusu} položek`}>
             <KosikIcon />
             <span>Košík</span>
@@ -212,8 +222,17 @@ function Hotovo({ info, onZpet }) {
 
 function MojeObjednavky({ onKosik }) {
   const { pridat } = useKosik()
-  const [objednavky, setObjednavky] = useState(nacistObjednavky)
+  const auth = useAuth()
+  const [mistni, setMistni] = useState(nacistObjednavky)
+  const [zUctu, setZUctu] = useState(null)
   const [info, setInfo] = useState(null)
+  const prihlasen = !!auth.uzivatel
+  const objednavky = prihlasen ? (zUctu || []) : mistni
+
+  useEffect(() => {
+    if (!prihlasen) return
+    nacistZUctu().then(setZUctu).catch(() => { setZUctu([]); setInfo('Objednávky z účtu se nepodařilo načíst. Zkuste obnovit stránku.') })
+  }, [prihlasen])
 
   const znovu = o => {
     let pridano = 0
@@ -230,10 +249,18 @@ function MojeObjednavky({ onKosik }) {
     <div className="max-w-3xl mx-auto px-6 py-10">
       <h1 className="font-serif text-3xl sm:text-4xl font-bold text-[#133e13] mb-2">Moje objednávky</h1>
       <p className="text-gray-500 text-sm mb-8">
-        Objednávky odeslané z tohoto zařízení. Údaje jsou uložené jen ve vašem prohlížeči, na jiném zařízení je neuvidíte.
+        {prihlasen
+          ? 'Všechny objednávky z vašeho účtu, i jejich aktuální stav.'
+          : 'Objednávky odeslané z tohoto zařízení. Údaje jsou uložené jen ve vašem prohlížeči, na jiném zařízení je neuvidíte.'}
       </p>
+      {auth.zapnuto && !prihlasen && (
+        <p className="text-sm bg-green-50 text-green-900 rounded-xl px-4 py-3 mb-6">
+          <a href="#ucet" className="font-semibold underline">Přihlaste se nebo si založte účet</a> – objednávky pak uvidíte na všech zařízeních i s jejich stavem.
+        </p>
+      )}
+      {prihlasen && zUctu === null && <p className="text-gray-400 py-10 text-center">Načítám…</p>}
       {info && <p className="text-sm text-amber-800 bg-amber-50 rounded-xl px-4 py-3 mb-6">{info}</p>}
-      {objednavky.length === 0 ? (
+      {prihlasen && zUctu === null ? null : objednavky.length === 0 ? (
         <div className="text-center py-16 text-gray-500">
           <p className="mb-3">Zatím tu nejsou žádné objednávky.</p>
           <a href="#" className="text-green-700 font-medium hover:underline">Vybrat ovoce →</a>
@@ -243,7 +270,10 @@ function MojeObjednavky({ onKosik }) {
           {objednavky.map(o => (
             <li key={o.cislo} className="bg-white rounded-2xl shadow-sm p-5">
               <div className="flex flex-wrap items-baseline justify-between gap-2 mb-3">
-                <p className="font-semibold text-[#133e13]">{o.cislo}</p>
+                <p className="font-semibold text-[#133e13] flex items-center gap-2">
+                  {o.cislo}
+                  {o.stav && <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${STAVY[o.stav] || STAVY['přijatá']}`}>{o.stav}</span>}
+                </p>
                 <p className="text-sm text-gray-500">
                   objednáno {new Date(o.datum).toLocaleDateString('cs-CZ')} · {o.termin}
                 </p>
@@ -262,8 +292,8 @@ function MojeObjednavky({ onKosik }) {
           ))}
         </ul>
       )}
-      {objednavky.length > 0 && (
-        <button onClick={() => { smazatVse(); setObjednavky([]) }}
+      {!prihlasen && objednavky.length > 0 && (
+        <button onClick={() => { smazatVse(); setMistni([]) }}
           className="mt-8 text-xs text-gray-400 hover:text-red-600 cursor-pointer">
           Smazat historii a uložené údaje z tohoto zařízení
         </button>
@@ -290,6 +320,7 @@ function Obchod() {
         {aktualni === 'pokladna' && <Pokladna onZpet={() => go('katalog')} onHotovo={info => { setHotovo(info); go('#hotovo') }} />}
         {aktualni === 'hotovo' && <Hotovo info={hotovo} onZpet={() => go('katalog')} />}
         {aktualni === 'objednavky' && <MojeObjednavky onKosik={() => setKosikOpen(true)} />}
+        {aktualni === 'ucet' && <Ucet />}
       </main>
       <Footer links={[[`${BASE}index.html#ovoce`, 'Ovoce'], [`${BASE}index.html#mosty`, 'Mošty'], [`${BASE}index.html#kontakt`, 'Kontakt']]} />
       <KosikPanel open={kosikOpen} onClose={() => setKosikOpen(false)} onPokladna={() => { setKosikOpen(false); go('#pokladna') }} />
@@ -299,8 +330,10 @@ function Obchod() {
 
 export default function EshopApp() {
   return (
-    <KosikProvider>
-      <Obchod />
-    </KosikProvider>
+    <AuthProvider>
+      <KosikProvider>
+        <Obchod />
+      </KosikProvider>
+    </AuthProvider>
   )
 }

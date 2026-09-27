@@ -1,0 +1,71 @@
+import { createContext, useContext, useEffect, useMemo, useState } from 'react'
+import { createClient } from '@supabase/supabase-js'
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from './supabaseConfig'
+
+// PKCE keeps the auth callback in the query string (?code=…), so it doesn't
+// clash with the e-shop's hash navigation (#pokladna, #ucet …).
+// eslint-disable-next-line react-refresh/only-export-components
+export const supabase = SUPABASE_URL && SUPABASE_ANON_KEY
+  ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { flowType: 'pkce', detectSessionInUrl: true, persistSession: true } })
+  : null
+
+const AuthContext = createContext({ zapnuto: false, uzivatel: null, nacita: false })
+
+const zpet = () => `${location.origin}${location.pathname}`
+
+// Supabase error messages are English; show the common ones in Czech.
+// eslint-disable-next-line react-refresh/only-export-components
+export function prelozChybu(err) {
+  const m = (err?.message || '').toLowerCase()
+  if (m.includes('invalid login credentials')) return 'Nesprávný e-mail nebo heslo.'
+  if (m.includes('email not confirmed')) return 'E-mail ještě není potvrzený – klikněte na odkaz, který jsme vám poslali.'
+  if (m.includes('already registered') || m.includes('already been registered')) return 'Účet s tímto e-mailem už existuje. Zkuste se přihlásit nebo obnovit heslo.'
+  if (m.includes('password should be at least') || m.includes('weak password')) return 'Heslo je příliš slabé – použijte aspoň 8 znaků.'
+  if (m.includes('rate limit') || m.includes('too many')) return 'Příliš mnoho pokusů. Zkuste to prosím za chvíli.'
+  if (m.includes('same password')) return 'Nové heslo musí být jiné než to současné.'
+  if (m.includes('network') || m.includes('fetch')) return 'Nepodařilo se spojit se serverem. Zkontrolujte připojení.'
+  return 'Něco se nepovedlo. Zkuste to prosím znovu.'
+}
+
+export function AuthProvider({ children }) {
+  const [uzivatel, setUzivatel] = useState(null)
+  const [nacita, setNacita] = useState(!!supabase)
+  const [obnovaHesla, setObnovaHesla] = useState(false)
+
+  useEffect(() => {
+    if (!supabase) return
+    supabase.auth.getSession().then(({ data }) => { setUzivatel(data.session?.user ?? null); setNacita(false) })
+    const { data: sub } = supabase.auth.onAuthStateChange((event, session) => {
+      setUzivatel(session?.user ?? null)
+      if (event === 'PASSWORD_RECOVERY') { setObnovaHesla(true); location.hash = '#nove-heslo' }
+      // Drop ?code=… from the address bar after a sign-in redirect.
+      if (event === 'SIGNED_IN' && location.search.includes('code=')) {
+        history.replaceState(null, '', location.pathname + (location.hash || '#ucet'))
+      }
+    })
+    return () => sub.subscription.unsubscribe()
+  }, [])
+
+  const value = useMemo(() => ({
+    zapnuto: !!supabase,
+    uzivatel,
+    nacita,
+    obnovaHesla,
+    prihlasit: (email, heslo) => supabase.auth.signInWithPassword({ email, password: heslo }),
+    registrovat: (email, heslo, jmeno) => supabase.auth.signUp({
+      email, password: heslo, options: { data: { jmeno }, emailRedirectTo: zpet() },
+    }),
+    prihlasitPres: provider => supabase.auth.signInWithOAuth({ provider, options: { redirectTo: zpet() } }),
+    zapomenuteHeslo: email => supabase.auth.resetPasswordForEmail(email, { redirectTo: zpet() }),
+    noveHeslo: async heslo => { const r = await supabase.auth.updateUser({ password: heslo }); if (!r.error) setObnovaHesla(false); return r },
+    ulozitProfil: udaje => supabase.auth.updateUser({ data: udaje }),
+    odhlasit: () => supabase.auth.signOut(),
+  }), [uzivatel, nacita, obnovaHesla])
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+}
+
+// eslint-disable-next-line react-refresh/only-export-components
+export function useAuth() {
+  return useContext(AuthContext)
+}

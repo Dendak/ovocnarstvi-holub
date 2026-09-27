@@ -1,8 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { OBSAH } from '../data'
 import { DORUCENI, formatKc, formatMnozstvi } from './katalog'
 import { useKosik } from './kosik'
 import { nacistUdaje, ulozitObjednavku } from './mujUcet'
+import { useAuth } from './auth'
+import { ulozitDoUctu } from './objednavkyDb'
 
 // ============================================================
 //  PRAVIDLA OBJEDNÁVEK
@@ -72,6 +74,21 @@ export default function Pokladna({ onZpet, onHotovo }) {
   const [chyby, setChyby] = useState({})
   const [stav, setStav] = useState(null)
   const set = (k, v) => setF(prev => ({ ...prev, [k]: v }))
+  const auth = useAuth()
+  const uzivatel = auth.uzivatel
+
+  // Signed-in customers get their saved details filled in (empty fields only).
+  useEffect(() => {
+    if (!uzivatel) return
+    const m = uzivatel.user_metadata || {}
+    setF(prev => ({
+      ...prev,
+      email: prev.email || uzivatel.email || '',
+      jmeno: prev.jmeno || m.jmeno || m.full_name || m.name || '',
+      telefon: prev.telefon || m.telefon || '',
+      adresa: prev.adresa || m.adresa || '',
+    }))
+  }, [uzivatel])
 
   const validovat = () => {
     const e = {}
@@ -137,11 +154,17 @@ export default function Pokladna({ onZpet, onHotovo }) {
         body: JSON.stringify(payload),
       })
       if (!res.ok) throw new Error()
+      const zaznam = {
+        cislo, datum: new Date().toISOString(), termin: `${rozvoz ? 'Dovoz' : 'Odběr'} ${den}`, celkem,
+        radky, polozky: kosik.polozky.map(p => ({ key: p.key, pocet: p.pocet })),
+      }
+      if (uzivatel) {
+        // The order e-mail already went out; the account copy is best-effort.
+        await ulozitDoUctu(zaznam).catch(() => false)
+        if (f.zapamatovat) await auth.ulozitProfil({ jmeno: f.jmeno.trim(), telefon: f.telefon.trim(), adresa: f.adresa.trim() }).catch(() => null)
+      }
       ulozitObjednavku(
-        {
-          cislo, datum: new Date().toISOString(), termin: `${rozvoz ? 'Dovoz' : 'Odběr'} ${den}`, celkem,
-          radky, polozky: kosik.polozky.map(p => ({ key: p.key, pocet: p.pocet })),
-        },
+        zaznam,
         f.zapamatovat
           ? { jmeno: f.jmeno.trim(), telefon: f.telefon.trim(), email: f.email.trim(), adresa: f.adresa.trim(), doruceni: f.doruceni }
           : null,
@@ -158,6 +181,11 @@ export default function Pokladna({ onZpet, onHotovo }) {
     <div className="max-w-5xl mx-auto px-6 py-10">
       <button onClick={onZpet} className="text-green-700 text-sm font-medium hover:underline mb-6 cursor-pointer">← Zpět do obchodu</button>
       <h1 className="font-serif text-3xl sm:text-4xl font-bold text-[#133e13] mb-8">Dokončení objednávky</h1>
+      {auth.zapnuto && !uzivatel && !auth.nacita && (
+        <p className="text-sm bg-green-50 text-green-900 rounded-xl px-4 py-3 mb-6 -mt-4">
+          Máte účet? <a href="#ucet" className="font-semibold underline">Přihlaste se</a> a údaje se vyplní samy. Košík vám zůstane.
+        </p>
+      )}
 
       <form onSubmit={odeslat} noValidate className="grid lg:grid-cols-[1fr_22rem] gap-8 items-start">
         <div className="space-y-6">
