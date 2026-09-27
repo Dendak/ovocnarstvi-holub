@@ -21,7 +21,7 @@ export default function OvoceSection() {
 
         <div className="mb-5">
           <OvoceKarta item={featured} featured
-            cta={{ href: '#napiste', label: 'Poptat →' }}
+            cta={{ href: `${import.meta.env.BASE_URL}eshop.html`, label: 'Objednat v e-shopu →' }}
             note="Osobní odběr v Krtelích u Netolic nebo rozvoz do Českých Budějovic v pondělí, středu a pátek." />
         </div>
 
@@ -29,6 +29,14 @@ export default function OvoceSection() {
           {rest.map((item, i) => (
             <OvoceKarta key={item.nazev} item={item} index={i + 1} />
           ))}
+        </div>
+
+        <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 text-center">
+          <p className="text-white/70">Všechny odrůdy s popisy a cenami najdete v e-shopu.</p>
+          <a href={`${import.meta.env.BASE_URL}eshop.html`}
+            className="inline-flex items-center gap-2 bg-white text-[#133e13] font-semibold px-6 py-3 rounded-full hover:bg-green-50 transition-colors text-sm">
+            Otevřít e-shop →
+          </a>
         </div>
       </div>
     </section>

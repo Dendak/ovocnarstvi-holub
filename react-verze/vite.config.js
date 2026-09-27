@@ -15,6 +15,7 @@ export default defineConfig(({ command }) => ({
         main: resolve(__dirname, 'index.html'),
         de: resolve(__dirname, 'index-de.html'),
         gdpr: resolve(__dirname, 'gdpr.html'),
+        eshop: resolve(__dirname, 'eshop.html'),
       },
     },
   },

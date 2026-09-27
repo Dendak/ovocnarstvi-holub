@@ -51,6 +51,10 @@ export default function Nav() {
               {l.label}
             </a>
           ))}
+          <a href={`${import.meta.env.BASE_URL}eshop.html`}
+            className="bg-white text-[#133e13] font-semibold text-sm px-4 py-2 rounded-full hover:bg-green-50 transition-colors">
+            E-shop
+          </a>
           <div className="flex gap-1 ml-2">
             <a href={`${import.meta.env.BASE_URL}index.html`} onClick={() => sessionStorage.setItem('lang_chosen','cs')}><img src={`${import.meta.env.BASE_URL}img/flag-cz.png`} alt="CZ" className="h-5 rounded-sm opacity-80 hover:opacity-100" /></a>
             <a href={`${import.meta.env.BASE_URL}index-de.html`} onClick={() => sessionStorage.setItem('lang_chosen','de')}><img src={`${import.meta.env.BASE_URL}img/flag-at.png`} alt="AT" className="h-5 rounded-sm opacity-60 hover:opacity-100" /></a>
@@ -85,6 +89,10 @@ export default function Nav() {
               {l.label}
             </a>
           ))}
+          <a href={`${import.meta.env.BASE_URL}eshop.html`}
+            className="bg-white text-[#133e13] font-semibold text-sm text-center py-2.5 rounded-full mt-1">
+            E-shop – objednat online
+          </a>
         </div>
       )}
     </nav>
