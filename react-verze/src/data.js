@@ -5,7 +5,7 @@ export const OBSAH = {
     mesto:     'Netolice, 384 11',
     tel1:      '+420 607 575 271',
     tel2:      '+420 722 949 299',
-    email:     'holous25@seznam.cz',
+    email:     'info@ovoce-holub.cz',
     facebook:  'https://www.facebook.com/OvoceHolub',
     instagram: 'https://www.instagram.com/ovocnarstviholub',
   },

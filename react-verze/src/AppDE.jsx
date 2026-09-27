@@ -208,7 +208,7 @@ export default function AppDE() {
               { icon: 'pin', title: 'Adresse', content: <><p>Krtely 70</p><p>Netolice, 384 11</p><p>Tschechien</p></> },
               { icon: 'phone', title: 'Telefon', content: <><a href="tel:+436787916433" className="block hover:text-green-700">0043 678 791 64 33</a><a href="tel:+420775047010" className="block hover:text-green-700 mt-1">+420 775 047 010</a></> },
               { icon: 'wa', title: 'WhatsApp', content: <a href={waUrl} target="_blank" rel="noopener noreferrer" className="text-green-700 hover:underline">Nachricht senden</a> },
-              { icon: 'mail', title: 'E-Mail', content: <a href="mailto:holous25@seznam.cz" className="hover:text-green-700">holous25@seznam.cz</a> },
+              { icon: 'mail', title: 'E-Mail', content: <a href="mailto:info@ovoce-holub.cz" className="hover:text-green-700">info@ovoce-holub.cz</a> },
             ].map(c => (
               <div key={c.title} className="bg-[#f7f4ef] rounded-2xl p-6 border border-green-100 text-center text-sm text-gray-600">
                 <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-3">
