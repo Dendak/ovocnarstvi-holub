@@ -3,18 +3,8 @@ import GalerieDE from './components/GalerieDE'
 import AnfrageForm from './components/AnfrageForm'
 import OvoceKarta from './components/OvoceKarta'
 import Footer from './components/Footer'
-import { OBSAH } from './data'
-
-// German fruit cards reuse the Czech OvoceKarta (rotating slideshow),
-// so the photo lists come straight from the shared data.
-const fotkyOf = nazev => OBSAH.ovoce.find(o => o.nazev === nazev)?.fotky || []
-
-const OBST = [
-  { nazev: 'Weichsel / Sauerkirschen', fotky: fotkyOf('Višně'), sezona: 'Juli – August', barva: 'red', popis: 'Aromatische Sauerkirschen – perfekte Grundlage für hochwertige Kirschbrände.' },
-  { nazev: 'Zwetschken', fotky: fotkyOf('Švestky'), sezona: 'August – Oktober', barva: 'purple', popis: 'Ideale Brennfrüchte mit hohem Zuckergehalt.', odrudy: ['Haganta', 'Top King', 'Topend Plus', 'Čačanská', 'Stanley'] },
-  { nazev: 'Birnen', fotky: fotkyOf('Hrušky'), sezona: 'August – Januar', barva: 'yellow', popis: 'Hervorragend für Birnenbrand und Williams.', odrudy: ['Williams', 'Alex Lucas', 'Conference'] },
-  { nazev: 'Äpfel', fotky: fotkyOf('Jablka'), sezona: 'August – März', barva: 'green', popis: 'Über 15 Sorten – für Apfelbrand und Cider.', odrudy: ['Bohemia', 'Topaz', 'Golden', 'Gala', 'Idared'] },
-]
+import { sortBySeason } from './data'
+import { OBST_DE, LABELS_DE } from './dataDE'
 
 const GRUENDE = [
   { num: '30 ha', label: 'eigener Obstgarten', text: 'Über 15 000 Bäume – wir ernten selbst' },
@@ -26,6 +16,7 @@ const GRUENDE = [
 export default function AppDE() {
   const waUrl = 'https://wa.me/420775047010'
   const base = import.meta.env.BASE_URL
+  const [featured, ...rest] = sortBySeason(OBST_DE)
 
   return (
     <>
@@ -33,7 +24,7 @@ export default function AppDE() {
       <div className="h-16" />
 
       {/* HERO */}
-      <header className="relative h-screen flex flex-col justify-end text-white overflow-hidden">
+      <header className="relative min-h-[calc(100svh-4rem)] flex flex-col text-white overflow-hidden">
         <img
           src={`${base}img/sad/504681257_4078182002327026_6055659733487249673_n.jpg`}
           alt=""
@@ -44,20 +35,20 @@ export default function AppDE() {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10" />
 
-        <div className="relative z-10 max-w-6xl mx-auto px-8 pb-32 w-full">
-          <p className="text-green-300 text-sm font-medium tracking-[0.25em] uppercase mb-5">
+        <div className="relative z-10 flex-1 flex flex-col justify-end max-w-6xl mx-auto px-6 sm:px-8 pt-12 pb-10 sm:pb-12 w-full">
+          <p className="text-green-300 text-sm font-medium tracking-[0.25em] uppercase mb-5 [text-shadow:0_1px_10px_rgba(0,0,0,0.75)]">
             Familien-Obstbauernhof · Südböhmen
           </p>
           <h1 className="font-serif font-bold leading-none mb-6"
-              style={{ fontSize: 'clamp(3rem, 9vw, 7rem)' }}>
+              style={{ fontSize: 'clamp(3rem, min(9vw, 12.5svh), 7rem)' }}>
             Obst<br />
             <em className="not-italic text-green-300">direkt</em><br />
             vom Bauern.
           </h1>
-          <p className="text-white/70 text-lg sm:text-xl font-light max-w-md mb-10 leading-relaxed">
+          <p className="text-white/85 text-lg sm:text-xl font-light max-w-md mb-10 leading-relaxed [text-shadow:0_1px_10px_rgba(0,0,0,0.75)]">
             Weichsel, Zwetschken, Birnen und Äpfel<br className="hidden sm:block" /> für Edelbrände. Lieferung nach Oberösterreich und Salzburg.
           </p>
-          <div className="flex flex-col sm:flex-row gap-3">
+          <div className="flex flex-col sm:flex-row sm:self-start gap-3">
             <a href="#anfrage"
               className="inline-flex items-center justify-center gap-2 bg-white text-[#133e13] font-semibold px-8 py-4 rounded-full hover:bg-green-50 transition-colors text-sm shadow-xl">
               Anfrage stellen →
@@ -69,20 +60,20 @@ export default function AppDE() {
           </div>
         </div>
 
-        {/* Stats strip — glassmorphism */}
-        <div className="absolute bottom-0 left-0 right-0 bg-black/40 backdrop-blur-md border-t border-white/10">
-          <div className="max-w-6xl mx-auto px-8 py-5 flex flex-wrap gap-8 items-center">
+        {/* Stats strip — glassmorphism, in normal flow so it never sits under the buttons */}
+        <div className="relative z-10 bg-black/40 backdrop-blur-md border-t border-white/10">
+          <div className="max-w-6xl mx-auto pl-6 pr-20 sm:px-8 py-4 sm:py-5 flex flex-wrap gap-x-8 gap-y-3 items-center">
             <div>
               <span className="font-serif text-2xl font-bold text-white">30 ha</span>
-              <span className="text-white/50 text-xs ml-2">eigener Obstgarten</span>
+              <span className="text-white/60 text-xs ml-2">eigener Obstgarten</span>
             </div>
             <div className="w-px h-5 bg-white/20" />
             <div>
               <span className="font-serif text-2xl font-bold text-white">200 kg</span>
-              <span className="text-white/50 text-xs ml-2">Mindestabnahme</span>
+              <span className="text-white/60 text-xs ml-2">Mindestabnahme</span>
             </div>
             <div className="w-px h-5 bg-white/20 hidden md:block" />
-            <div className="ml-auto flex items-center gap-2.5 bg-white/10 backdrop-blur-sm rounded-full px-4 py-1.5 border border-white/15">
+            <div className="w-full sm:w-auto sm:ml-auto flex items-center gap-2.5 bg-white/10 backdrop-blur-sm rounded-full px-4 py-1.5 border border-white/15">
               <svg className="w-5 h-5 text-green-300 shrink-0" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" /></svg>
               <span className="text-white text-sm font-medium">Lieferung nach Oberösterreich &amp; Salzburg</span>
             </div>
@@ -151,15 +142,16 @@ export default function AppDE() {
             </p>
           </div>
 
-          {/* Featured card — Weichsel */}
+          {/* Featured card — whatever is in season right now */}
           <div className="mb-5">
-            <OvoceKarta item={OBST[0]} featured />
+            <OvoceKarta item={featured} featured labels={LABELS_DE}
+              cta={{ href: '#anfrage', label: 'Anfrage stellen →' }}
+              note="Lieferung nach Oberösterreich und Salzburg, Mindestabnahme 200 kg." />
           </div>
 
-          {/* Grid of remaining */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {OBST.slice(1).map(item => (
-              <OvoceKarta key={item.nazev} item={item} />
+            {rest.map((item, i) => (
+              <OvoceKarta key={item.nazev} item={item} index={i + 1} labels={LABELS_DE} />
             ))}
           </div>
         </div>
@@ -172,7 +164,7 @@ export default function AppDE() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             <div className="bg-[#f7f4ef] rounded-2xl p-6 text-center border border-green-100">
               <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-4">
-                <svg className="w-6 h-6 text-green-700" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 3v17.25m0 0c-1.472 0-2.882.265-4.185.75M12 20.25c1.472 0 2.882.265 4.185.75" /></svg>
+                <svg className="w-6 h-6 text-green-700" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 3v17.25m0 0c-1.472 0-2.882.265-4.185.75M12 20.25c1.472 0 2.882.265 4.185.75M18.75 4.97A48.416 48.416 0 0 0 12 4.5c-2.291 0-4.545.16-6.75.47m13.5 0c1.01.143 2.01.317 3 .52m-3-.52 2.62 10.726c.122.499-.106 1.028-.589 1.202a5.988 5.988 0 0 1-2.031.352 5.988 5.988 0 0 1-2.031-.352c-.483-.174-.711-.703-.59-1.202L18.75 4.971Zm-16.5.52c.99-.203 1.99-.377 3-.52m0 0 2.62 10.726c.122.499-.106 1.028-.589 1.202a5.989 5.989 0 0 1-2.031.352 5.989 5.989 0 0 1-2.031-.352c-.483-.174-.711-.703-.59-1.202L5.25 4.971Z" /></svg>
               </div>
               <h3 className="font-semibold text-[#133e13] mb-2">Mindestabnahme</h3>
               <p className="text-3xl font-bold text-green-700 mb-1">200 kg</p>
@@ -207,7 +199,10 @@ export default function AppDE() {
       {/* KONTAKT */}
       <section id="kontakt" className="bg-white py-16">
         <div className="max-w-4xl mx-auto px-6">
-          <h2 className="font-serif text-3xl font-bold text-[#133e13] text-center mb-12">Kontakt</h2>
+          <div className="text-center mb-12">
+            <p className="text-green-700 text-xs tracking-widest uppercase mb-3">So erreichen Sie uns</p>
+            <h2 className="font-serif text-3xl sm:text-4xl font-bold text-[#133e13]">Kontakt</h2>
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
               { icon: 'pin', title: 'Adresse', content: <><p>Krtely 70</p><p>Netolice, 384 11</p><p>Tschechien</p></> },

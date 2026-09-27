@@ -5,7 +5,7 @@ export default function Hero() {
 
   return (
     <>
-      <header className="relative h-screen flex flex-col justify-end text-white overflow-hidden">
+      <header className="relative min-h-[calc(100svh-4rem)] flex flex-col text-white overflow-hidden">
         <img
           src={`${import.meta.env.BASE_URL}img/sad/504681257_4078182002327026_6055659733487249673_n.jpg`}
           alt=""
@@ -17,20 +17,20 @@ export default function Hero() {
         {/* Dark gradient — heavier at bottom */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10" />
 
-        <div className="relative z-10 max-w-6xl mx-auto px-8 pb-32 w-full">
-          <p className="text-green-300 text-sm font-medium tracking-[0.25em] uppercase mb-5">
+        <div className="relative z-10 flex-1 flex flex-col justify-end max-w-6xl mx-auto px-6 sm:px-8 pt-12 pb-10 sm:pb-12 w-full">
+          <p className="text-green-300 text-sm font-medium tracking-[0.25em] uppercase mb-5 [text-shadow:0_1px_10px_rgba(0,0,0,0.75)]">
             Rodinné ovocnářství · Krtely u Netolic
           </p>
           <h1 className="font-serif font-bold leading-none mb-6"
-              style={{ fontSize: 'clamp(3.5rem, 10vw, 8rem)' }}>
+              style={{ fontSize: 'clamp(3.25rem, min(10vw, 12.5svh), 8rem)' }}>
             Ovoce<br />
             <em className="not-italic text-green-300">přímo</em><br />
             ze sadu.
           </h1>
-          <p className="text-white/70 text-lg sm:text-xl font-light max-w-md mb-10 leading-relaxed">
+          <p className="text-white/85 text-lg sm:text-xl font-light max-w-md mb-10 leading-relaxed [text-shadow:0_1px_10px_rgba(0,0,0,0.75)]">
             Třešně, višně, meruňky, hrušky, švestky, jablka<br className="hidden sm:block" /> a domácí mošty. Přímý prodej z Krtel u Netolic.
           </p>
-          <div className="flex flex-col sm:flex-row gap-3">
+          <div className="flex flex-col sm:flex-row sm:self-start gap-3">
             <a
               href={`tel:${k.tel1.replace(/\s/g, '')}`}
               className="inline-flex items-center justify-center gap-2 bg-white text-[#133e13] font-semibold px-8 py-4 rounded-full hover:bg-green-50 transition-colors text-sm shadow-xl"
@@ -49,20 +49,20 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* Stats strip — glassmorphism */}
-        <div className="absolute bottom-0 left-0 right-0 bg-black/40 backdrop-blur-md border-t border-white/10">
-          <div className="max-w-6xl mx-auto px-8 py-5 flex flex-wrap gap-8 items-center">
+        {/* Stats strip — glassmorphism, in normal flow so it never sits under the buttons */}
+        <div className="relative z-10 bg-black/40 backdrop-blur-md border-t border-white/10">
+          <div className="max-w-6xl mx-auto pl-6 pr-20 sm:px-8 py-4 sm:py-5 flex flex-wrap gap-x-8 gap-y-3 items-center">
             <div>
               <span className="font-serif text-2xl font-bold text-white">30 ha</span>
-              <span className="text-white/50 text-xs ml-2">vlastního sadu</span>
+              <span className="text-white/60 text-xs ml-2">vlastního sadu</span>
             </div>
             <div className="w-px h-5 bg-white/20" />
             <div>
               <span className="font-serif text-2xl font-bold text-white">15 000+</span>
-              <span className="text-white/50 text-xs ml-2">ovocných stromů</span>
+              <span className="text-white/60 text-xs ml-2">ovocných stromů</span>
             </div>
             <div className="w-px h-5 bg-white/20 hidden md:block" />
-            <div className="ml-auto flex items-center gap-2.5 bg-white/10 backdrop-blur-sm rounded-full px-4 py-1.5 border border-white/15">
+            <div className="w-full sm:w-auto sm:ml-auto flex items-center gap-2.5 bg-white/10 backdrop-blur-sm rounded-full px-4 py-1.5 border border-white/15">
               <svg className="w-5 h-5 text-green-300 shrink-0" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" /></svg>
               <span className="text-white text-sm font-medium">Rozvoz do Českých Budějovic po–st–pá</span>
             </div>

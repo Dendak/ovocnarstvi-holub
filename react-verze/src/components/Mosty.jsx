@@ -48,29 +48,32 @@ export default function Mosty() {
             {/* Column headers */}
             <div className="grid grid-cols-[1fr_auto_auto] gap-x-6 px-6 py-3 bg-[#133e13] text-white text-xs font-semibold uppercase tracking-widest">
               <span>Příchuť</span>
-              <span className="text-right w-20">5 l</span>
-              <span className="text-right w-16">3 l</span>
+              <span className="text-right w-20 hidden sm:block">5 l</span>
+              <span className="text-right w-16 hidden sm:block">3 l</span>
             </div>
 
             {skupiny.map((sk, i) => (
                 <div
                   key={i}
-                  className="grid grid-cols-[1fr_auto_auto] gap-x-6 items-center px-6 py-4 border-b border-gray-100 last:border-0 transition-colors hover:bg-green-50"
+                  className="flex flex-col gap-3 sm:grid sm:grid-cols-[1fr_auto_auto] sm:gap-x-6 sm:items-center px-6 py-4 border-b border-gray-100 last:border-0 transition-colors hover:bg-green-50"
                 >
                   <div className="flex flex-wrap gap-1.5">
                     {sk.polozky.map(p => (
                       p.dostupne === false
-                        ? <span key={p.nazev} className="inline-flex items-center gap-1 bg-gray-100 text-gray-400 text-xs px-3 py-1 rounded-full line-through">{p.nazev}</span>
-                        : <span key={p.nazev} className="inline-flex items-center text-xs font-medium px-3 py-1 rounded-full bg-green-100 text-green-800">{p.nazev}</span>
+                        ? <span key={p.nazev} className="inline-flex items-center gap-1 bg-gray-100 text-gray-400 text-xs px-3 py-1 rounded-full line-through whitespace-nowrap">{p.nazev}</span>
+                        : <span key={p.nazev} className="inline-flex items-center text-xs font-medium px-3 py-1 rounded-full bg-green-100 text-green-800 whitespace-nowrap">{p.nazev}</span>
                     ))}
                   </div>
 
-                  <div className="text-right w-20">
-                    <span className="font-bold text-lg tabular-nums text-[#133e13]">{sk.cena5l} Kč</span>
-                  </div>
-
-                  <div className="text-right w-16">
-                    <span className="font-semibold text-sm tabular-nums text-green-600">{sk.cena3l} Kč</span>
+                  <div className="flex items-baseline gap-6 sm:contents">
+                    <div className="sm:text-right sm:w-20">
+                      <span className="text-gray-400 text-xs mr-1.5 sm:hidden">5 l</span>
+                      <span className="font-bold text-lg tabular-nums text-[#133e13]">{sk.cena5l} Kč</span>
+                    </div>
+                    <div className="sm:text-right sm:w-16">
+                      <span className="text-gray-400 text-xs mr-1.5 sm:hidden">3 l</span>
+                      <span className="font-semibold text-sm tabular-nums text-green-600">{sk.cena3l} Kč</span>
+                    </div>
                   </div>
                 </div>
             ))}

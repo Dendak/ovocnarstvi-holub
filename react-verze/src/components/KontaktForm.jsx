@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { OBSAH } from '../data'
+import { OBSAH, isInSeason } from '../data'
 
 function getAllMosty() {
   const items = []
@@ -11,25 +11,10 @@ function getAllMosty() {
   return items
 }
 
-function isInSeason(o) {
-  if (o.vzdy) return true
-  if (!o.sezonaOd || !o.sezonaDo) return true
-  const now = new Date()
-  const m = now.getMonth() + 1
-  const d = now.getDate()
-  const [fromM, fromD] = o.sezonaOd
-  const [toM, toD] = o.sezonaDo
-  const cur = m * 100 + d
-  const from = fromM * 100 + fromD
-  const to = toM * 100 + toD
-  if (from <= to) return cur >= from && cur <= to
-  return cur >= from || cur <= to  // přes přelom roku (hrušky, jablka)
-}
-
 export default function KontaktForm() {
   const k = OBSAH.kontakt
   const mostyList = getAllMosty()
-  const dostupneOvoce = OBSAH.ovoce.filter(isInSeason)
+  const dostupneOvoce = OBSAH.ovoce.filter(o => isInSeason(o))
 
   const [form, setForm] = useState({ jmeno: '', telefon: '', email: '', zprava: '' })
   const [ovoce, setOvoce] = useState({})

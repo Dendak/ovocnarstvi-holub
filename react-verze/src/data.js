@@ -19,7 +19,9 @@ export const OBSAH = {
     { nazev: 'Jablka',  fotky: ['jablka/119992725_2437457233066186_4983175529147161289_n.jpg', 'jablka/IMG_0889.jpeg', 'jablka/IMG_2863.JPEG', 'jablka/IMG_2866.JPEG', 'jablka/IMG_2867.JPEG', 'jablka/IMG_3016.JPG'], sezona: '15. 8. – 31. 3.', sezonaOd: [8, 15], sezonaDo: [3, 31], barva: 'green', popis: 'Více než 15 odrůd, sklizené z vlastního sadu a skladované pro vás.', odrudy: ['Bohemia', 'Rubinola', 'Topaz', 'Golden', 'Gala', 'Rozela', 'Idared', 'Sirius', 'Lucy', 'Jonagold', 'Jonaprince', 'Fuji', 'Braeburn'], wide: true, vzdy: true },
   ],
   aktuality: {
-    skladem: ['Jablka – Fuji, Jonagold, Braeburn', 'Domácí mošty – dostupné celoročně'],
+    // Ovoce v sezóně se doplňuje automaticky podle data (sezonaOd/sezonaDo);
+    // sem patří jen to, co je k dispozici vždy nebo navíc.
+    skladem: ['Domácí mošty – dostupné celoročně'],
   },
   mosty: {
     platnostOd: '15. 3. 2026',
@@ -35,4 +37,32 @@ export const OBSAH = {
 
 export function imgSrc(path) {
   return import.meta.env.BASE_URL + 'img/' + path.split('/').map(encodeURIComponent).join('/')
+}
+
+// Fotky, kde podstatné není uprostřed – kam má ořez „zaostřit“ (CSS object-position).
+const IMG_POS = {
+  'visne/IMG_0674.JPG': 'center 88%',
+  'hrusky/542007542_1218005136796557_6760772214935127534_n.jpg': 'center 75%',
+  'hrusky/c993f4e2-fc75-4b5f-b42f-2ba935d8a624.jpg': 'center 70%',
+}
+
+export function imgPos(path) {
+  return IMG_POS[path] || 'center'
+}
+
+// Je ovoce právě v sezóně? Rozsah [měsíc, den] může jít přes přelom roku.
+export function isInSeason(o, now) {
+  if (!(now instanceof Date)) now = new Date()
+  if (o.vzdy) return true
+  if (!o.sezonaOd || !o.sezonaDo) return true
+  const cur = (now.getMonth() + 1) * 100 + now.getDate()
+  const from = o.sezonaOd[0] * 100 + o.sezonaOd[1]
+  const to = o.sezonaDo[0] * 100 + o.sezonaDo[1]
+  return from <= to ? cur >= from && cur <= to : cur >= from || cur <= to
+}
+
+// Ovoce v sezóně napřed (skladované „vzdy“ až za sezónním), zbytek v původním pořadí.
+export function sortBySeason(list, now) {
+  const rank = o => (isInSeason(o, now) ? (o.vzdy ? 1 : 0) : 2)
+  return list.map((o, i) => [o, i]).sort((a, b) => rank(a[0]) - rank(b[0]) || a[1] - b[1]).map(([o]) => o)
 }

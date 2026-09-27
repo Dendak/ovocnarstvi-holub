@@ -1,11 +1,9 @@
 import { useState } from 'react'
+import { isInSeason } from '../data'
+import { OBST_DE } from '../dataDE'
 
-const OBST_ITEMS = [
-  { value: 'Weichsel / Sauerkirschen', season: 'Juli – August' },
-  { value: 'Zwetschken', season: 'August – Oktober' },
-  { value: 'Birnen', season: 'August – Januar' },
-  { value: 'Äpfel', season: 'August – März' },
-]
+const inSeason = OBST_DE.filter(o => isInSeason(o))
+const OBST_ITEMS = (inSeason.length ? inSeason : OBST_DE).map(o => ({ value: o.nazev, season: o.sezona }))
 
 export default function AnfrageForm() {
   const [form, setForm] = useState({ jmeno: '', telefon: '', email: '', adresa: '', zprava: '' })
