@@ -1,4 +1,5 @@
 import { OBSAH, isInSeason } from '../data'
+import { FOTO_ODRUD } from './fotoOdrud'
 
 // ============================================================
 //  KATALOG E-SHOPU – sem se píšou ceny, dostupnost a popisy
@@ -86,8 +87,8 @@ const DRUHY_OVOCE = [
   },
 ]
 
-// Photos per variety: we don't have one per variety yet, so rotate through
-// the fruit's photos (shown as illustrative).
+// Varieties without their own photo rotate through the farm's photos of
+// that fruit (shown as illustrative).
 function fotoFor(fotky, i) {
   return fotky.length ? fotky[i % fotky.length] : null
 }
@@ -97,6 +98,7 @@ const produktyOvoce = DRUHY_OVOCE.flatMap(d => {
   const vSezone = d.zdroj ? isInSeason(d.zdroj) : true
   return d.odrudy.map((o, i) => {
     const cenaKg = o.cenaKg ?? d.cenaKg ?? null
+    const vlastni = FOTO_ODRUD[o.id]
     return {
     id: `${d.id}-${o.id}`,
     druh: d.id,
@@ -106,8 +108,9 @@ const produktyOvoce = DRUHY_OVOCE.flatMap(d => {
     popis: o.popis,
     hodiSe: o.hodiSe,
     sklizen: d.sklizen,
-    foto: fotoFor(fotky, i),
-    fotoIlustracni: true,
+    foto: vlastni?.foto || fotoFor(fotky, i),
+    fotoIlustracni: !vlastni,
+    fotoInfo: vlastni || null,
     vSezone,
     dostupne: vSezone && o.dostupne !== false,
     jednotka: 'kg',

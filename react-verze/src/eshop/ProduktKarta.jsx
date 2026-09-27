@@ -9,6 +9,7 @@ export default function ProduktKarta({ produkt }) {
   const [pocet, setPocet] = useState(1)
   const [pridano, setPridano] = useState(false)
   const varianta = produkt.varianty.find(v => v.id === variantaId)
+  const info = produkt.fotoInfo
 
   const doKosiku = () => {
     pridat(produkt.id, variantaId, pocet)
@@ -18,10 +19,11 @@ export default function ProduktKarta({ produkt }) {
 
   return (
     <article className="group bg-white rounded-2xl border border-green-100 shadow-sm hover:shadow-md transition-shadow overflow-hidden flex flex-col">
-      <div className="relative aspect-[16/9] sm:aspect-[4/3] overflow-hidden bg-green-50">
+      <div className="relative aspect-[16/9] sm:aspect-[4/3] overflow-hidden bg-green-50"
+        style={info?.bg ? { backgroundColor: info.bg } : undefined}>
         {produkt.foto && (
           <img src={imgSrc(produkt.foto)} alt={produkt.nazev} loading="lazy" decoding="async"
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            className={`w-full h-full transition-transform duration-700 group-hover:scale-105 ${info?.fit === 'contain' ? 'object-contain' : 'object-cover'}`}
             style={{ objectPosition: imgPos(produkt.foto) }} />
         )}
         <span className="absolute top-3 left-3 text-xs font-semibold px-3 py-1 rounded-full bg-white/90 text-[#133e13] backdrop-blur-sm">
@@ -36,6 +38,12 @@ export default function ProduktKarta({ produkt }) {
         )}
         {produkt.fotoIlustracni && (
           <span className="absolute bottom-2 right-3 text-[10px] text-white/80 drop-shadow">ilustrační foto</span>
+        )}
+        {info && (
+          <a href={info.zdroj} target="_blank" rel="noopener noreferrer"
+            className="absolute bottom-1.5 right-2 text-[10px] leading-tight text-white bg-black/45 hover:bg-black/65 rounded px-1.5 py-0.5 max-w-[85%] truncate">
+            Foto: {info.autor}, {info.licence}
+          </a>
         )}
       </div>
 
