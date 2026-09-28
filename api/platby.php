@@ -85,12 +85,12 @@ foreach ($uids as $uid) {
     poslat_email($o['email'], "Platba za objednávku {$o['cislo']} přijata – Ovocnářství Holub",
       "Dobrý den,\n\nplatba $celkem za objednávku {$o['cislo']} k nám dorazila. Děkujeme!\n\n{$o['souhrn']}\n\nOvocnářství Holub\n" . WEB . "\n",
       email_html('Platba přijata, děkujeme', '<p style="line-height:1.5">Dobrý den,<br>platba <b>' . h($celkem) . '</b> za objednávku <b>' . h($o['cislo']) . '</b> k nám dorazila.</p>'
-        . '<div style="background:#fff;border:1px solid #dfd7c9;border-radius:8px;padding:18px 20px;white-space:pre-line;line-height:1.55;font-size:14px">' . h($o['souhrn']) . '</div>'),
+        . '<div style="background:#fff;border:1px solid #dfd7c9;border-radius:8px;padding:18px 20px;line-height:1.55;font-size:14px">' . nl2br(h($o['souhrn'])) . '</div>'),
       null, false);
     poslat_email(ODESILATEL, "ZAPLACENO {$o['cislo']} | $celkem | {$o['jmeno']}",
       "Objednávka {$o['cislo']} je zaplacená ($celkem z $ma).\nZákazník dostal potvrzení o přijetí platby.\n\n{$o['souhrn']}\n",
       email_html("Zaplaceno {$o['cislo']}", '<p>Objednávka je zaplacená: <b>' . h($celkem) . '</b> z ' . h($ma) . '. Zákazník dostal potvrzení.</p>'
-        . '<div style="white-space:pre-line;font-size:14px">' . h($o['souhrn']) . '</div>'), null, false);
+        . '<div style="font-size:14px">' . nl2br(h($o['souhrn'])) . '</div>'), null, false);
   } elseif ($o['zaplaceno'] + 0.001 < $o['castka']) {
     poslat_email(ODESILATEL, "NEÚPLNÁ PLATBA {$o['cislo']} | $celkem z $ma | {$o['jmeno']}",
       "K objednávce {$o['cislo']} zatím přišlo $celkem z $ma.\nZákazník: {$o['jmeno']}, {$o['email']}\n",

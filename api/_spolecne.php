@@ -7,6 +7,7 @@ const JMENO_ODESILATELE = 'Ovocnářství Holub';
 const WEB = 'https://ovoce-holub.cz';
 const UCET = ['cislo' => '662075319/0800', 'iban' => 'CZ3008000000000662075319', 'majitel' => 'Pavel Holub'];
 const IMAP_SERVER = 'ssl://wes1-imap.wedos.net:993';
+const SMTP_SERVER = 'ssl://wes1-smtp.wedos.net:465';
 const DATA = __DIR__ . '/data';
 
 function data_cesta(string $soubor): string {
@@ -80,13 +81,63 @@ function poslat_email(string $komu, string $predmet, string $text, string $html,
     $telo = $alt;
   }
   $od = '=?UTF-8?B?' . base64_encode(JMENO_ODESILATELE) . '?= <' . ODESILATEL . '>';
-  $hlavicky = ['From: ' . $od, 'Reply-To: ' . $od];
-  if ($kopie && strcasecmp($komu, ODESILATEL) !== 0) $hlavicky[] = 'Bcc: ' . ODESILATEL;
-  $hlavicky[] = 'MIME-Version: 1.0';
-  $hlavicky[] = 'Content-Type: ' . $typ;
-  $ok = mail($komu, '=?UTF-8?B?' . base64_encode($predmet) . '?=', $telo, implode($eol, $hlavicky), '-f' . ODESILATEL);
-  zapsat_log(($ok ? 'odesláno' : 'CHYBA mail()') . ': ' . $predmet . ' → ' . preg_replace('/^(.).*(@.*)$/', '$1…$2', $komu));
+  $predmetMime = '=?UTF-8?B?' . base64_encode($predmet) . '?=';
+  $hlavicky = ['From: ' . $od, 'Reply-To: ' . $od, 'MIME-Version: 1.0', 'Content-Type: ' . $typ];
+  $prijemci = [$komu];
+  if ($kopie && strcasecmp($komu, ODESILATEL) !== 0) $prijemci[] = ODESILATEL;
+  $komuLog = preg_replace('/^(.).*(@.*)$/', '$1…$2', $komu);
+
+  // Přes přihlášené SMTP Wedosu (e-maily jsou podepsané DKIM a nekončí ve spamu); mail() jen jako záloha.
+  $heslo = nastaveni()['heslo'] ?? '';
+  if ($heslo !== '') {
+    try {
+      smtp_odeslat($heslo, $prijemci, array_merge([
+        'Date: ' . date('r'),
+        'Message-ID: <' . bin2hex(random_bytes(12)) . '@ovoce-holub.cz>',
+        'To: ' . $komu,
+        'Subject: ' . $predmetMime,
+      ], $hlavicky), $telo);
+      zapsat_log("odesláno (SMTP): $predmet → $komuLog");
+      return true;
+    } catch (RuntimeException $e) {
+      zapsat_log('SMTP selhalo (' . $e->getMessage() . '), zkouším mail()');
+    }
+  }
+
+  if (count($prijemci) > 1) $hlavicky[] = 'Bcc: ' . ODESILATEL;
+  $ok = mail($komu, $predmetMime, $telo, implode($eol, $hlavicky), '-f' . ODESILATEL);
+  zapsat_log(($ok ? 'odesláno (mail)' : 'CHYBA mail()') . ": $predmet → $komuLog");
   return $ok;
+}
+
+function smtp_odeslat(string $heslo, array $prijemci, array $hlavicky, string $telo): void {
+  $s = @stream_socket_client(SMTP_SERVER, $errno, $errstr, 20);
+  if (!$s) throw new RuntimeException('nelze se připojit');
+  stream_set_timeout($s, 30);
+  $cti = function (string $ocekavam) use ($s): void {
+    do {
+      $r = fgets($s);
+      if ($r === false) throw new RuntimeException('spojení přerušeno');
+    } while (isset($r[3]) && $r[3] === '-');
+    if (!str_starts_with($r, $ocekavam)) throw new RuntimeException(trim($r));
+  };
+  $posli = function (string $c, string $ocekavam) use ($s, $cti): void { fwrite($s, "$c\r\n"); $cti($ocekavam); };
+  try {
+    $cti('220');
+    $posli('EHLO ovoce-holub.cz', '250');
+    $posli('AUTH LOGIN', '334');
+    $posli(base64_encode(ODESILATEL), '334');
+    $posli(base64_encode($heslo), '235');
+    $posli('MAIL FROM:<' . ODESILATEL . '>', '250');
+    foreach ($prijemci as $p) $posli("RCPT TO:<$p>", '25');
+    $posli('DATA', '354');
+    $data = implode("\r\n", $hlavicky) . "\r\n\r\n" . $telo;
+    $data = preg_replace('/^\./m', '..', str_replace(["\r\n", "\n"], ["\n", "\r\n"], $data));
+    $posli(rtrim($data, "\r\n") . "\r\n.", '250');
+    @fwrite($s, "QUIT\r\n");
+  } finally {
+    @fclose($s);
+  }
 }
 
 function zapsat_log(string $radek): void {

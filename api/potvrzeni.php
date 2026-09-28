@@ -68,7 +68,7 @@ $text .= "Pokud by něco z objednávky nebylo k dispozici, ozveme se vám. "
 
 $radek = fn($k, $v) => '<tr><td style="padding:6px 16px 6px 0;color:#6b6f66">' . h($k) . '</td><td style="padding:6px 0;font-weight:600">' . h($v) . '</td></tr>';
 $obsah = '<p style="margin:0 0 18px;line-height:1.5">Dobrý den' . ($jmeno !== '' ? ', ' . h($jmeno) : '') . ',<br>děkujeme – objednávka platí, nic dalšího potvrzovat nemusíte.</p>'
-  . '<div style="background:#fff;border:1px solid #dfd7c9;border-radius:8px;padding:18px 20px;margin:0 0 18px;white-space:pre-line;line-height:1.55;font-size:14px">' . h($souhrn) . '</div>';
+  . '<div style="background:#fff;border:1px solid #dfd7c9;border-radius:8px;padding:18px 20px;margin:0 0 18px;line-height:1.55;font-size:14px">' . nl2br(h($souhrn)) . '</div>';
 if ($castka > 0) {
   $obsah .= '<div style="background:#fff;border:1px solid #dfd7c9;border-radius:8px;padding:18px 20px;margin:0 0 18px">'
     . '<h2 style="font-family:Georgia,serif;font-weight:normal;font-size:20px;margin:0 0 12px">Platba převodem</h2>'
