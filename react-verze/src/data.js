@@ -6,6 +6,8 @@ export const OBSAH = {
     tel1:      '+420 607 575 271',
     tel2:      '+420 722 949 299',
     email:     'info@ovoce-holub.cz',
+    // Sem chodí objednávky z e-shopu a poptávky pálenic (dotazy z webu jdou na email).
+    emailObjednavky: 'objednavky@ovoce-holub.cz',
     facebook:  'https://www.facebook.com/OvoceHolub',
     instagram: 'https://www.instagram.com/ovocnarstviholub',
   },

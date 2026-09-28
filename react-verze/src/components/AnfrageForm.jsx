@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { isInSeason } from '../data'
+import { OBSAH, isInSeason } from '../data'
 import { OBST_DE } from '../dataDE'
 
 const inSeason = OBST_DE.filter(o => isInSeason(o))
@@ -57,7 +57,7 @@ export default function AnfrageForm() {
     const fullMsg = [orderText, form.zprava].filter(Boolean).join('\n\n')
 
     try {
-      const res = await fetch('https://formsubmit.co/ajax/info@ovoce-holub.cz', {
+      const res = await fetch(`https://formsubmit.co/ajax/${OBSAH.kontakt.emailObjednavky}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify({ _subject: `Anfrage Brennerei – ${form.jmeno || form.email || form.telefon}`, ...form, zprava: fullMsg }),

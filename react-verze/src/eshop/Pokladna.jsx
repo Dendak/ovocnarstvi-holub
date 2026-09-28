@@ -153,11 +153,11 @@ export default function Pokladna({ onZpet, onHotovo }) {
           : '') +
         `Pokud by něco z objednávky nebylo k dispozici, ozveme se vám. ` +
         `Změnu nebo zrušení nám prosím pošlete nejpozději den před termínem do ${UZAVERKA_HODINA}:00 ` +
-        `na ${k.email} nebo zavolejte ${k.tel1}.\n\nOvocnářství Holub, ${k.adresa}, ${k.mesto}`,
+        `na ${k.emailObjednavky} nebo zavolejte ${k.tel1}.\n\nOvocnářství Holub, ${k.adresa}, ${k.mesto}`,
     }
 
     try {
-      const res = await fetch(`https://formsubmit.co/ajax/${k.email}`, {
+      const res = await fetch(`https://formsubmit.co/ajax/${k.emailObjednavky}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify(payload),
