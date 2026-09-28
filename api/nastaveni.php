@@ -50,6 +50,10 @@ button{margin-top:12px;background:#2f5a33;color:#fff;border:0;border-radius:6px;
   <?php if (!empty($stav['chyba'])): ?><p class="err">Poslední chyba: <?= h($stav['chyba']) ?></p><?php endif ?>
   <?php if (!$ochrana): ?><p class="err">Chybí ochrana složky s daty (.htaccess) – nezadávejte heslo a ozvěte se správci webu.</p><?php endif ?>
 </div>
+<?php $log = array_slice(@file(DATA . '/log.txt', FILE_IGNORE_NEW_LINES) ?: [], -15); if ($log): ?>
+<div class="box"><p><b>Poslední odeslané e-maily</b></p>
+<pre class="muted" style="white-space:pre-wrap;margin:0"><?= h(implode("\n", array_reverse($log))) ?></pre></div>
+<?php endif ?>
 <?php if ($ochrana): ?>
 <form method="post" class="box" autocomplete="off">
   <label for="heslo">Heslo ke schránce <?= h(ODESILATEL) ?></label>

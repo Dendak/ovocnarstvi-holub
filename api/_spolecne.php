@@ -84,7 +84,16 @@ function poslat_email(string $komu, string $predmet, string $text, string $html,
   if ($kopie && strcasecmp($komu, ODESILATEL) !== 0) $hlavicky[] = 'Bcc: ' . ODESILATEL;
   $hlavicky[] = 'MIME-Version: 1.0';
   $hlavicky[] = 'Content-Type: ' . $typ;
-  return mail($komu, '=?UTF-8?B?' . base64_encode($predmet) . '?=', $telo, implode($eol, $hlavicky), '-f' . ODESILATEL);
+  $ok = mail($komu, '=?UTF-8?B?' . base64_encode($predmet) . '?=', $telo, implode($eol, $hlavicky), '-f' . ODESILATEL);
+  zapsat_log(($ok ? 'odesláno' : 'CHYBA mail()') . ': ' . $predmet . ' → ' . preg_replace('/^(.).*(@.*)$/', '$1…$2', $komu));
+  return $ok;
+}
+
+function zapsat_log(string $radek): void {
+  $f = data_cesta('log.txt');
+  $radky = array_slice(@file($f, FILE_IGNORE_NEW_LINES) ?: [], -199);
+  $radky[] = date('Y-m-d H:i:s') . ' ' . $radek;
+  file_put_contents($f, implode("\n", $radky) . "\n", LOCK_EX);
 }
 
 // ---------------------------------------------------------------------------
