@@ -1,88 +1,62 @@
 import { OBSAH } from '../data'
 
-const BENEFITY = [
-  { icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="m21 7.5-9-5.25L3 7.5m18 0-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9"/></svg>, text: 'Bag-in-box 3 l a 5 l' },
-  { icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>, text: 'Bez přidaných cukrů a konzervantů' },
-  { icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5"/></svg>, text: 'Dostupné celoročně' },
-]
+const bezEmoji = s => s.replace(/\p{Extended_Pictographic}️?\s*/gu, '').trim()
 
 export default function Mosty() {
   const { platnostOd, skupiny } = OBSAH.mosty
 
   return (
-    <section id="mosty" className="bg-[#f7f4ef] py-20">
-      <div className="max-w-5xl mx-auto px-6">
-
-        {/* Header */}
-        <div className="text-center mb-14">
-          <p className="text-green-700 text-sm tracking-widest uppercase mb-3">100% přírodní · bez přidaných cukrů</p>
-          <h2 className="font-serif text-4xl sm:text-5xl font-bold text-[#133e13] mb-4">
-            Domácí mošty
-          </h2>
-          <p className="text-gray-500 text-base">
-            Základem je čerstvá jablečná šťáva z vlastního sadu &nbsp;·&nbsp;
-            <span className="text-green-700 font-medium">Ceník od {platnostOd}</span>
+    <section id="mosty" className="bg-paper py-20 sm:py-24">
+      <div className="container-page grid lg:grid-cols-[1fr_1.35fr] gap-12 lg:gap-16 items-start">
+        <div>
+          <p className="kicker mb-3">Z vlastních jablek</p>
+          <h2 className="section-title mb-6">Domácí mošty</h2>
+          <p className="lead mb-8">
+            Základem každého moštu je čerstvě lisovaná šťáva z jablek z našeho sadu. Nepřidáváme cukr
+            ani konzervanty. Balíme do bag-in-boxů po 3 a 5 litrech, které po otevření vydrží několik týdnů.
+          </p>
+          <div className="overflow-hidden rounded-lg aspect-[4/3] bg-paper-2 mb-6">
+            <img src={`${import.meta.env.BASE_URL}img/mosty/most-sklenice.jpg`} alt="Jablečný mošt ve sklenici"
+              loading="lazy" decoding="async" className="w-full h-full object-cover" />
+          </div>
+          <p className="text-xs text-muted">
+            Foto: <a href="https://commons.wikimedia.org/wiki/File:Apple_juice_with_3apples.jpg" target="_blank" rel="noopener noreferrer" className="underline">Flunse (Patrick Geltinger)</a>, CC BY-SA 3.0
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-[1fr_2fr] gap-10 items-start">
-
-          {/* Left: benefits */}
-          <div className="space-y-3">
-            {BENEFITY.map(b => (
-              <div key={b.text} className="flex items-center gap-3 bg-white rounded-2xl px-5 py-4 shadow-sm">
-                <span className="text-green-700 shrink-0">{b.icon}</span>
-                <span className="text-base font-medium text-gray-700">{b.text}</span>
-              </div>
-            ))}
-            <div className="bg-[#133e13] text-white rounded-2xl px-5 py-5 mt-2">
-              <p className="font-serif text-lg font-semibold mb-1">Objednávky</p>
-              <p className="text-green-300 text-sm leading-relaxed">
-                Zavolejte nebo napište – domluvíme předání přímo nebo rozvoz do Budějovic.
-              </p>
-            </div>
+        <div className="panel p-6 sm:p-8">
+          <div className="flex items-baseline justify-between gap-4 pb-4 border-b border-ink/80">
+            <h3 className="font-serif text-2xl text-ink">Ceník</h3>
+            <p className="text-sm text-muted">platí od {platnostOd}</p>
           </div>
 
-          {/* Right: price list */}
-          <div className="bg-white rounded-3xl shadow-sm overflow-hidden">
-            {/* Column headers */}
-            <div className="grid grid-cols-[1fr_auto_auto] gap-x-6 px-6 py-3 bg-[#133e13] text-white text-xs font-semibold uppercase tracking-widest">
-              <span>Příchuť</span>
-              <span className="text-right w-20 hidden sm:block">5 l</span>
-              <span className="text-right w-16 hidden sm:block">3 l</span>
-            </div>
+          <div className="grid grid-cols-[1fr_4.5rem_4.5rem] gap-x-4 pt-4 pb-2 text-sm text-muted">
+            <span>Příchuť</span>
+            <span className="text-right">3 l</span>
+            <span className="text-right">5 l</span>
+          </div>
 
+          <ul>
             {skupiny.map((sk, i) => (
-                <div
-                  key={i}
-                  className="flex flex-col gap-3 sm:grid sm:grid-cols-[1fr_auto_auto] sm:gap-x-6 sm:items-center px-6 py-4 border-b border-gray-100 last:border-0 transition-colors hover:bg-green-50"
-                >
-                  <div className="flex flex-wrap gap-1.5">
-                    {sk.polozky.map(p => (
-                      p.dostupne === false
-                        ? <span key={p.nazev} className="inline-flex items-center gap-1 bg-gray-100 text-gray-400 text-xs px-3 py-1 rounded-full line-through whitespace-nowrap">{p.nazev}</span>
-                        : <span key={p.nazev} className="inline-flex items-center text-xs font-medium px-3 py-1 rounded-full bg-green-100 text-green-800 whitespace-nowrap">{p.nazev}</span>
-                    ))}
-                  </div>
-
-                  <div className="flex items-baseline gap-6 sm:contents">
-                    <div className="sm:text-right sm:w-20">
-                      <span className="text-gray-400 text-xs mr-1.5 sm:hidden">5 l</span>
-                      <span className="font-bold text-lg tabular-nums text-[#133e13]">{sk.cena5l} Kč</span>
-                    </div>
-                    <div className="sm:text-right sm:w-16">
-                      <span className="text-gray-400 text-xs mr-1.5 sm:hidden">3 l</span>
-                      <span className="font-semibold text-sm tabular-nums text-green-600">{sk.cena3l} Kč</span>
-                    </div>
-                  </div>
-                </div>
+              <li key={i} className="grid grid-cols-[1fr_4.5rem_4.5rem] gap-x-4 py-3.5 border-t border-line items-baseline">
+                <span className="text-ink leading-snug">
+                  {sk.polozky.map((p, j) => (
+                    <span key={p.nazev} className={p.dostupne === false ? 'text-muted line-through' : ''}>
+                      {bezEmoji(p.nazev)}{j < sk.polozky.length - 1 ? ', ' : ''}
+                    </span>
+                  ))}
+                </span>
+                <span className="text-right tabular-nums text-ink-soft">{sk.cena3l} Kč</span>
+                <span className="text-right tabular-nums font-semibold text-ink">{sk.cena5l} Kč</span>
+              </li>
             ))}
+          </ul>
+
+          <div className="mt-6 pt-6 border-t border-line flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <p className="text-sm text-muted">Ceny za balení bag-in-box včetně obalu.</p>
+            <a href={`${import.meta.env.BASE_URL}eshop.html`} className="btn">Objednat mošt</a>
           </div>
         </div>
-
-        <p className="text-center text-gray-400 text-sm mt-8">
-          Ceny jsou za bag-in-box balení včetně obalu.
-        </p>
       </div>
     </section>
   )

@@ -16,5 +16,5 @@ const FOTKY = [
 ]
 
 export default function Galerie() {
-  return <FotoGalerie fotky={FOTKY} eyebrow="Nahlédněte k nám" title="Ze sadu" zoomLabel="Zvětšit fotku" />
+  return <FotoGalerie fotky={FOTKY} eyebrow="Fotogalerie" title="Ze sadu" zoomLabel="Zvětšit fotku" />
 }

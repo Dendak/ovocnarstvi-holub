@@ -13,19 +13,19 @@ export default function FotoGalerie({ fotky, eyebrow, title, zoomLabel }) {
 
   return (
     <>
-      <section id="galerie" className="bg-[#0d1f0d] py-20">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="text-center mb-12">
-            <p className="text-green-400/70 text-xs tracking-widest uppercase mb-3">{eyebrow}</p>
-            <h2 className="font-serif text-3xl sm:text-4xl font-bold text-white">{title}</h2>
+      <section id="galerie" className="bg-paper-2/60 border-y border-line py-20 sm:py-24">
+        <div className="container-page">
+          <div className="mb-10">
+            <p className="kicker mb-3">{eyebrow}</p>
+            <h2 className="section-title">{title}</h2>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 grid-flow-row-dense auto-rows-[180px] md:auto-rows-[220px] gap-2 sm:gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-3 grid-flow-row-dense auto-rows-[170px] md:auto-rows-[230px] gap-2 sm:gap-3">
             {fotos.map((f, i) => (
               <button
                 key={f.path}
                 type="button"
-                className={`relative overflow-hidden rounded-xl cursor-pointer group bg-[#1a2e1a] ${f.tall ? 'row-span-2' : ''}`}
+                className={`relative overflow-hidden rounded-md cursor-zoom-in group bg-paper-2 ${f.tall ? 'row-span-2' : ''}`}
                 onClick={() => setLightbox(i)}
                 aria-label={`${zoomLabel}: ${f.alt}`}
               >
@@ -34,14 +34,9 @@ export default function FotoGalerie({ fotky, eyebrow, title, zoomLabel }) {
                   alt={f.alt}
                   loading="lazy"
                   decoding="async"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                  className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                   style={{ objectPosition: imgPos(f.path) }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
-                  <span className="text-white text-sm font-medium px-4 py-3 drop-shadow-lg">
-                    {f.alt}
-                  </span>
-                </div>
               </button>
             ))}
           </div>

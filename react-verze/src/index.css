@@ -1,17 +1,29 @@
 @import "tailwindcss";
 
+/* ============================================================
+   Design system – Ovocnářství Holub
+   Paper background, ink text, one deep green accent, hairline
+   rules instead of shadows. Serif for headings, sans for text.
+   ============================================================ */
 @theme {
-  --color-brand-50: #f2f9f2;
-  --color-brand-100: #e0f2e0;
-  --color-brand-200: #b8e0b8;
-  --color-brand-300: #86c886;
-  --color-brand-400: #52a852;
-  --color-brand-500: #2e8b2e;
-  --color-brand-600: #237023;
-  --color-brand-700: #1a561a;
-  --color-brand-800: #133e13;
-  --color-brand-900: #0d2b0d;
-  --font-serif: "Playfair Display", Georgia, serif;
+  --color-paper: #f8f5ef;
+  --color-paper-2: #efe9de;
+  --color-line: #dfd7c9;
+  --color-ink: #1d231c;
+  --color-ink-soft: #4b5448;
+  --color-muted: #7c8478;
+  --color-leaf: #2f5a33;
+  --color-leaf-dark: #213f24;
+  --color-forest: #17241a;
+  --color-berry: #8c2f2b;
+
+  /* legacy names still used by the German static page and a few spots */
+  --color-brand-50: #f8f5ef;
+  --color-brand-700: #2f5a33;
+  --color-brand-800: #213f24;
+
+  --font-serif: "Newsreader", Georgia, "Times New Roman", serif;
+  --font-sans: "Source Sans 3", system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
 @layer base {
@@ -22,48 +34,62 @@
     scroll-padding-top: 5rem;
   }
   body {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
-    background-color: #f2f9f2;
-    color: #1c1c1c;
+    background-color: var(--color-paper);
+    color: var(--color-ink);
     margin: 0;
     text-rendering: optimizeLegibility;
+    font-feature-settings: "kern", "liga";
   }
   @media (max-width: 640px) {
     html { font-size: 16px; }
   }
+  h1, h2, h3 {
+    font-family: var(--font-serif);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+  p { text-wrap: pretty; }
   ::selection {
-    background-color: #2e8b2e;
+    background-color: var(--color-leaf);
     color: #fff;
   }
   :focus-visible {
-    outline: 2px solid #52a852;
+    outline: 2px solid var(--color-leaf);
     outline-offset: 2px;
-    border-radius: 4px;
   }
 }
 
-/* Scroll-driven reveal — progressive enhancement, no JS.
-   Sections fade/slide in as they enter the viewport. */
-@media (prefers-reduced-motion: no-preference) {
-  @supports (animation-timeline: view()) {
-    section {
-      animation: section-reveal both;
-      animation-timeline: view();
-      animation-range: entry 0% entry 35%;
-    }
-  }
-}
+@layer components {
+  .container-page { @apply mx-auto w-full max-w-6xl px-5 sm:px-8; }
 
-@keyframes section-reveal {
-  from {
-    opacity: 0.2;
-    transform: translateY(28px);
+  .kicker { @apply text-sm font-semibold text-leaf; }
+  .section-title { @apply font-serif text-3xl leading-tight text-ink sm:text-[2.6rem]; }
+  .lead { @apply text-lg leading-relaxed text-ink-soft; }
+
+  .btn {
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-md bg-leaf px-5 py-3
+      text-[0.95rem] font-semibold text-white transition-colors hover:bg-leaf-dark disabled:cursor-default disabled:opacity-60;
   }
-  to {
-    opacity: 1;
-    transform: none;
+  .btn-outline {
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-md border border-ink/25 px-5 py-3
+      text-[0.95rem] font-semibold text-ink transition-colors hover:border-ink hover:bg-white/60;
   }
+  .btn-light {
+    @apply inline-flex cursor-pointer items-center justify-center gap-2 rounded-md bg-paper px-5 py-3
+      text-[0.95rem] font-semibold text-ink transition-colors hover:bg-white;
+  }
+  .link { @apply font-semibold text-leaf underline decoration-leaf/30 underline-offset-4 hover:decoration-leaf; }
+
+  .field {
+    @apply w-full rounded-md border border-line bg-white px-3.5 py-2.5 text-[0.95rem] text-ink
+      placeholder:text-muted/70 focus:border-leaf focus:ring-2 focus:ring-leaf/15 focus:outline-none;
+  }
+  .label { @apply mb-1.5 block text-sm font-medium text-ink-soft; }
+  .panel { @apply rounded-lg border border-line bg-white; }
+  .tag { @apply inline-block rounded bg-paper-2 px-2 py-0.5 text-xs font-medium text-ink-soft; }
 }
 
 @media (prefers-reduced-motion: reduce) {

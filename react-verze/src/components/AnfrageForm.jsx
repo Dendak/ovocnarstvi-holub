@@ -60,121 +60,98 @@ export default function AnfrageForm() {
       const res = await fetch('https://formsubmit.co/ajax/info@ovoce-holub.cz', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify({ ...form, zprava: fullMsg }),
+        body: JSON.stringify({ _subject: `Anfrage Brennerei – ${form.jmeno || form.email || form.telefon}`, ...form, zprava: fullMsg }),
       })
       setStatus(res.ok ? 'ok' : 'err')
     } catch { setStatus('err') }
   }
 
-  const field = 'border border-gray-200 rounded-xl px-4 py-3 text-sm w-full focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent transition bg-white'
-  const qtyField = 'border border-gray-200 rounded-lg px-3 py-2 text-sm w-24 text-center focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent transition bg-white'
+  const qtyField = 'field !w-20 !py-1.5 text-center'
 
   return (
-    <section id="anfrage" className="bg-[#f7f4ef] py-20">
-      <div className="max-w-2xl mx-auto px-6">
-        <div className="text-center mb-10">
-          <p className="text-green-700 text-xs tracking-widest uppercase mb-3">Unverbindliche Anfrage</p>
-          <h2 className="font-serif text-3xl sm:text-4xl font-bold text-[#133e13] mb-3">Anfrage stellen</h2>
-          <p className="text-gray-500 text-sm">Teilen Sie uns Ihren Bedarf mit – wir melden uns mit Verfügbarkeit und Preis</p>
+    <section id="anfrage" className="bg-paper-2/60 border-t border-line py-20 sm:py-24">
+      <div className="container-page grid lg:grid-cols-[1fr_1.4fr] gap-12 lg:gap-16 items-start">
+        <div>
+          <p className="kicker mb-3">Unverbindliche Anfrage</p>
+          <h2 className="section-title mb-6">Anfrage stellen</h2>
+          <p className="lead">
+            Teilen Sie uns mit, welches Obst Sie brauchen und in welcher Menge. Wir melden uns mit
+            Verfügbarkeit, Preis und einem Liefertermin.
+          </p>
         </div>
 
         {status === 'ok' ? (
-          <div className="bg-white rounded-2xl border border-green-200 p-8 text-center text-green-700 shadow-sm">
-            <svg className="w-10 h-10 mx-auto mb-3 text-green-500" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
-            <p className="font-semibold text-lg mb-1">Anfrage gesendet!</p>
-            <p className="text-sm text-gray-500">Wir melden uns so bald wie möglich mit Verfügbarkeit und Preis.</p>
+          <div className="panel p-8">
+            <h3 className="font-serif text-2xl text-ink mb-2">Vielen Dank für Ihre Anfrage.</h3>
+            <p className="text-ink-soft">Wir melden uns so bald wie möglich mit Verfügbarkeit und Preis.</p>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-6" noValidate>
-            {/* Obstauswahl */}
-            <div className="bg-white rounded-2xl shadow-sm p-6 sm:p-8">
-              <h3 className="font-semibold text-[#133e13] text-lg mb-1">Welches Obst interessiert Sie?</h3>
-              <p className="text-gray-400 text-xs mb-5">Wählen Sie Produkte und geschätzte Menge (min. 200 kg gesamt)</p>
-              <div className="space-y-2">
+          <form onSubmit={handleSubmit} noValidate className="panel p-6 sm:p-8 space-y-7">
+            <fieldset>
+              <legend className="font-serif text-xl text-ink mb-1">Obst</legend>
+              <p className="text-sm text-muted mb-3">Menge in kg, insgesamt mindestens 200 kg.</p>
+              <div className="border-t border-line">
                 {OBST_ITEMS.map(o => {
                   const selected = o.value in obst
                   return (
-                    <div key={o.value}
-                      className={`flex items-center gap-3 rounded-xl border px-4 py-3 transition cursor-pointer ${
-                        selected ? 'border-green-300 bg-green-50' : 'border-gray-100 hover:border-gray-200'
-                      }`}
-                      onClick={() => toggleObst(o.value)}
-                    >
-                      <div className={`w-5 h-5 rounded-md border-2 flex items-center justify-center flex-shrink-0 transition ${
-                        selected ? 'bg-green-600 border-green-600' : 'border-gray-300'
-                      }`}>
-                        {selected && <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <span className="text-sm font-medium text-gray-800">{o.value}</span>
-                        <span className="text-xs text-gray-400 ml-2">{o.season}</span>
-                      </div>
+                    <div key={o.value} className="flex items-center gap-3 py-3 border-b border-line">
+                      <label className="flex items-center gap-3 flex-1 min-w-0 cursor-pointer">
+                        <input type="checkbox" checked={selected} onChange={() => toggleObst(o.value)} className="w-4 h-4 accent-leaf" />
+                        <span className="text-ink">{o.value}</span>
+                        <span className="text-sm text-muted hidden sm:inline">{o.season}</span>
+                      </label>
                       {selected && (
-                        <div className="flex items-center gap-2" onClick={e => e.stopPropagation()}>
-                          <input type="number" min="200" placeholder="kg" value={obst[o.value] || ''}
-                            onChange={e => setObstKg(o.value, e.target.value)}
-                            className={qtyField} />
-                          <span className="text-xs text-gray-400">kg</span>
-                        </div>
+                        <label className="flex items-center gap-2 text-sm text-muted">
+                          <input type="number" min="1" inputMode="numeric" value={obst[o.value] || ''}
+                            onChange={e => setObstKg(o.value, e.target.value)} className={qtyField} aria-label={`${o.value} in kg`} />
+                          kg
+                        </label>
                       )}
                     </div>
                   )
                 })}
               </div>
-            </div>
+            </fieldset>
 
-            {/* Kontaktdaten */}
-            <div className="bg-white rounded-2xl shadow-sm p-6 sm:p-8 space-y-4">
-              <h3 className="font-semibold text-[#133e13] text-lg mb-1">Kontaktdaten</h3>
+            <fieldset className="space-y-4">
+              <legend className="font-serif text-xl text-ink mb-1">Kontaktdaten</legend>
               <div>
-                <label className="text-xs font-medium text-gray-600 mb-1 block">Name / Betrieb</label>
-                <input name="jmeno" value={form.jmeno} onChange={handleChange} onBlur={handleBlur}
-                  placeholder="z.B. Brennerei Müller" className={field} />
+                <label htmlFor="a-jmeno" className="label">Name / Betrieb</label>
+                <input id="a-jmeno" name="jmeno" value={form.jmeno} onChange={handleChange} onBlur={handleBlur} className="field" />
               </div>
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-medium text-gray-600 mb-1 block">Telefon</label>
-                  <input name="telefon" type="tel" value={form.telefon} onChange={handleChange} onBlur={handleBlur}
-                    placeholder="+43 ..." className={field} />
-                  {touched.telefon && errors.telefon && <p className="text-red-500 text-xs mt-1">{errors.telefon}</p>}
+                  <label htmlFor="a-telefon" className="label">Telefon</label>
+                  <input id="a-telefon" name="telefon" type="tel" value={form.telefon} onChange={handleChange} onBlur={handleBlur} className="field" />
+                  {touched.telefon && errors.telefon && <p className="text-berry text-sm mt-1">{errors.telefon}</p>}
                 </div>
                 <div>
-                  <label className="text-xs font-medium text-gray-600 mb-1 block">E-Mail</label>
-                  <input name="email" type="email" value={form.email} onChange={handleChange} onBlur={handleBlur}
-                    placeholder="info@brennerei.at" className={field} />
-                  {touched.email && errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+                  <label htmlFor="a-email" className="label">E-Mail</label>
+                  <input id="a-email" name="email" type="email" value={form.email} onChange={handleChange} onBlur={handleBlur} className="field" />
+                  {touched.email && errors.email && <p className="text-berry text-sm mt-1">{errors.email}</p>}
                 </div>
               </div>
-              {(touched.telefon || touched.email) && errors.kontakt && (
-                <p className="text-red-500 text-xs -mt-2">{errors.kontakt}</p>
-              )}
-              <p className="text-gray-400 text-xs -mt-2">Telefon oder E-Mail genügt.</p>
-            </div>
+              {(touched.telefon || touched.email) && errors.kontakt
+                ? <p className="text-berry text-sm">{errors.kontakt}</p>
+                : <p className="text-sm text-muted">Telefon oder E-Mail genügt.</p>}
+              <div>
+                <label htmlFor="a-adresa" className="label">Lieferadresse</label>
+                <input id="a-adresa" name="adresa" value={form.adresa} onChange={handleChange} placeholder="Straße, PLZ, Ort" className="field" />
+              </div>
+              <div>
+                <label htmlFor="a-zprava" className="label">Anmerkung</label>
+                <textarea id="a-zprava" name="zprava" value={form.zprava} onChange={handleChange} rows={3}
+                  placeholder="Gewünschter Liefertermin, besondere Anforderungen …" className="field resize-y" />
+              </div>
+            </fieldset>
 
-            {/* Lieferadresse */}
-            <div className="bg-white rounded-2xl shadow-sm p-6 sm:p-8 space-y-4">
-              <h3 className="font-semibold text-[#133e13] text-lg mb-1">Lieferadresse</h3>
-              <input name="adresa" value={form.adresa} onChange={handleChange}
-                placeholder="Straße, PLZ, Ort" className={field} />
-              <p className="text-xs text-gray-400 -mt-2">Lieferung nach Oberösterreich und Salzburg.</p>
+            {status === 'err' && <p className="text-berry text-sm">Fehler beim Senden. Bitte versuchen Sie es erneut.</p>}
+            <div className="flex flex-wrap items-center justify-between gap-4 pt-1">
+              <p className="text-sm text-muted">Unverbindlich – wir melden uns mit Preis und Termin.</p>
+              <button type="submit" disabled={status === 'sending'} className="btn">
+                {status === 'sending' ? 'Wird gesendet …' : 'Anfrage senden'}
+              </button>
             </div>
-
-            {/* Anmerkung */}
-            <div className="bg-white rounded-2xl shadow-sm p-6 sm:p-8">
-              <label className="text-xs font-medium text-gray-600 mb-1 block">Anmerkung</label>
-              <textarea name="zprava" value={form.zprava} onChange={handleChange}
-                rows={3} placeholder="Gewünschter Liefertermin, besondere Anforderungen..."
-                className={field + ' resize-none'} />
-            </div>
-
-            {status === 'err' && (
-              <p className="text-red-600 text-sm text-center">Fehler beim Senden. Bitte versuchen Sie es erneut.</p>
-            )}
-            <button type="submit" disabled={status === 'sending'}
-              className="w-full bg-[#1a561a] hover:bg-[#133e13] text-white font-semibold py-4 rounded-xl transition-colors disabled:opacity-60 text-lg">
-              {status === 'sending' ? 'Wird gesendet...' : 'Unverbindliche Anfrage senden →'}
-            </button>
-            <p className="text-gray-400 text-xs text-center">Ihre Anfrage ist unverbindlich. Wir melden uns telefonisch mit Verfügbarkeit und Preis.</p>
           </form>
         )}
       </div>

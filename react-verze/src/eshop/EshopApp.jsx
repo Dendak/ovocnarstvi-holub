@@ -34,7 +34,7 @@ function Hlavicka({ onKosik }) {
   const { pocetKusu } = useKosik()
   const auth = useAuth()
   return (
-    <nav className="fixed top-0 left-0 right-0 z-40 bg-[#133e13]/95 backdrop-blur-md shadow-lg">
+    <nav className="fixed top-0 left-0 right-0 z-40 bg-forest">
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
         <a href={`${BASE}index.html`} className="flex items-center gap-3 shrink-0">
           <img src={`${BASE}img/logo.png`} alt="Ovocnářství Holub" className="h-12 w-auto" width="88" height="48" />
@@ -49,11 +49,11 @@ function Hlavicka({ onKosik }) {
               <span className="hidden sm:inline">{auth.uzivatel ? 'Můj účet' : 'Přihlásit'}</span>
             </a>
           )}
-          <button onClick={onKosik} className="relative flex items-center gap-2 bg-white text-[#133e13] font-semibold text-sm px-4 py-2 rounded-full hover:bg-green-50 transition-colors cursor-pointer" aria-label={`Košík, ${pocetKusu} položek`}>
+          <button onClick={onKosik} className="relative btn-light !py-2 !px-4 !text-sm" aria-label={`Košík, ${pocetKusu} položek`}>
             <KosikIcon />
             <span>Košík</span>
             {pocetKusu > 0 && (
-              <span className="absolute -top-1.5 -right-1.5 bg-green-500 text-white text-xs font-bold rounded-full min-w-5 h-5 px-1 flex items-center justify-center">{pocetKusu}</span>
+              <span className="absolute -top-1.5 -right-1.5 bg-berry text-white text-xs font-semibold rounded-full min-w-5 h-5 px-1 flex items-center justify-center">{pocetKusu}</span>
             )}
           </button>
         </div>
@@ -76,47 +76,47 @@ function KosikPanel({ open, onClose, onPokladna }) {
       <div className={`absolute inset-0 bg-black/40 transition-opacity ${open ? 'opacity-100' : 'opacity-0'}`} onClick={onClose} />
       <aside role="dialog" aria-label="Košík"
         className={`absolute right-0 top-0 bottom-0 w-full sm:w-[26rem] bg-white shadow-2xl flex flex-col transition-transform duration-300 ${open ? 'translate-x-0' : 'translate-x-full'}`}>
-        <div className="flex items-center justify-between px-5 h-16 border-b border-gray-100">
-          <h2 className="font-serif text-xl font-bold text-[#133e13]">Košík</h2>
-          <button onClick={onClose} aria-label="Zavřít košík" className="text-gray-400 hover:text-gray-700 text-3xl leading-none cursor-pointer">&times;</button>
+        <div className="flex items-center justify-between px-5 h-16 border-b border-line">
+          <h2 className="font-serif text-xl font-semibold text-ink">Košík</h2>
+          <button onClick={onClose} aria-label="Zavřít košík" className="text-muted hover:text-ink text-3xl leading-none cursor-pointer">&times;</button>
         </div>
 
         {kosik.polozky.length === 0 ? (
-          <div className="flex-1 flex flex-col items-center justify-center text-center px-8 text-gray-500">
-            <KosikIcon className="w-12 h-12 text-gray-300 mb-3" />
+          <div className="flex-1 flex flex-col items-center justify-center text-center px-8 text-muted">
+            <KosikIcon className="w-12 h-12 text-line mb-3" />
             <p>Košík je zatím prázdný.</p>
-            <button onClick={onClose} className="mt-4 text-green-700 font-medium hover:underline cursor-pointer">Vybrat ovoce →</button>
+            <button onClick={onClose} className="mt-4 text-leaf font-medium hover:underline cursor-pointer">Vybrat ovoce →</button>
           </div>
         ) : (
           <>
-            <ul className="flex-1 overflow-y-auto divide-y divide-gray-100 px-5">
+            <ul className="flex-1 overflow-y-auto divide-y divide-line px-5">
               {kosik.polozky.map(p => (
                 <li key={p.key} className="py-4 flex gap-3">
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-gray-800">{p.produkt.nazev}</p>
-                    <p className="text-xs text-gray-500">{p.produkt.druhNazev}{p.produkt.jednotka === 'kg' ? '' : ` · ${p.varianta.label}`}{p.varianta.cena != null && ` · ${formatKc(p.varianta.cena)} ${p.produkt.jednotka === 'kg' ? 'za kg' : 'za kus'}`}</p>
+                    <p className="font-medium text-ink">{p.produkt.nazev}</p>
+                    <p className="text-xs text-muted">{p.produkt.druhNazev}{p.produkt.jednotka === 'kg' ? '' : ` · ${p.varianta.label}`}{p.varianta.cena != null && ` · ${formatKc(p.varianta.cena)} ${p.produkt.jednotka === 'kg' ? 'za kg' : 'za kus'}`}</p>
                     <div className="flex items-center gap-3 mt-2">
-                      <div className="flex items-center border border-gray-200 rounded-lg">
-                        <button onClick={() => kosik.nastavit(p.key, p.pocet - 1)} aria-label="Méně" className="w-8 h-8 text-gray-600 cursor-pointer">−</button>
+                      <div className="flex items-center border border-line rounded-lg">
+                        <button onClick={() => kosik.nastavit(p.key, p.pocet - 1)} aria-label="Méně" className="w-8 h-8 text-ink-soft cursor-pointer">−</button>
                         <span className="min-w-7 px-1 text-center text-sm tabular-nums">{p.pocet}{p.produkt.jednotka === 'kg' ? ' kg' : ''}</span>
-                        <button onClick={() => kosik.nastavit(p.key, p.pocet + 1)} aria-label="Více" className="w-8 h-8 text-gray-600 cursor-pointer">+</button>
+                        <button onClick={() => kosik.nastavit(p.key, p.pocet + 1)} aria-label="Více" className="w-8 h-8 text-ink-soft cursor-pointer">+</button>
                       </div>
-                      <button onClick={() => kosik.nastavit(p.key, 0)} className="text-xs text-gray-400 hover:text-red-600 cursor-pointer">Odebrat</button>
+                      <button onClick={() => kosik.nastavit(p.key, 0)} className="text-xs text-muted hover:text-berry cursor-pointer">Odebrat</button>
                     </div>
                   </div>
-                  <p className="font-semibold tabular-nums text-[#133e13] whitespace-nowrap">{p.cena == null ? 'na dotaz' : formatKc(p.cena)}</p>
+                  <p className="font-semibold tabular-nums text-ink whitespace-nowrap">{p.cena == null ? 'na dotaz' : formatKc(p.cena)}</p>
                 </li>
               ))}
             </ul>
-            <div className="border-t border-gray-100 p-5 space-y-3">
+            <div className="border-t border-line p-5 space-y-3">
               <div className="flex justify-between items-baseline">
-                <span className="text-gray-600">Celkem</span>
-                <span className="font-bold text-2xl text-[#133e13] tabular-nums">{formatKc(kosik.soucet)}</span>
+                <span className="text-ink-soft">Celkem</span>
+                <span className="font-semibold text-2xl text-ink tabular-nums">{formatKc(kosik.soucet)}</span>
               </div>
-              <button onClick={onPokladna} className="w-full bg-[#1a561a] hover:bg-[#133e13] text-white font-semibold py-3.5 rounded-xl transition-colors cursor-pointer">
+              <button onClick={onPokladna} className="w-full bg-leaf hover:bg-leaf-dark text-white font-semibold py-3.5 rounded-md transition-colors cursor-pointer">
                 Pokračovat k objednávce →
               </button>
-              <p className="text-xs text-gray-400 text-center">Platíte až při převzetí. Doprava je v ceně.</p>
+              <p className="text-xs text-muted text-center">Platíte až při převzetí. Doprava je v ceně.</p>
             </div>
           </>
         )}
@@ -143,50 +143,55 @@ function Katalog() {
 
   return (
     <>
-      <header className="bg-[#0d1f0d] text-white">
-        <div className="max-w-6xl mx-auto px-6 py-14 sm:py-16">
-          <p className="text-green-400 text-sm tracking-widest uppercase mb-3">E-shop · přímo ze sadu</p>
-          <h1 className="font-serif text-4xl sm:text-5xl font-bold leading-tight mb-4">Objednejte si ovoce a mošty</h1>
-          <p className="text-white/70 text-lg max-w-2xl mb-8">
-            Naklikejte si, kolik kilo chcete. Ceny jsou včetně dovozu až domů, potvrzení vám hned přijde e-mailem a platíte až při převzetí.
+      <header className="bg-forest text-white">
+        <div className="container-page pt-14 pb-10 sm:pt-16">
+          <p className="text-[0.95rem] font-medium text-white/70 mb-3">E-shop Ovocnářství Holub</p>
+          <h1 className="font-serif font-medium leading-[1.08] mb-4" style={{ fontSize: 'clamp(2.3rem, 5vw, 3.6rem)' }}>
+            Objednejte si ovoce a mošty
+          </h1>
+          <p className="text-white/75 text-lg leading-relaxed max-w-2xl">
+            Naklikejte si, kolik kilo chcete. Ceny jsou včetně dovozu až domů, potvrzení vám hned přijde
+            e-mailem a platíte až při převzetí.
           </p>
-          <div className="flex flex-wrap gap-3 text-sm">
-            {['Dovoz až domů v ceně – Č. Budějovice, po, st, pá', DORUCENI.odber.label + ' v Krtelích', 'Libovolné množství od 1 kg', 'Platba při převzetí'].map(t => (
-              <span key={t} className="bg-white/10 border border-white/15 rounded-full px-4 py-1.5">✓ {t}</span>
+        </div>
+        <div className="border-t border-white/15">
+          <ul className="container-page py-4 flex flex-wrap gap-x-8 gap-y-2 text-sm text-white/70">
+            {['Dovoz v ceně – Č. Budějovice, po · st · pá', `${DORUCENI.odber.label} v Krtelích`, 'Libovolné množství od 1 kg', 'Platba při převzetí'].map(t => (
+              <li key={t}>{t}</li>
             ))}
-          </div>
+          </ul>
         </div>
       </header>
 
-      <section className="max-w-6xl mx-auto px-6 py-10">
+      <section className="container-page py-10 sm:py-12">
         <div className="flex flex-col lg:flex-row lg:items-center gap-4 mb-8">
           <div className="flex flex-wrap gap-2 flex-1">
             {[{ id: 'vse', nazev: 'Vše' }, ...KATEGORIE].map(k => (
               <button key={k.id} onClick={() => setKategorie(k.id)}
-                className={`text-sm px-4 py-2 rounded-full border transition cursor-pointer ${
-                  kategorie === k.id ? 'bg-[#133e13] border-[#133e13] text-white' : 'bg-white border-gray-200 text-gray-700 hover:border-green-400'
+                className={`text-sm px-3.5 py-2 rounded-md border transition cursor-pointer ${
+                  kategorie === k.id ? 'bg-leaf border-leaf text-white' : 'bg-white border-line text-ink-soft hover:border-leaf'
                 }`}>
                 {k.nazev}
-                {k.id !== 'vse' && <span className={`ml-1.5 text-xs ${kategorie === k.id ? 'text-green-200' : 'text-gray-400'}`}>{pocty[k.id]}</span>}
+                {k.id !== 'vse' && <span className={`ml-1.5 text-xs ${kategorie === k.id ? 'text-white/70' : 'text-muted'}`}>{pocty[k.id]}</span>}
               </button>
             ))}
           </div>
           <div className="flex items-center gap-4">
             <input type="search" value={hledat} onChange={e => setHledat(e.target.value)} placeholder="Hledat odrůdu…"
               aria-label="Hledat odrůdu"
-              className="border border-gray-200 rounded-full px-4 py-2 text-sm w-full lg:w-56 focus:outline-none focus:ring-2 focus:ring-green-400 bg-white" />
-            <label className="flex items-center gap-2 text-sm text-gray-600 whitespace-nowrap cursor-pointer">
-              <input type="checkbox" checked={jenDostupne} onChange={e => setJenDostupne(e.target.checked)} className="accent-green-600" />
+              className="field !py-2 lg:!w-56" />
+            <label className="flex items-center gap-2 text-sm text-ink-soft whitespace-nowrap cursor-pointer">
+              <input type="checkbox" checked={jenDostupne} onChange={e => setJenDostupne(e.target.checked)} className="accent-leaf" />
               Jen dostupné
             </label>
           </div>
         </div>
 
         {produkty.length === 0 ? (
-          <div className="text-center py-16 text-gray-500">
+          <div className="text-center py-16 text-muted">
             <p className="mb-3">Tady teď nic není{jenDostupne ? ' – mimo sezónu nebo vyprodáno' : ''}.</p>
             {jenDostupne && (
-              <button onClick={() => setJenDostupne(false)} className="text-green-700 font-medium hover:underline cursor-pointer">Zobrazit i nedostupné</button>
+              <button onClick={() => setJenDostupne(false)} className="text-leaf font-medium hover:underline cursor-pointer">Zobrazit i nedostupné</button>
             )}
           </div>
         ) : (
@@ -202,19 +207,18 @@ function Katalog() {
 function Hotovo({ info, onZpet }) {
   return (
     <div className="max-w-2xl mx-auto px-6 py-16 text-center">
-      <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-green-100 flex items-center justify-center text-green-600 text-3xl">✓</div>
-      <h1 className="font-serif text-3xl sm:text-4xl font-bold text-[#133e13] mb-3">Objednávka je přijatá</h1>
-      {info?.cislo && <p className="text-gray-600 mb-2">Číslo objednávky: <strong>{info.cislo}</strong></p>}
-      <p className="text-gray-600 mb-6">
+            <h1 className="font-serif text-3xl sm:text-4xl font-semibold text-ink mb-3">Objednávka je přijatá</h1>
+      {info?.cislo && <p className="text-ink-soft mb-2">Číslo objednávky: <strong>{info.cislo}</strong></p>}
+      <p className="text-ink-soft mb-6">
         {info?.email ? <>Potvrzení jsme poslali na <strong>{info.email}</strong>. </> : null}
         Nic dalšího potvrzovat nemusíte – ozveme se jen tehdy, kdyby něco nebylo k dispozici.
       </p>
       {info?.souhrn && (
-        <pre className="text-left whitespace-pre-wrap font-sans text-sm text-gray-700 bg-white rounded-2xl shadow-sm p-5 mb-8">{info.souhrn}</pre>
+        <pre className="text-left whitespace-pre-wrap font-sans text-sm text-ink-soft bg-white rounded-lg p-5 mb-8">{info.souhrn}</pre>
       )}
       <div className="flex flex-wrap gap-3 justify-center">
-        <button onClick={onZpet} className="bg-[#1a561a] hover:bg-[#133e13] text-white font-semibold px-6 py-3 rounded-full cursor-pointer">Zpět do obchodu</button>
-        <a href="#objednavky" className="border border-gray-300 text-gray-700 hover:border-green-600 font-semibold px-6 py-3 rounded-full">Moje objednávky</a>
+        <button onClick={onZpet} className="btn">Zpět do obchodu</button>
+        <a href="#objednavky" className="btn-outline">Moje objednávky</a>
       </div>
     </div>
   )
@@ -247,44 +251,44 @@ function MojeObjednavky({ onKosik }) {
 
   return (
     <div className="max-w-3xl mx-auto px-6 py-10">
-      <h1 className="font-serif text-3xl sm:text-4xl font-bold text-[#133e13] mb-2">Moje objednávky</h1>
-      <p className="text-gray-500 text-sm mb-8">
+      <h1 className="font-serif text-3xl sm:text-4xl font-semibold text-ink mb-2">Moje objednávky</h1>
+      <p className="text-muted text-sm mb-8">
         {prihlasen
           ? 'Všechny objednávky z vašeho účtu, i jejich aktuální stav.'
           : 'Objednávky odeslané z tohoto zařízení. Údaje jsou uložené jen ve vašem prohlížeči, na jiném zařízení je neuvidíte.'}
       </p>
       {auth.zapnuto && !prihlasen && (
-        <p className="text-sm bg-green-50 text-green-900 rounded-xl px-4 py-3 mb-6">
+        <p className="text-sm bg-paper-2 text-ink rounded-md px-4 py-3 mb-6">
           <a href="#ucet" className="font-semibold underline">Přihlaste se nebo si založte účet</a> – objednávky pak uvidíte na všech zařízeních i s jejich stavem.
         </p>
       )}
-      {prihlasen && zUctu === null && <p className="text-gray-400 py-10 text-center">Načítám…</p>}
-      {info && <p className="text-sm text-amber-800 bg-amber-50 rounded-xl px-4 py-3 mb-6">{info}</p>}
+      {prihlasen && zUctu === null && <p className="text-muted py-10 text-center">Načítám…</p>}
+      {info && <p className="text-sm text-ink-soft bg-paper-2 rounded-md px-4 py-3 mb-6">{info}</p>}
       {prihlasen && zUctu === null ? null : objednavky.length === 0 ? (
-        <div className="text-center py-16 text-gray-500">
+        <div className="text-center py-16 text-muted">
           <p className="mb-3">Zatím tu nejsou žádné objednávky.</p>
-          <a href="#" className="text-green-700 font-medium hover:underline">Vybrat ovoce →</a>
+          <a href="#" className="text-leaf font-medium hover:underline">Vybrat ovoce →</a>
         </div>
       ) : (
         <ul className="space-y-4">
           {objednavky.map(o => (
-            <li key={o.cislo} className="bg-white rounded-2xl shadow-sm p-5">
+            <li key={o.cislo} className="bg-white rounded-lg p-5">
               <div className="flex flex-wrap items-baseline justify-between gap-2 mb-3">
-                <p className="font-semibold text-[#133e13] flex items-center gap-2">
+                <p className="font-semibold text-ink flex items-center gap-2">
                   {o.cislo}
-                  {o.stav && <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${STAVY[o.stav] || STAVY['přijatá']}`}>{o.stav}</span>}
+                  {o.stav && <span className={`text-xs font-medium px-2 py-0.5 rounded ${STAVY[o.stav] || STAVY['přijatá']}`}>{o.stav}</span>}
                 </p>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-muted">
                   objednáno {new Date(o.datum).toLocaleDateString('cs-CZ')} · {o.termin}
                 </p>
               </div>
-              <ul className="text-sm text-gray-700 space-y-0.5 mb-3">
+              <ul className="text-sm text-ink-soft space-y-0.5 mb-3">
                 {(o.radky || []).map(r => <li key={r}>{r}</li>)}
               </ul>
-              <div className="flex flex-wrap items-center justify-between gap-3 border-t border-gray-100 pt-3">
-                <p className="font-bold text-[#133e13]">Celkem {o.celkem}</p>
+              <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-3">
+                <p className="font-semibold text-ink">Celkem {o.celkem}</p>
                 <button onClick={() => znovu(o)}
-                  className="bg-[#1a561a] hover:bg-[#133e13] text-white text-sm font-semibold px-4 py-2 rounded-full cursor-pointer">
+                  className="btn !py-2 !px-4 !text-sm">
                   Objednat znovu
                 </button>
               </div>
@@ -294,7 +298,7 @@ function MojeObjednavky({ onKosik }) {
       )}
       {!prihlasen && objednavky.length > 0 && (
         <button onClick={() => { smazatVse(); setMistni([]) }}
-          className="mt-8 text-xs text-gray-400 hover:text-red-600 cursor-pointer">
+          className="mt-8 text-xs text-muted hover:text-berry cursor-pointer">
           Smazat historii a uložené údaje z tohoto zařízení
         </button>
       )}
@@ -312,7 +316,7 @@ function Obchod() {
   const aktualni = view === 'pokladna' && polozky.length === 0 ? 'katalog' : view
 
   return (
-    <div className="bg-[#f7f4ef] min-h-screen flex flex-col">
+    <div className="bg-paper min-h-screen flex flex-col">
       <Hlavicka onKosik={() => setKosikOpen(true)} />
       <div className="h-16" />
       <main className="flex-1">

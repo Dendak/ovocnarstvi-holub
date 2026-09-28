@@ -42,18 +42,18 @@ function cisloObjednavky() {
 }
 
 function Chyba({ text }) {
-  return text ? <p className="text-red-600 text-xs mt-1">{text}</p> : null
+  return text ? <p className="text-berry text-xs mt-1">{text}</p> : null
 }
 
 function Volba({ name, value, current, onChange, label, detail }) {
   return (
-    <label className={`flex items-start gap-3 rounded-xl border-2 px-4 py-3 cursor-pointer transition ${
-      current === value ? 'border-green-500 bg-green-50' : 'border-gray-200 hover:border-gray-300'
+    <label className={`flex items-start gap-3 rounded-md border-2 px-4 py-3 cursor-pointer transition ${
+      current === value ? 'border-leaf bg-paper-2' : 'border-line hover:border-ink/40'
     }`}>
-      <input type="radio" name={name} value={value} checked={current === value} onChange={() => onChange(name, value)} className="mt-1 accent-green-600" />
+      <input type="radio" name={name} value={value} checked={current === value} onChange={() => onChange(name, value)} className="mt-1 accent-leaf" />
       <span>
-        <span className="block text-sm font-medium text-gray-800">{label}</span>
-        {detail && <span className="block text-xs text-gray-500 mt-0.5">{detail}</span>}
+        <span className="block text-sm font-medium text-ink">{label}</span>
+        {detail && <span className="block text-xs text-muted mt-0.5">{detail}</span>}
       </span>
     </label>
   )
@@ -176,47 +176,47 @@ export default function Pokladna({ onZpet, onHotovo }) {
     }
   }
 
-  const field = 'border border-gray-200 rounded-xl px-4 py-3 text-sm w-full focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent bg-white'
+  const field = 'border border-line rounded-md px-4 py-3 text-sm w-full focus:outline-none focus:ring-2 focus:ring-leaf/20 focus:border-transparent bg-white'
   return (
     <div className="max-w-5xl mx-auto px-6 py-10">
-      <button onClick={onZpet} className="text-green-700 text-sm font-medium hover:underline mb-6 cursor-pointer">← Zpět do obchodu</button>
-      <h1 className="font-serif text-3xl sm:text-4xl font-bold text-[#133e13] mb-8">Dokončení objednávky</h1>
+      <button onClick={onZpet} className="text-leaf text-sm font-medium hover:underline mb-6 cursor-pointer">← Zpět do obchodu</button>
+      <h1 className="font-serif text-3xl sm:text-4xl font-semibold text-ink mb-8">Dokončení objednávky</h1>
       {auth.zapnuto && !uzivatel && !auth.nacita && (
-        <p className="text-sm bg-green-50 text-green-900 rounded-xl px-4 py-3 mb-6 -mt-4">
+        <p className="text-sm bg-paper-2 text-ink rounded-md px-4 py-3 mb-6 -mt-4">
           Máte účet? <a href="#ucet" className="font-semibold underline">Přihlaste se</a> a údaje se vyplní samy. Košík vám zůstane.
         </p>
       )}
 
       <form onSubmit={odeslat} noValidate className="grid lg:grid-cols-[1fr_22rem] gap-8 items-start">
         <div className="space-y-6">
-          <div className="bg-white rounded-2xl shadow-sm p-6 space-y-4">
-            <h2 className="font-semibold text-lg text-[#133e13]">Kontaktní údaje</h2>
+          <div className="bg-white rounded-lg p-6 space-y-4">
+            <h2 className="font-semibold text-lg text-ink">Kontaktní údaje</h2>
             <div>
-              <label htmlFor="jmeno" className="text-xs font-medium text-gray-600 mb-1 block">Jméno a příjmení *</label>
+              <label htmlFor="jmeno" className="text-xs font-medium text-ink-soft mb-1 block">Jméno a příjmení *</label>
               <input id="jmeno" autoComplete="name" value={f.jmeno} onChange={e => set('jmeno', e.target.value)} className={field} />
               <Chyba text={chyby.jmeno} />
             </div>
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="email" className="text-xs font-medium text-gray-600 mb-1 block">E-mail * (přijde na něj potvrzení)</label>
+                <label htmlFor="email" className="text-xs font-medium text-ink-soft mb-1 block">E-mail * (přijde na něj potvrzení)</label>
                 <input id="email" type="email" autoComplete="email" value={f.email} onChange={e => set('email', e.target.value)} className={field} />
                 <Chyba text={chyby.email} />
               </div>
               <div>
-                <label htmlFor="telefon" className="text-xs font-medium text-gray-600 mb-1 block">Telefon *</label>
+                <label htmlFor="telefon" className="text-xs font-medium text-ink-soft mb-1 block">Telefon *</label>
                 <input id="telefon" type="tel" autoComplete="tel" value={f.telefon} onChange={e => set('telefon', e.target.value)} placeholder="+420 …" className={field} />
                 <Chyba text={chyby.telefon} />
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-sm p-6 space-y-3">
-            <h2 className="font-semibold text-lg text-[#133e13]">Převzetí</h2>
+          <div className="bg-white rounded-lg p-6 space-y-3">
+            <h2 className="font-semibold text-lg text-ink">Převzetí</h2>
             <Volba name="doruceni" current={f.doruceni} onChange={set} value="rozvoz" label={DORUCENI.rozvoz.label} detail={DORUCENI.rozvoz.detail} />
             <Volba name="doruceni" current={f.doruceni} onChange={set} value="odber" label={DORUCENI.odber.label} detail={DORUCENI.odber.detail} />
             {f.doruceni === 'odber' ? (
               <div className="pt-2">
-                <label htmlFor="terminOdberu" className="text-xs font-medium text-gray-600 mb-1 block">Den vyzvednutí</label>
+                <label htmlFor="terminOdberu" className="text-xs font-medium text-ink-soft mb-1 block">Den vyzvednutí</label>
                 <select id="terminOdberu" value={f.terminOdberu} onChange={e => set('terminOdberu', e.target.value)} className={field}>
                   {terminyOdberu.map(t => <option key={t}>{t}</option>)}
                 </select>
@@ -224,67 +224,67 @@ export default function Pokladna({ onZpet, onHotovo }) {
             ) : (
               <div className="pt-2 space-y-3">
                 <div>
-                  <label htmlFor="termin" className="text-xs font-medium text-gray-600 mb-1 block">Den dovozu (dopoledne)</label>
+                  <label htmlFor="termin" className="text-xs font-medium text-ink-soft mb-1 block">Den dovozu (dopoledne)</label>
                   <select id="termin" value={f.termin} onChange={e => set('termin', e.target.value)} className={field}>
                     {terminyRozvozu.map(t => <option key={t}>{t}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label htmlFor="adresa" className="text-xs font-medium text-gray-600 mb-1 block">Adresa v Českých Budějovicích *</label>
+                  <label htmlFor="adresa" className="text-xs font-medium text-ink-soft mb-1 block">Adresa v Českých Budějovicích *</label>
                   <input id="adresa" autoComplete="street-address" value={f.adresa} onChange={e => set('adresa', e.target.value)} placeholder="Ulice a číslo" className={field} />
                   <Chyba text={chyby.adresa} />
                 </div>
               </div>
             )}
-            <p className="text-xs text-gray-400">Objednávky přijímáme nejpozději den předem do {UZAVERKA_HODINA}:00.</p>
+            <p className="text-xs text-muted">Objednávky přijímáme nejpozději den předem do {UZAVERKA_HODINA}:00.</p>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-sm p-6">
-            <label htmlFor="poznamka" className="text-xs font-medium text-gray-600 mb-1 block">Poznámka k objednávce</label>
+          <div className="bg-white rounded-lg p-6">
+            <label htmlFor="poznamka" className="text-xs font-medium text-ink-soft mb-1 block">Poznámka k objednávce</label>
             <textarea id="poznamka" rows={3} value={f.poznamka} onChange={e => set('poznamka', e.target.value)}
               placeholder="Např. zvonit na Novákovi, 2. patro" className={field + ' resize-none'} />
           </div>
         </div>
 
         {/* Souhrn */}
-        <aside className="bg-white rounded-2xl shadow-sm p-6 lg:sticky lg:top-24">
-          <h2 className="font-semibold text-lg text-[#133e13] mb-4">Souhrn</h2>
-          <ul className="divide-y divide-gray-100 mb-4">
+        <aside className="bg-white rounded-lg p-6 lg:sticky lg:top-24">
+          <h2 className="font-semibold text-lg text-ink mb-4">Souhrn</h2>
+          <ul className="divide-y divide-line mb-4">
             {kosik.polozky.map(p => (
               <li key={p.key} className="py-2 flex justify-between gap-3 text-sm">
-                <span className="text-gray-700">{formatMnozstvi(p.produkt, p.varianta, p.pocet)} {p.produkt.nazev}</span>
+                <span className="text-ink-soft">{formatMnozstvi(p.produkt, p.varianta, p.pocet)} {p.produkt.nazev}</span>
                 <span className="tabular-nums font-medium whitespace-nowrap">{p.cena == null ? 'na dotaz' : formatKc(p.cena)}</span>
               </li>
             ))}
           </ul>
-          <div className="flex justify-between items-baseline border-t border-gray-200 pt-3 mb-1">
+          <div className="flex justify-between items-baseline border-t border-line pt-3 mb-1">
             <span className="font-semibold">Celkem</span>
-            <span className="font-bold text-xl text-[#133e13] tabular-nums">{formatKc(kosik.soucet)}</span>
+            <span className="font-semibold text-xl text-ink tabular-nums">{formatKc(kosik.soucet)}</span>
           </div>
-          <p className="text-xs text-gray-400 mb-5">
+          <p className="text-xs text-muted mb-5">
             Doprava až domů je v ceně. Platíte až při převzetí.
           </p>
 
-          <label className="flex items-start gap-2 text-xs text-gray-600 mb-1 cursor-pointer">
-            <input type="checkbox" checked={f.souhlas} onChange={e => set('souhlas', e.target.checked)} className="mt-0.5 accent-green-600" />
+          <label className="flex items-start gap-2 text-xs text-ink-soft mb-1 cursor-pointer">
+            <input type="checkbox" checked={f.souhlas} onChange={e => set('souhlas', e.target.checked)} className="mt-0.5 accent-leaf" />
             <span>Souhlasím se zpracováním osobních údajů pro vyřízení objednávky podle{' '}
-              <a href={`${import.meta.env.BASE_URL}gdpr.html`} target="_blank" rel="noreferrer" className="text-green-700 underline">zásad ochrany osobních údajů</a>.
+              <a href={`${import.meta.env.BASE_URL}gdpr.html`} target="_blank" rel="noreferrer" className="text-leaf underline">zásad ochrany osobních údajů</a>.
             </span>
           </label>
           <Chyba text={chyby.souhlas} />
-          <label className="flex items-start gap-2 text-xs text-gray-600 mt-2 cursor-pointer">
-            <input type="checkbox" checked={f.zapamatovat} onChange={e => set('zapamatovat', e.target.checked)} className="mt-0.5 accent-green-600" />
+          <label className="flex items-start gap-2 text-xs text-ink-soft mt-2 cursor-pointer">
+            <input type="checkbox" checked={f.zapamatovat} onChange={e => set('zapamatovat', e.target.checked)} className="mt-0.5 accent-leaf" />
             <span>Zapamatovat mé údaje na tomto zařízení pro příští objednávku</span>
           </label>
 
           {stav === 'chyba' && (
-            <p className="text-red-600 text-sm mt-3">Objednávku se nepodařilo odeslat. Zkuste to prosím znovu, nebo zavolejte {OBSAH.kontakt.tel1}.</p>
+            <p className="text-berry text-sm mt-3">Objednávku se nepodařilo odeslat. Zkuste to prosím znovu, nebo zavolejte {OBSAH.kontakt.tel1}.</p>
           )}
           <button type="submit" disabled={stav === 'odesilam' || kosik.polozky.length === 0}
-            className="w-full mt-4 bg-[#1a561a] hover:bg-[#133e13] text-white font-semibold py-3.5 rounded-xl transition-colors disabled:opacity-60 cursor-pointer">
+            className="w-full mt-4 bg-leaf hover:bg-leaf-dark text-white font-semibold py-3.5 rounded-md transition-colors disabled:opacity-60 cursor-pointer">
             {stav === 'odesilam' ? 'Odesílám…' : `Objednat za ${formatKc(kosik.soucet)}`}
           </button>
-          <p className="text-xs text-gray-400 mt-3 text-center">Potvrzení vám hned přijde e-mailem. Ozveme se jen tehdy, kdyby něco nebylo k dispozici.</p>
+          <p className="text-xs text-muted mt-3 text-center">Potvrzení vám hned přijde e-mailem. Ozveme se jen tehdy, kdyby něco nebylo k dispozici.</p>
         </aside>
       </form>
     </div>
