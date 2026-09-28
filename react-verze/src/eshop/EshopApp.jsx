@@ -9,6 +9,8 @@ import { nacistObjednavky, smazatVse } from './mujUcet'
 import { AuthProvider, useAuth } from './auth'
 import { nacistZUctu, STAVY } from './objednavkyDb'
 import Ucet from './Ucet'
+import PlatbaPrevodem from './PlatbaPrevodem'
+import { odkazNaPlatbu } from './platba'
 
 const BASE = import.meta.env.BASE_URL
 
@@ -213,6 +215,9 @@ function Hotovo({ info, onZpet }) {
         {info?.email ? <>Potvrzení jsme poslali na <strong>{info.email}</strong>. </> : null}
         Nic dalšího potvrzovat nemusíte – ozveme se jen tehdy, kdyby něco nebylo k dispozici.
       </p>
+      {info?.prevodem && info.castka > 0 && (
+        <div className="mb-8"><PlatbaPrevodem cislo={info.cislo} castka={info.castka} /></div>
+      )}
       {info?.souhrn && (
         <pre className="text-left whitespace-pre-wrap font-sans text-sm text-ink-soft bg-white rounded-lg p-5 mb-8">{info.souhrn}</pre>
       )}
@@ -286,7 +291,10 @@ function MojeObjednavky({ onKosik }) {
                 {(o.radky || []).map(r => <li key={r}>{r}</li>)}
               </ul>
               <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-3">
-                <p className="font-semibold text-ink">Celkem {o.celkem}</p>
+                <p className="font-semibold text-ink">
+                  Celkem {o.celkem}
+                  {o.prevod > 0 && <a href={odkazNaPlatbu(o.cislo, o.prevod)} className="link text-sm font-normal ml-3">QR kód k platbě</a>}
+                </p>
                 <button onClick={() => znovu(o)}
                   className="btn !py-2 !px-4 !text-sm">
                   Objednat znovu
@@ -306,8 +314,24 @@ function MojeObjednavky({ onKosik }) {
   )
 }
 
+function StrankaPlatby({ cislo, castka }) {
+  return (
+    <div className="max-w-2xl mx-auto px-6 py-14">
+      <h1 className="font-serif text-3xl sm:text-4xl text-ink mb-2">Platba objednávky</h1>
+      <p className="text-ink-soft mb-8">Objednávka <strong>{cislo}</strong></p>
+      <PlatbaPrevodem cislo={cislo} castka={castka} />
+      <a href="#" className="btn-outline mt-8">Zpět do obchodu</a>
+    </div>
+  )
+}
+
 function Obchod() {
   const [view, go] = useHashView()
+  const [platbaZOdkazu] = useState(() => {
+    const q = new URLSearchParams(location.search)
+    const cislo = q.get('platba'), castka = Number(q.get('castka'))
+    return cislo && castka > 0 ? { cislo, castka } : null
+  })
   const [kosikOpen, setKosikOpen] = useState(false)
   const [hotovo, setHotovo] = useState(null)
   const { polozky } = useKosik()
@@ -320,7 +344,8 @@ function Obchod() {
       <Hlavicka onKosik={() => setKosikOpen(true)} />
       <div className="h-16" />
       <main className="flex-1">
-        {aktualni === 'katalog' && <Katalog />}
+        {platbaZOdkazu && aktualni === 'katalog' && <StrankaPlatby {...platbaZOdkazu} />}
+        {!platbaZOdkazu && aktualni === 'katalog' && <Katalog />}
         {aktualni === 'pokladna' && <Pokladna onZpet={() => go('katalog')} onHotovo={info => { setHotovo(info); go('#hotovo') }} />}
         {aktualni === 'hotovo' && <Hotovo info={hotovo} onZpet={() => go('katalog')} />}
         {aktualni === 'objednavky' && <MojeObjednavky onKosik={() => setKosikOpen(true)} />}

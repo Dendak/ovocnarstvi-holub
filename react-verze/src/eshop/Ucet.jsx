@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { OBSAH } from '../data'
 import { useAuth, prelozChybu } from './auth'
-import { SSO_POSKYTOVATELE } from './supabaseConfig'
 
 const field = 'border border-line rounded-md px-4 py-3 text-sm w-full focus:outline-none focus:ring-2 focus:ring-leaf/20 focus:border-transparent bg-white'
 const primary = 'w-full bg-leaf hover:bg-leaf-dark text-white font-semibold py-3 rounded-md transition-colors disabled:opacity-60 cursor-pointer'
@@ -82,13 +81,13 @@ function Prihlaseni() {
       </p>
 
       <div className="bg-white rounded-lg p-6 space-y-4">
-        {rezim !== 'zapomenute' && SSO_POSKYTOVATELE.filter(p => SSO[p]).map(p => (
+        {rezim !== 'zapomenute' && auth.poskytovatele.filter(p => SSO[p]).map(p => (
           <button key={p} type="button" onClick={() => sso(p)} disabled={stav.nacita}
             className="w-full flex items-center justify-center gap-3 border border-line hover:border-ink/40 rounded-md py-3 text-sm font-medium text-ink-soft cursor-pointer disabled:opacity-60">
             {SSO[p].icon}{SSO[p].label}
           </button>
         ))}
-        {rezim !== 'zapomenute' && SSO_POSKYTOVATELE.length > 0 && (
+        {rezim !== 'zapomenute' && auth.poskytovatele.length > 0 && (
           <div className="flex items-center gap-3 text-xs text-muted"><span className="flex-1 h-px bg-line" />nebo e-mailem<span className="flex-1 h-px bg-line" /></div>
         )}
 

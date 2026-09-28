@@ -1,11 +1,11 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import { createClient } from '@supabase/supabase-js'
-import { SUPABASE_URL, SUPABASE_ANON_KEY } from './supabaseConfig'
+import { SUPABASE_URL, SUPABASE_ANON_KEY, UCTY_ZAPNUTE, SSO_POSKYTOVATELE } from './supabaseConfig'
 
 // PKCE keeps the auth callback in the query string (?code=…), so it doesn't
 // clash with the e-shop's hash navigation (#pokladna, #ucet …).
 // eslint-disable-next-line react-refresh/only-export-components
-export const supabase = SUPABASE_URL && SUPABASE_ANON_KEY
+export const supabase = UCTY_ZAPNUTE && SUPABASE_URL && SUPABASE_ANON_KEY
   ? createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth: { flowType: 'pkce', detectSessionInUrl: true, persistSession: true } })
   : null
 
@@ -31,6 +31,17 @@ export function AuthProvider({ children }) {
   const [uzivatel, setUzivatel] = useState(null)
   const [nacita, setNacita] = useState(!!supabase)
   const [obnovaHesla, setObnovaHesla] = useState(false)
+  const [poskytovatele, setPoskytovatele] = useState(SSO_POSKYTOVATELE)
+
+  // Show SSO buttons for whatever is switched on in Supabase (Authentication → Providers),
+  // so enabling Google there needs no redeploy.
+  useEffect(() => {
+    if (!supabase) return
+    fetch(`${SUPABASE_URL}/auth/v1/settings`, { headers: { apikey: SUPABASE_ANON_KEY } })
+      .then(r => (r.ok ? r.json() : null))
+      .then(d => { if (d?.external) setPoskytovatele(['google'].filter(p => d.external[p])) })
+      .catch(() => {})
+  }, [])
 
   useEffect(() => {
     if (!supabase) return
@@ -51,6 +62,7 @@ export function AuthProvider({ children }) {
     uzivatel,
     nacita,
     obnovaHesla,
+    poskytovatele,
     prihlasit: (email, heslo) => supabase.auth.signInWithPassword({ email, password: heslo }),
     registrovat: (email, heslo, jmeno) => supabase.auth.signUp({
       email, password: heslo, options: { data: { jmeno }, emailRedirectTo: zpet() },
@@ -60,7 +72,7 @@ export function AuthProvider({ children }) {
     noveHeslo: async heslo => { const r = await supabase.auth.updateUser({ password: heslo }); if (!r.error) setObnovaHesla(false); return r },
     ulozitProfil: udaje => supabase.auth.updateUser({ data: udaje }),
     odhlasit: () => supabase.auth.signOut(),
-  }), [uzivatel, nacita, obnovaHesla])
+  }), [uzivatel, nacita, obnovaHesla, poskytovatele])
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

@@ -5,6 +5,7 @@ import { useKosik } from './kosik'
 import { nacistUdaje, ulozitObjednavku } from './mujUcet'
 import { useAuth } from './auth'
 import { ulozitDoUctu } from './objednavkyDb'
+import { UCET, variabilniSymbol, odkazNaPlatbu } from './platba'
 
 // ============================================================
 //  PRAVIDLA OBJEDNÁVEK
@@ -68,7 +69,7 @@ export default function Pokladna({ onZpet, onHotovo }) {
     return {
       jmeno: u?.jmeno || '', telefon: u?.telefon || '', email: u?.email || '', adresa: u?.adresa || '',
       doruceni: u?.doruceni || 'rozvoz', termin: terminyRozvozu[0], terminOdberu: terminyOdberu[0],
-      poznamka: '', souhlas: false, zapamatovat: true,
+      platba: 'prevzeti', poznamka: '', souhlas: false, zapamatovat: true,
     }
   })
   const [chyby, setChyby] = useState({})
@@ -117,11 +118,13 @@ export default function Pokladna({ onZpet, onHotovo }) {
       ? `Dovoz až domů: ${den} dopoledne, ${f.adresa.trim()}, České Budějovice`
       : `Osobní odběr: ${den}, ${k.adresa}, ${k.mesto}`
     const celkem = `${formatKc(kosik.soucet)}${kosik.bezCeny ? ' + položky s cenou na dotaz' : ''}`
+    const prevodem = f.platba === 'prevod'
+    const vs = variabilniSymbol(cislo)
     const souhrn = [
       ...radky, '',
       `Celkem: ${celkem}${rozvoz ? ' (doprava v ceně)' : ''}`,
       prevzeti,
-      'Platba: při převzetí',
+      prevodem ? `Platba: převodem předem, VS ${vs}` : 'Platba: při převzetí',
       ...(f.poznamka.trim() ? [`Poznámka: ${f.poznamka.trim()}`] : []),
     ].join('\n')
 
@@ -138,10 +141,16 @@ export default function Pokladna({ onZpet, onHotovo }) {
       adresa: rozvoz ? f.adresa.trim() : '— (osobní odběr)',
       polozky: radky.join('\n'),
       celkem,
+      platba: prevodem ? `PŘEVODEM PŘEDEM – VS ${vs} – zkontrolovat příchod platby` : 'při převzetí',
       poznamka: f.poznamka.trim() || '—',
       _autoresponse:
         `Dobrý den,\n\nděkujeme – vaše objednávka ${cislo} je přijatá a platí. Nic dalšího potvrzovat nemusíte.\n\n` +
         `${souhrn}\n\n` +
+        (prevodem
+          ? `PLATBA PŘEVODEM\nČástka: ${formatKc(kosik.soucet)}\nČíslo účtu: ${UCET.cislo}\nVariabilní symbol: ${vs}\n` +
+            `IBAN: ${UCET.iban}\nQR kód k platbě: ${odkazNaPlatbu(cislo, kosik.soucet)}\n` +
+            `Zaplaťte prosím nejpozději den před termínem.\n\n`
+          : '') +
         `Pokud by něco z objednávky nebylo k dispozici, ozveme se vám. ` +
         `Změnu nebo zrušení nám prosím pošlete nejpozději den před termínem do ${UZAVERKA_HODINA}:00 ` +
         `na ${k.email} nebo zavolejte ${k.tel1}.\n\nOvocnářství Holub, ${k.adresa}, ${k.mesto}`,
@@ -156,6 +165,7 @@ export default function Pokladna({ onZpet, onHotovo }) {
       if (!res.ok) throw new Error()
       const zaznam = {
         cislo, datum: new Date().toISOString(), termin: `${rozvoz ? 'Dovoz' : 'Odběr'} ${den}`, celkem,
+        ...(prevodem ? { prevod: kosik.soucet } : {}),
         radky, polozky: kosik.polozky.map(p => ({ key: p.key, pocet: p.pocet })),
       }
       if (uzivatel) {
@@ -170,7 +180,7 @@ export default function Pokladna({ onZpet, onHotovo }) {
           : null,
       )
       kosik.vyprazdnit()
-      onHotovo({ cislo, souhrn, email: f.email.trim() })
+      onHotovo({ cislo, souhrn, email: f.email.trim(), prevodem, castka: kosik.soucet })
     } catch {
       setStav('chyba')
     }
@@ -239,6 +249,12 @@ export default function Pokladna({ onZpet, onHotovo }) {
             <p className="text-xs text-muted">Objednávky přijímáme nejpozději den předem do {UZAVERKA_HODINA}:00.</p>
           </div>
 
+          <div className="bg-white rounded-lg p-6 space-y-3">
+            <h2 className="font-semibold text-lg text-ink">Platba</h2>
+            <Volba name="platba" current={f.platba} onChange={set} value="prevzeti" label="Při převzetí" detail="hotově řidiči nebo při vyzvednutí" />
+            <Volba name="platba" current={f.platba} onChange={set} value="prevod" label="Převodem předem" detail="QR kód k platbě uvidíte hned po odeslání objednávky" />
+          </div>
+
           <div className="bg-white rounded-lg p-6">
             <label htmlFor="poznamka" className="text-xs font-medium text-ink-soft mb-1 block">Poznámka k objednávce</label>
             <textarea id="poznamka" rows={3} value={f.poznamka} onChange={e => set('poznamka', e.target.value)}
@@ -262,7 +278,7 @@ export default function Pokladna({ onZpet, onHotovo }) {
             <span className="font-semibold text-xl text-ink tabular-nums">{formatKc(kosik.soucet)}</span>
           </div>
           <p className="text-xs text-muted mb-5">
-            Doprava až domů je v ceně. Platíte až při převzetí.
+            Doprava až domů je v ceně. {f.platba === 'prevod' ? 'Platíte převodem předem.' : 'Platíte až při převzetí.'}
           </p>
 
           <label className="flex items-start gap-2 text-xs text-ink-soft mb-1 cursor-pointer">
