@@ -1,6 +1,8 @@
 <?php
 // Společné věci pro e-shop skripty: účet, odesílání e-mailů, úložiště objednávek, IMAP.
 if (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === basename(__FILE__)) { http_response_code(404); exit; }
+// Wedos CDN jinak odpovědi skriptů cachuje na 10 minut.
+header('Cache-Control: no-store, max-age=0');
 
 const ODESILATEL = 'objednavky@ovoce-holub.cz';
 const JMENO_ODESILATELE = 'Ovocnářství Holub';
