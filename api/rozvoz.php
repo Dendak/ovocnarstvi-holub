@@ -4,7 +4,7 @@
 require __DIR__ . '/_spolecne.php';
 header('Content-Type: text/html; charset=utf-8');
 header('X-Robots-Tag: noindex');
-header('Referrer-Policy: no-referrer');
+header('Referrer-Policy: strict-origin-when-cross-origin');
 
 const FARMA = 'Krtely 70, Netolice';
 const COOKIE = 'oh_rozvoz';
@@ -350,15 +350,15 @@ if (!$dny) {
     if ($gps) $obsah .= '<div id="mapa"></div>' . ($trasa ? '<p class="muted">Nejkratší okruh ze statku a zpět: <b>' . h(str_replace('.', ',', (string)$trasa['km'])) . ' km</b>, cca <b>' . h(intdiv($trasa['min'], 60) ? intdiv($trasa['min'], 60) . ' h ' . ($trasa['min'] % 60) . ' min' : $trasa['min'] . ' min') . '</b> jízdy. Čísla zastávek odpovídají pořadí jízdy.</p>' : '<p class="muted">Trasu po silnicích se teď nepodařilo spočítat – pořadí je podle vzdušné vzdálenosti.</p>');
     $stops = array_map(fn($o) => $o['plna_adresa'], $rozvoz);
     $posledni = array_pop($stops);
-    $trasa = 'https://www.google.com/maps/dir/?api=1&travelmode=driving&origin=' . urlencode(FARMA)
+    $navigace = 'https://www.google.com/maps/dir/?api=1&travelmode=driving&origin=' . urlencode(FARMA)
       . '&destination=' . urlencode($posledni) . ($stops ? '&waypoints=' . urlencode(implode('|', $stops)) : '');
-    $obsah .= '<div class="akce"><a class="hl" href="' . h($trasa) . '">Navigovat celou trasu (Google Maps)</a></div>';
+    $obsah .= '<div class="akce"><a class="hl" href="' . h($navigace) . '">Navigovat celou trasu (Google Maps)</a></div>';
     if (count($rozvoz) > 9) $obsah .= '<p class="muted">Google Maps v telefonu zvládne jen 9 zastávek najednou – další navigujte u jednotlivých adres.</p>';
     foreach ($rozvoz as $i => $o) $obsah .= $karta($o, $i + 1);
     if ($gps) {
       $obsah .= '<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script><script>'
         . 'const b=' . json_encode($gps, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG) . ',f=' . json_encode($farma) . ',t=' . json_encode($trasa['cara'] ?? null) . ';'
-        . 'const m=L.map("mapa");L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap"}).addTo(m);'
+        . 'const m=L.map("mapa");L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,referrerPolicy:"strict-origin-when-cross-origin",attribution:"© OpenStreetMap"}).addTo(m);'
         . 'const e=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));'
         . 'const pts=[];if(f){L.circleMarker(f,{radius:8,color:"#17241a",fillOpacity:1}).addTo(m).bindPopup("Statek – start a cíl");pts.push(f)}'
         . 'b.forEach(x=>{L.marker(x.gps,{icon:L.divIcon({className:"",html:`<span class="cislo">${x.n}</span>`,iconSize:[28,28],iconAnchor:[14,14]})}).addTo(m)'
