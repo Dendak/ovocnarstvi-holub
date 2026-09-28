@@ -6,9 +6,9 @@
 export const SUPABASE_URL = 'https://vautiqafcwlxuyzlfkac.supabase.co'
 export const SUPABASE_ANON_KEY = 'sb_publishable_CBcBegREJoaGr_o0BYnyuw_Vp0xkCHB'
 
-// Účty zapnout až po nastavení SMTP v Supabase (Authentication → SMTP),
-// jinak zákazníkům nedorazí e-mail pro potvrzení registrace.
-export const UCTY_ZAPNUTE = false
+// Vyžaduje SMTP v Supabase (Authentication → Emails → SMTP, odesílá objednavky@),
+// jinak zákazníkům nedorazí e-mail pro potvrzení registrace a obnovu hesla.
+export const UCTY_ZAPNUTE = true
 
 // Přihlášení přes další služby – musí být zapnuté i v Supabase → Authentication → Providers.
 // Google zatím nastavený není, proto je seznam prázdný.
