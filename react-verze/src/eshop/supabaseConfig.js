@@ -17,4 +17,4 @@ export const SSO_POSKYTOVATELE = []
 // Vlastní poskytovatelé (Supabase → Custom Providers) se v nastavení Supabase nehlásí,
 // proto se zapínají tady – až když jsou v Supabase opravdu nastavení.
 // 'custom:seznam' = Přihlášení přes Seznam (údaje o uživateli převádí api/seznam-userinfo.php).
-export const VLASTNI_POSKYTOVATELE = []
+export const VLASTNI_POSKYTOVATELE = ['custom:seznam']
