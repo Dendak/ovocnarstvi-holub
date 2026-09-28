@@ -2,8 +2,8 @@
 //  PLATBA PŘEVODEM – účet, na který zákazníci posílají peníze
 // ============================================================
 export const UCET = {
-  cislo: '1577877143/0800',
-  iban: 'CZ5208000000001577877143',
+  cislo: '662075319/0800',
+  iban: 'CZ3008000000000662075319',
   bic: 'GIBACZPX',
   majitel: 'Pavel Holub',
 }

@@ -336,6 +336,11 @@ function Obchod() {
   const [hotovo, setHotovo] = useState(null)
   const { polozky } = useKosik()
 
+  // Visits also nudge the bank-payment matcher on the hosting (it throttles itself).
+  useEffect(() => {
+    if (import.meta.env.PROD) fetch(`${import.meta.env.BASE_URL}api/platby.php`).catch(() => {})
+  }, [])
+
   // An empty cart can't go to checkout (e.g. after reload on #pokladna).
   const aktualni = view === 'pokladna' && polozky.length === 0 ? 'katalog' : view
 
