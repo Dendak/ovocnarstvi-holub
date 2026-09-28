@@ -91,6 +91,7 @@ table{width:100%;border-collapse:collapse;font-size:15px}td{padding:6px 0;border
 #mapa{height:340px;border-radius:10px;border:1px solid var(--line);margin:10px 0}
 input[type=password]{width:100%;padding:12px;border:1px solid var(--line);border-radius:8px;font-size:16px}
 .err{color:var(--berry);font-weight:bold}
+.akce a.waze{background:#33ccff;border-color:#33ccff;color:#0b2530;font-weight:bold}
 details.qr{margin-top:10px}details.qr summary{display:inline-block;list-style:none}details.qr summary::-webkit-details-marker{display:none}
 </style></head><body>' . $obsah . '</body></html>';
   exit;
@@ -167,6 +168,57 @@ Ovocnářství Holub
     ulozit_json("objednavky/$vs.json", $o);
   }
   header('Location: rozvoz.php?den=' . urlencode($_POST['den'] ?? '') . '#o' . $vs); exit;
+}
+
+// ---------- přehled účtenek (a export pro účetní) ----------
+if (isset($_GET['uctenky'])) {
+  $doklady = array_values(array_filter($vse, fn($o) => !empty($o['doklad'])));
+  usort($doklady, fn($a, $b) => strcmp($b['doklad']['cislo'], $a['doklad']['cislo']));
+  $mesice = array_values(array_unique(array_map(fn($o) => substr($o['doklad']['vystaveno'], 0, 7), $doklady)));
+  $mesic = in_array($_GET['mesic'] ?? '', $mesice, true) ? $_GET['mesic'] : ($mesice[0] ?? date('Y-m'));
+  $vMesici = array_values(array_filter($doklady, fn($o) => str_starts_with($o['doklad']['vystaveno'], $mesic)));
+  $sazba = (int)(PRODAVAJICI['sazba_dph'] ?? 0);
+  $rozpis = function (array $o) use ($sazba): array {
+    $c = cil_platby($o);
+    $z = PRODAVAJICI['platce_dph'] ? round($c / (1 + $sazba / 100), 2) : $c;
+    return [$c, $z, round($c - $z, 2)];
+  };
+  if (($_GET['uctenky'] ?? '') === 'csv') {
+    header('Content-Type: text/csv; charset=utf-8');
+    header('Content-Disposition: attachment; filename="uctenky-' . $mesic . '.csv"');
+    $out = fopen('php://output', 'w');
+    fwrite($out, "\xEF\xBB\xBF");
+    fputcsv($out, ['Číslo účtenky', 'Datum vystavení', 'DUZP', 'Objednávka', 'Zákazník', 'Úhrada', 'Sazba DPH %', 'Základ', 'DPH', 'Celkem'], ';', '"', '');
+    foreach (array_reverse($vMesici) as $o) {
+      [$c, $z, $dan] = $rozpis($o);
+      fputcsv($out, [$o['doklad']['cislo'], date('j.n.Y', strtotime($o['doklad']['vystaveno'])), !empty($o['datum']) ? date('j.n.Y', strtotime($o['datum'])) : '',
+        $o['cislo'], $o['jmeno'], $o['doklad']['uhrada'], $sazba, number_format($z, 2, ',', ''), number_format($dan, 2, ',', ''), number_format($c, 2, ',', '')], ';', '"', '');
+    }
+    exit;
+  }
+  $obsah = '<header><h1 style="font-size:19px">Účtenky</h1><span><a href="rozvoz.php">Objednávky</a> · <a href="?odhlasit=1">Odhlásit</a></span></header><main>';
+  if (PRODAVAJICI['ico'] === '') $obsah .= '<p class="box">Účtenky se začnou vystavovat po doplnění IČO.</p>';
+  $obsah .= '<p class="muted">Účtenka se vystaví sama, když je objednávka doručená a zaplacená. Zákazník dostane odkaz e-mailem.</p>';
+  if (!$doklady) {
+    $obsah .= '<p class="box">Zatím žádné účtenky.</p>';
+  } else {
+    $obsah .= '<nav class="dny">';
+    foreach ($mesice as $m) $obsah .= '<a href="?uctenky=1&mesic=' . h($m) . '"' . ($m === $mesic ? ' class="akt"' : '') . '>' . h(date('n/Y', strtotime("$m-01"))) . '</a>';
+    $obsah .= '</nav>';
+    $soucet = [0, 0, 0];
+    $obsah .= '<div class="box"><table><tr><td class="muted">Účtenka</td><td class="muted">Zákazník</td><td class="r muted">Celkem</td></tr>';
+    foreach ($vMesici as $o) {
+      [$c, $z, $dan] = $rozpis($o);
+      $soucet = [$soucet[0] + $c, $soucet[1] + $z, $soucet[2] + $dan];
+      $obsah .= '<tr><td><a href="' . h(odkaz_na_doklad($o)) . '">' . h($o['doklad']['cislo']) . '</a><br><span class="muted">' . h(date('j. n.', strtotime($o['doklad']['vystaveno']))) . ' · ' . h($o['doklad']['uhrada']) . '</span></td>'
+        . '<td>' . h($o['jmeno']) . '<br><span class="muted">' . h($o['cislo']) . '</span></td><td class="r">' . h(kc($c)) . '</td></tr>';
+    }
+    $f2 = fn($x) => number_format($x, 2, ',', ' ') . ' Kč';
+    $obsah .= '</table><p style="margin:12px 0 0"><b>Celkem za měsíc: ' . h($f2($soucet[0])) . '</b>'
+      . (PRODAVAJICI['platce_dph'] ? '<br><span class="muted">základ ' . h($f2($soucet[1])) . ' · DPH ' . $sazba . ' % ' . h($f2($soucet[2])) . '</span>' : '') . '</p></div>'
+      . '<div class="akce"><a class="hl" href="?uctenky=csv&mesic=' . h($mesic) . '">Stáhnout pro účetní (CSV / Excel)</a></div>';
+  }
+  stranka('Účtenky', $obsah . '</main>');
 }
 
 // ---------- výběr dne ----------
@@ -314,6 +366,16 @@ $karta = function (array $o, ?int $cislo) use ($platba, $tlacitko, $zaplaceno, $
       . '<p class="muted" style="margin:6px 0 0">Po připsání platby se objednávka označí jako zaplacená sama.</p></div></details>';
   }
   if (!empty($o['doklad'])) $s .= '<div style="margin-top:8px"><a href="' . h(odkaz_na_doklad($o)) . '">Účtenka č. ' . h($o['doklad']['cislo']) . '</a></div>';
+  if (!empty($o['rozvoz'])) {
+    $kam = $o['plna_adresa'] ?? $o['adresa'];
+    $waze = !empty($o['gps'])
+      ? 'https://waze.com/ul?ll=' . $o['gps'][0] . ',' . $o['gps'][1] . '&navigate=yes'
+      : 'https://waze.com/ul?q=' . rawurlencode($kam) . '&navigate=yes';
+    $gmaps = 'https://www.google.com/maps/dir/?api=1&travelmode=driving&destination='
+      . (!empty($o['gps']) ? $o['gps'][0] . ',' . $o['gps'][1] : urlencode($kam));
+    $s .= '<div class="akce"><a class="nav waze" href="' . h($waze) . '">Navigovat ve Waze</a>'
+      . '<a class="nav" href="' . h($gmaps) . '">Google Maps</a></div>';
+  }
   $s .= '<div class="akce">'
     . $tlacitko($o, 'doruceno', $hotovo ? 'Vrátit: nedoručeno' : (!empty($o['rozvoz']) ? '✓ Doručeno' : '✓ Vyzvednuto'), !$hotovo)
     . (!$zaplaceno($o) || !empty($o['zaplaceno_hotove']) ? $tlacitko($o, 'hotove', empty($o['zaplaceno_hotove']) ? 'Zaplaceno na místě' : 'Zrušit: zaplaceno na místě') : '')
@@ -322,7 +384,7 @@ $karta = function (array $o, ?int $cislo) use ($platba, $tlacitko, $zaplaceno, $
   return $s;
 };
 
-$obsah = '<header><h1 style="font-size:19px">Objednávky a rozvoz</h1><a href="?odhlasit=1">Odhlásit</a></header><main>';
+$obsah = '<header><h1 style="font-size:19px">Objednávky a rozvoz</h1><span><a href="?uctenky=1">Účtenky</a> · <a href="?odhlasit=1">Odhlásit</a></span></header><main>';
 if (!$dny) {
   $obsah .= '<p class="box">Zatím žádné objednávky z e-shopu.</p>';
 } else {
