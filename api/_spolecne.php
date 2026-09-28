@@ -21,7 +21,7 @@ const PRODAVAJICI = [
   'ico' => '',
   'dic' => '',
   'platce_dph' => false,
-  'zapis' => 'Fyzická osoba podnikající dle živnostenského zákona / zemědělský podnikatel',
+  'zapis' => '', // např. zápis v evidenci zemědělského podnikatele
 ];
 
 function data_cesta(string $soubor): string {
