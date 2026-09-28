@@ -214,9 +214,10 @@ $souradnice = function (string $adresa) use (&$geo, &$dotazu): ?array {
 $farma = $souradnice(FARMA) ?? $souradnice('Krtely, Česko');
 $body = [];
 foreach ($rozvoz as $i => $o) {
-  $adr = $o['adresa'] . ', České Budějovice';
+  // Adresa ověřená při objednávce v registru adres (RÚIAN) má přesné souřadnice; jinak dohledání přes OpenStreetMap.
+  $adr = !empty($o['adresa_overena']) ? $o['adresa_overena'] : $o['adresa'] . ', České Budějovice';
   $rozvoz[$i]['plna_adresa'] = $adr;
-  $rozvoz[$i]['gps'] = $souradnice($adr);
+  $rozvoz[$i]['gps'] = $o['gps_overena'] ?? $souradnice($adr);
 }
 if ($dotazu) ulozit_json('geo.json', $geo);
 
@@ -296,7 +297,10 @@ $karta = function (array $o, ?int $cislo) use ($platba, $tlacitko, $zaplaceno, $
     . '<span class="jm">' . h($o['jmeno']) . '</span> <span class="muted">' . h($o['cislo']) . '</span>';
   if (!empty($o['rozvoz'])) {
     $s .= '<div><a href="https://www.google.com/maps/dir/?api=1&destination=' . urlencode($o['plna_adresa'] ?? $o['adresa']) . '">' . h($o['adresa']) . '</a>'
-      . (empty($o['gps']) ? ' <span class="muted">(adresu se nepodařilo najít na mapě)</span>' : '') . '</div>';
+      . (!empty($o['adresa_overena'])
+          ? '<br><span class="muted" style="color:var(--leaf)">✓ ověřeno: ' . h($o['adresa_overena']) . '</span>'
+          : '<br><span class="stitek ceka">⚠ Adresa neověřená – zkontrolujte' . (empty($o['gps']) ? ', nenašla se ani na mapě' : '') . '</span>')
+      . '</div>';
   }
   if (!empty($o['telefon'])) $s .= '<div><a href="tel:' . h(preg_replace('/[^\d+]/', '', $o['telefon'])) . '">' . h($o['telefon']) . '</a></div>';
   $s .= '<ul>' . implode('', array_map(fn($r) => '<li>' . h($r) . '</li>', $o['polozky'] ?? [])) . '</ul>';

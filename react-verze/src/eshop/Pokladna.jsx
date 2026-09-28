@@ -52,6 +52,25 @@ async function poslatPotvrzeni({ email, jmeno, cislo, souhrn, castka, vs, detail
   } catch { /* the order itself is already sent */ }
 }
 
+// Address check against the official Czech address register (api/adresa.php → RÚIAN).
+// Returns { stav: 'ok' | 'vice' | 'nenalezeno' | 'mimo' | 'chyba', kandidati }.
+async function overitAdresu(adresa) {
+  try {
+    const res = await fetch(`${import.meta.env.BASE_URL}api/adresa.php?q=${encodeURIComponent(adresa)}`)
+    if (!res.ok) throw new Error()
+    const d = await res.json()
+    if (d.limit) return { stav: 'chyba', kandidati: [] }
+    const k = d.kandidati || []
+    const vMeste = k.filter(x => x.vMeste)
+    if (vMeste.length === 1) return { stav: 'ok', kandidati: vMeste, vybrana: vMeste[0] }
+    if (vMeste.length > 1) return { stav: 'vice', kandidati: vMeste }
+    if (k.length) return { stav: 'mimo', kandidati: k }
+    return { stav: 'nenalezeno', kandidati: [], chybiCislo: d.chybiCislo }
+  } catch {
+    return { stav: 'chyba', kandidati: [] }
+  }
+}
+
 function cisloObjednavky() {
   const d = new Date()
   const p = n => String(n).padStart(2, '0')
@@ -60,6 +79,31 @@ function cisloObjednavky() {
 
 function Chyba({ text }) {
   return text ? <p className="text-berry text-xs mt-1">{text}</p> : null
+}
+
+function OvereniAdresy({ overeni, aktualni, vybrat }) {
+  if (!overeni.stav || overeni.q !== aktualni || overeni.stav === 'chyba') return null
+  if (overeni.stav === 'overuji') return <p className="text-xs text-muted mt-1.5">Ověřuji adresu…</p>
+  if (overeni.stav === 'ok') return <p className="text-xs text-leaf font-medium mt-1.5">✓ {overeni.vybrana.adresa}</p>
+  if (overeni.stav === 'vice') return (
+    <fieldset className="mt-2 space-y-1.5">
+      <legend className="text-xs font-medium text-ink mb-1">Upřesněte prosím adresu:</legend>
+      {overeni.kandidati.map(k => (
+        <label key={k.adresa} className="flex gap-2 items-start text-sm cursor-pointer">
+          <input type="radio" name="adresaKandidat" checked={overeni.vybrana?.adresa === k.adresa} onChange={() => vybrat(k)} className="mt-1 accent-leaf" />
+          {k.adresa}
+        </label>
+      ))}
+    </fieldset>
+  )
+  if (overeni.stav === 'mimo') return (
+    <p className="text-xs text-berry mt-1.5">Adresa vychází mimo České Budějovice ({overeni.kandidati[0].adresa}). Dovážíme jen po Budějovicích – případně zvolte osobní odběr.</p>
+  )
+  return (
+    <p className="text-xs text-berry mt-1.5">
+      {overeni.chybiCislo ? 'Doplňte prosím číslo domu.' : 'Tuto adresu jsme nenašli v registru adres. Zkontrolujte název ulice a číslo domu.'}
+    </p>
+  )
 }
 
 function Volba({ name, value, current, onChange, label, detail }) {
@@ -90,6 +134,8 @@ export default function Pokladna({ onZpet, onHotovo }) {
   })
   const [chyby, setChyby] = useState({})
   const [stav, setStav] = useState(null)
+  const [overeni, setOvereni] = useState({ q: '', stav: null, kandidati: [] })
+  const [neovereneOK, setNeovereneOK] = useState(false)
   const set = (k, v) => setF(prev => ({ ...prev, [k]: v }))
   const auth = useAuth()
   const uzivatel = auth.uzivatel
@@ -117,12 +163,38 @@ export default function Pokladna({ onZpet, onHotovo }) {
     return e
   }
 
+  const zkontrolovatAdresu = async () => {
+    const q = f.adresa.trim()
+    if (f.doruceni !== 'rozvoz' || q.length < 3) return overeni
+    if (overeni.q === q && overeni.stav && overeni.stav !== 'overuji') return overeni
+    setOvereni({ q, stav: 'overuji', kandidati: [] })
+    const v = { q, ...(await overitAdresu(q)) }
+    setOvereni(v)
+    setNeovereneOK(false)
+    return v
+  }
+
   const odeslat = async ev => {
     ev.preventDefault()
     const e = validovat()
     setChyby(e)
     if (Object.keys(e).length) return
+
+    let adr = null
+    if (f.doruceni === 'rozvoz') {
+      adr = await zkontrolovatAdresu()
+      if (adr.stav === 'vice' && !adr.vybrana) {
+        setChyby({ adresa: 'Vyberte prosím přesnou adresu ze seznamu.' })
+        return
+      }
+      if ((adr.stav === 'nenalezeno' || adr.stav === 'mimo') && !neovereneOK) {
+        setNeovereneOK(true)
+        setChyby({ adresa: 'Zkontrolujte prosím adresu. Pokud je správně, klikněte znovu na Objednat.' })
+        return
+      }
+    }
     setStav('odesilam')
+    const adresaDovozu = adr?.vybrana ? adr.vybrana.adresa : `${f.adresa.trim()}, České Budějovice`
 
     const k = OBSAH.kontakt
     const cislo = cisloObjednavky()
@@ -131,7 +203,7 @@ export default function Pokladna({ onZpet, onHotovo }) {
     const rozvoz = f.doruceni === 'rozvoz'
     const den = rozvoz ? f.termin : f.terminOdberu
     const prevzeti = rozvoz
-      ? `Dovoz až domů: ${den} dopoledne, ${f.adresa.trim()}, České Budějovice`
+      ? `Dovoz až domů: ${den} dopoledne, ${adresaDovozu}`
       : `Osobní odběr: ${den}, ${k.adresa}, ${k.mesto}`
     const celkem = `${formatKc(kosik.soucet)}${kosik.bezCeny ? ' + položky s cenou na dotaz' : ''}`
     const prevodem = f.platba === 'prevod'
@@ -154,7 +226,7 @@ export default function Pokladna({ onZpet, onHotovo }) {
       jmeno: f.jmeno.trim(),
       telefon: f.telefon.trim(),
       email: f.email.trim(),
-      adresa: rozvoz ? f.adresa.trim() : '— (osobní odběr)',
+      adresa: rozvoz ? `${adresaDovozu}${adr?.vybrana ? ' (ověřeno v registru adres)' : ' – NEOVĚŘENO, zkontrolovat'}` : '— (osobní odběr)',
       polozky: radky.join('\n'),
       celkem,
       platba: prevodem ? `PŘEVODEM PŘEDEM – VS ${vs} – zkontrolovat příchod platby` : 'při převzetí',
@@ -190,6 +262,7 @@ export default function Pokladna({ onZpet, onHotovo }) {
         // For the delivery overview page on the hosting (api/rozvoz.php).
         detail: {
           rozvoz, den, telefon: f.telefon.trim(), adresa: rozvoz ? f.adresa.trim() : '',
+          adresaOverena: rozvoz && adr?.vybrana ? adr.vybrana.adresa : '', gps: rozvoz && adr?.vybrana ? adr.vybrana.gps : null,
           polozky: radky, celkem: kosik.soucet, platba: prevodem ? 'prevod' : 'prevzeti',
           poznamka: f.poznamka.trim(),
         },
@@ -256,7 +329,10 @@ export default function Pokladna({ onZpet, onHotovo }) {
                 </div>
                 <div>
                   <label htmlFor="adresa" className="text-xs font-medium text-ink-soft mb-1 block">Adresa v Českých Budějovicích *</label>
-                  <input id="adresa" autoComplete="street-address" value={f.adresa} onChange={e => set('adresa', e.target.value)} placeholder="Ulice a číslo" className={field} />
+                  <input id="adresa" autoComplete="street-address" value={f.adresa} onChange={e => set('adresa', e.target.value)}
+                    onBlur={zkontrolovatAdresu} placeholder="Ulice a číslo domu" className={field} />
+                  <OvereniAdresy overeni={overeni} aktualni={f.adresa.trim()}
+                    vybrat={k => { setOvereni(o => ({ ...o, vybrana: k })); setChyby(c => ({ ...c, adresa: undefined })) }} />
                   <Chyba text={chyby.adresa} />
                 </div>
               </div>
