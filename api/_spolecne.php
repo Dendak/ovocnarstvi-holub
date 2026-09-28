@@ -17,11 +17,13 @@ const DATA = __DIR__ . '/data';
 // Údaje prodávajícího na účtenkách. Účtenky se vystavují, až je vyplněné IČO.
 const PRODAVAJICI = [
   'jmeno' => 'Pavel Holub',
-  'adresa' => 'Krtely 70, 384 11 Netolice',
-  'ico' => '',
-  'dic' => '',
-  'platce_dph' => false,
-  'zapis' => '', // např. zápis v evidenci zemědělského podnikatele
+  'adresa' => 'Krtely 70, 384 11 Malovice',
+  'ico' => '12320030',
+  'dic' => 'CZ6803300394',
+  'platce_dph' => true,
+  'sazba_dph' => 12, // snížená sazba – ovoce a mošty; ověřit s účetní
+  'telefon' => '+420 607 575 271',
+  'zapis' => '',
 ];
 
 function data_cesta(string $soubor): string {

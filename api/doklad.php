@@ -22,6 +22,11 @@ foreach ($o['polozky'] ?? [] as $r) {
 }
 if ($radky === '') $radky = '<tr><td colspan="2" style="white-space:pre-line">' . h($o['souhrn']) . '</td></tr>';
 $celkem = cil_platby($o);
+// Ceny v e-shopu jsou konečné (včetně DPH) – základ a daň se dopočítají.
+$sazba = (int)($p['sazba_dph'] ?? 0);
+$zaklad = $p['platce_dph'] ? round($celkem / (1 + $sazba / 100), 2) : 0;
+$dan = $p['platce_dph'] ? round($celkem - $zaklad, 2) : 0;
+$kc2 = fn(float $x) => number_format($x, 2, ',', ' ') . ' Kč';
 $datum = date('j. n. Y', strtotime($d['vystaveno']));
 ?><!doctype html>
 <html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -40,20 +45,28 @@ table{width:100%;border-collapse:collapse;margin-top:12px}td{padding:8px 0;borde
 <div class="list">
   <p class="muted" style="margin:0">Ovocnářství Holub</p>
   <h1>Účtenka č. <?= h($d['cislo']) ?></h1>
-  <p class="muted">Doklad o prodeji · objednávka <?= h($o['cislo']) ?></p>
+  <p class="muted"><?= $p['platce_dph'] ? 'Zjednodušený daňový doklad' : 'Doklad o prodeji' ?> · objednávka <?= h($o['cislo']) ?></p>
   <div class="strany">
-    <div><b>Prodávající</b><?= h($p['jmeno']) ?><br><?= h($p['adresa']) ?><br>IČO: <?= h($p['ico']) ?><?= $p['dic'] ? '<br>DIČ: ' . h($p['dic']) : '' ?>
+    <div><b>Prodávající</b><?= h($p['jmeno']) ?><br><?= h($p['adresa']) ?><br>IČO: <?= h($p['ico']) ?><?= $p['dic'] ? '<br>DIČ: ' . h($p['dic']) : '' ?><?= !empty($p['telefon']) ? '<br>Tel.: ' . h($p['telefon']) : '' ?>
       <?= $p['zapis'] ? '<br><span class="muted">' . h($p['zapis']) . '</span>' : '' ?></div>
     <div><b>Kupující</b><?= h($o['jmeno']) ?><?= !empty($o['adresa']) ? '<br>' . h($o['adresa']) . ', České Budějovice' : '' ?></div>
   </div>
-  <p>Datum vystavení: <?= h($datum) ?><br>Datum prodeje: <?= h(!empty($o['datum']) ? date('j. n. Y', strtotime($o['datum'])) : $datum) ?><br>
+  <p>Datum vystavení: <?= h($datum) ?><br><?= $p['platce_dph'] ? 'Datum uskutečnění zdanitelného plnění' : 'Datum prodeje' ?>: <?= h(!empty($o['datum']) ? date('j. n. Y', strtotime($o['datum'])) : $datum) ?><br>
     Úhrada: <?= h($d['uhrada']) ?> – uhrazeno</p>
   <table>
     <?= $radky ?>
     <?php if (!empty($o['rozvoz'])): ?><tr><td>Doprava až domů</td><td class="r">v ceně</td></tr><?php endif ?>
-    <tr class="celkem"><td>Celkem</td><td class="r"><?= h(kc($celkem)) ?></td></tr>
+    <tr class="celkem"><td>Celkem<?= $p['platce_dph'] ? ' včetně DPH' : '' ?></td><td class="r"><?= h(kc($celkem)) ?></td></tr>
   </table>
-  <p class="muted"><?= $p['platce_dph'] ? 'Ceny jsou uvedeny včetně DPH.' : 'Prodávající není plátcem DPH.' ?></p>
+  <?php if ($p['platce_dph']): ?>
+  <table style="margin-top:4px;font-size:14px">
+    <tr><td class="muted">Sazba DPH</td><td class="r muted">Základ daně</td><td class="r muted">DPH</td><td class="r muted">Celkem</td></tr>
+    <tr><td><?= $sazba ?> %</td><td class="r"><?= h($kc2($zaklad)) ?></td><td class="r"><?= h($kc2($dan)) ?></td><td class="r"><?= h($kc2($celkem)) ?></td></tr>
+  </table>
+  <p class="muted">Ceny jsou uvedeny včetně DPH.</p>
+  <?php else: ?>
+  <p class="muted">Prodávající není plátcem DPH.</p>
+  <?php endif ?>
 </div>
 <button class="tisk" onclick="print()">Vytisknout / uložit jako PDF</button>
 </body></html>

@@ -220,7 +220,7 @@ foreach ($rozvoz as $i => $o) {
 }
 if ($dotazu) ulozit_json('geo.json', $geo);
 
-// Pořadí zastávek: vždy nejbližší další (vzdušnou čarou) od statku.
+// Pořadí zastávek: nejdřív hrubě „vždy k nejbližší další“, pak nejkratší okruh po silnicích (OSRM).
 $vzd = fn($a, $b) => hypot(($a[0] - $b[0]) * 111, ($a[1] - $b[1]) * 111 * cos(deg2rad($a[0])));
 $zbyva = $rozvoz; $poradi = []; $kde = $farma;
 while ($zbyva) {
@@ -231,6 +231,37 @@ while ($zbyva) {
   array_splice($zbyva, $nej, 1);
 }
 $rozvoz = $poradi;
+
+$trasa = null;
+$sGps = array_values(array_filter($rozvoz, fn($o) => !empty($o['gps'])));
+if ($farma && $sGps) {
+  $body = array_merge([$farma], array_map(fn($o) => $o['gps'], $sGps));
+  $klicTrasy = sha1(json_encode($body));
+  $trasy = nacist_json('trasy.json', []);
+  if (!isset($trasy[$klicTrasy])) {
+    $souradniceUrl = implode(';', array_map(fn($b) => $b[1] . ',' . $b[0], $body));
+    $url = "https://router.project-osrm.org/trip/v1/driving/$souradniceUrl?source=first&roundtrip=true&geometries=geojson&overview=full";
+    $ctx = stream_context_create(['http' => ['timeout' => 10, 'header' => "User-Agent: ovoce-holub.cz rozvoz\r\n"]]);
+    $r = json_decode((string)@file_get_contents($url, false, $ctx), true);
+    if (($r['code'] ?? '') === 'Ok') {
+      $trasy = array_slice($trasy, -50, null, true);
+      $trasy[$klicTrasy] = [
+        'poradi' => array_map(fn($w) => (int)$w['waypoint_index'], $r['waypoints']),
+        'km' => round($r['trips'][0]['distance'] / 1000, 1),
+        'min' => (int)round($r['trips'][0]['duration'] / 60),
+        'cara' => array_map(fn($c) => [round($c[1], 5), round($c[0], 5)], $r['trips'][0]['geometry']['coordinates']),
+      ];
+      ulozit_json('trasy.json', $trasy);
+    }
+  }
+  if (isset($trasy[$klicTrasy])) {
+    $trasa = $trasy[$klicTrasy];
+    // waypoint_index = pořadí bodu na trase; bod 0 je statek.
+    $serazene = $sGps;
+    usort($serazene, fn($x, $y) => $trasa['poradi'][array_search($x, $sGps, true) + 1] <=> $trasa['poradi'][array_search($y, $sGps, true) + 1]);
+    $rozvoz = array_merge($serazene, array_values(array_filter($rozvoz, fn($o) => empty($o['gps']))));
+  }
+}
 
 // ---------- co naložit ----------
 $nalozit = [];
@@ -255,7 +286,7 @@ $platba = function (array $o) use ($cil): string {
 // Řetězec QR Platby (stejný formát jako na webu).
 $spd = fn(array $o) => implode('*', ['SPD*1.0', 'ACC:' . UCET['iban'] . '+GIBACZPX', 'AM:' . number_format($cil($o) - (float)$o['zaplaceno'], 2, '.', ''),
   'CC:CZK', 'X-VS:' . $o['vs'], 'RN:PAVEL HOLUB', 'MSG:Objednavka ' . $o['cislo']]);
-$tlacitko = fn($o, $akce, $text, $hl = false) => '<form method="post"><input type="hidden" name="vs" value="' . h($o['vs']) . '">'
+$tlacitko = fn($o, $akce, $text, $hl = false) => '<form method="post"' . ($akce === 'zruseno' && empty($o['zruseno']) ? ' onsubmit="return confirm(' . h(json_encode("Opravdu stornovat objednávku {$o['cislo']} ({$o['jmeno']})?", JSON_UNESCAPED_UNICODE)) . ')"' : '') . '><input type="hidden" name="vs" value="' . h($o['vs']) . '">'
   . '<input type="hidden" name="akce" value="' . $akce . '"><input type="hidden" name="den" value="' . h($GLOBALS['vybrany']) . '">'
   . '<button' . ($hl ? ' class="hl"' : '') . '>' . $text . '</button></form>';
 $karta = function (array $o, ?int $cislo) use ($platba, $tlacitko, $zaplaceno, $spd, $cil): string {
@@ -310,8 +341,13 @@ if (!$dny) {
 
   if ($rozvoz) {
     $obsah .= '<h2>Rozvoz – Č. Budějovice</h2>';
-    $gps = array_values(array_filter(array_map(fn($o) => $o['gps'] ? ['gps' => $o['gps'], 'jm' => $o['jmeno'], 'adr' => $o['adresa']] : null, $rozvoz)));
-    if ($gps) $obsah .= '<div id="mapa"></div>';
+    $gps = [];
+    foreach ($rozvoz as $i => $o) if ($o['gps']) $gps[] = [
+      'n' => $i + 1, 'gps' => $o['gps'], 'jm' => $o['jmeno'], 'adr' => $o['adresa'],
+      'co' => $o['polozky'] ?? [],
+      'vybrat' => $zaplaceno($o) ? 'zaplaceno' : 'vybrat ' . kc($cil($o) - (int)$o['zaplaceno']),
+    ];
+    if ($gps) $obsah .= '<div id="mapa"></div>' . ($trasa ? '<p class="muted">Nejkratší okruh ze statku a zpět: <b>' . h(str_replace('.', ',', (string)$trasa['km'])) . ' km</b>, cca <b>' . h(intdiv($trasa['min'], 60) ? intdiv($trasa['min'], 60) . ' h ' . ($trasa['min'] % 60) . ' min' : $trasa['min'] . ' min') . '</b> jízdy. Čísla zastávek odpovídají pořadí jízdy.</p>' : '<p class="muted">Trasu po silnicích se teď nepodařilo spočítat – pořadí je podle vzdušné vzdálenosti.</p>');
     $stops = array_map(fn($o) => $o['plna_adresa'], $rozvoz);
     $posledni = array_pop($stops);
     $trasa = 'https://www.google.com/maps/dir/?api=1&travelmode=driving&origin=' . urlencode(FARMA)
@@ -321,11 +357,14 @@ if (!$dny) {
     foreach ($rozvoz as $i => $o) $obsah .= $karta($o, $i + 1);
     if ($gps) {
       $obsah .= '<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script><script>'
-        . 'const b=' . json_encode($gps, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG) . ',f=' . json_encode($farma) . ';'
+        . 'const b=' . json_encode($gps, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG) . ',f=' . json_encode($farma) . ',t=' . json_encode($trasa['cara'] ?? null) . ';'
         . 'const m=L.map("mapa");L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap"}).addTo(m);'
-        . 'const pts=[];if(f){L.circleMarker(f,{radius:7,color:"#17241a",fillOpacity:1}).addTo(m).bindPopup("Statek");pts.push(f)}'
-        . 'b.forEach((x,i)=>{L.marker(x.gps,{icon:L.divIcon({className:"",html:`<span class="cislo">${i+1}</span>`,iconSize:[28,28],iconAnchor:[14,14]})}).addTo(m).bindPopup(`${i+1}. ${x.jm}<br>${x.adr}`);pts.push(x.gps)});'
-        . 'L.polyline(pts,{color:"#2f5a33",weight:3,opacity:.6,dashArray:"6 6"}).addTo(m);m.fitBounds(pts,{padding:[30,30]});</script>';
+        . 'const e=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));'
+        . 'const pts=[];if(f){L.circleMarker(f,{radius:8,color:"#17241a",fillOpacity:1}).addTo(m).bindPopup("Statek – start a cíl");pts.push(f)}'
+        . 'b.forEach(x=>{L.marker(x.gps,{icon:L.divIcon({className:"",html:`<span class="cislo">${x.n}</span>`,iconSize:[28,28],iconAnchor:[14,14]})}).addTo(m)'
+        . '.bindPopup(`<b>${x.n}. ${e(x.jm)}</b><br>${e(x.adr)}<br>${x.co.map(e).join("<br>")}<br><b>${e(x.vybrat)}</b>`);pts.push(x.gps)});'
+        . 'if(t){L.polyline(t,{color:"#2f5a33",weight:5,opacity:.75}).addTo(m)}else{L.polyline(pts,{color:"#2f5a33",weight:3,opacity:.6,dashArray:"6 6"}).addTo(m)}'
+        . 'm.fitBounds(t||pts,{padding:[30,30]});</script>';
     }
   }
   if ($odber) {
