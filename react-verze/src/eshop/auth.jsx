@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import { createClient } from '@supabase/supabase-js'
-import { SUPABASE_URL, SUPABASE_ANON_KEY, UCTY_ZAPNUTE, SSO_POSKYTOVATELE } from './supabaseConfig'
+import { SUPABASE_URL, SUPABASE_ANON_KEY, UCTY_ZAPNUTE, SSO_POSKYTOVATELE, VLASTNI_POSKYTOVATELE } from './supabaseConfig'
 
 // PKCE keeps the auth callback in the query string (?code=…), so it doesn't
 // clash with the e-shop's hash navigation (#pokladna, #ucet …).
@@ -31,7 +31,7 @@ export function AuthProvider({ children }) {
   const [uzivatel, setUzivatel] = useState(null)
   const [nacita, setNacita] = useState(!!supabase)
   const [obnovaHesla, setObnovaHesla] = useState(false)
-  const [poskytovatele, setPoskytovatele] = useState(SSO_POSKYTOVATELE)
+  const [poskytovatele, setPoskytovatele] = useState([...SSO_POSKYTOVATELE, ...VLASTNI_POSKYTOVATELE])
 
   // Show SSO buttons for whatever is switched on in Supabase (Authentication → Providers),
   // so enabling Google there needs no redeploy.
@@ -39,7 +39,7 @@ export function AuthProvider({ children }) {
     if (!supabase) return
     fetch(`${SUPABASE_URL}/auth/v1/settings`, { headers: { apikey: SUPABASE_ANON_KEY } })
       .then(r => (r.ok ? r.json() : null))
-      .then(d => { if (d?.external) setPoskytovatele(['google'].filter(p => d.external[p])) })
+      .then(d => { if (d?.external) setPoskytovatele([...['google', 'azure', 'apple'].filter(p => d.external[p]), ...VLASTNI_POSKYTOVATELE]) })
       .catch(() => {})
   }, [])
 
@@ -67,7 +67,11 @@ export function AuthProvider({ children }) {
     registrovat: (email, heslo, jmeno) => supabase.auth.signUp({
       email, password: heslo, options: { data: { jmeno }, emailRedirectTo: zpet() },
     }),
-    prihlasitPres: provider => supabase.auth.signInWithOAuth({ provider, options: { redirectTo: zpet() } }),
+    prihlasitPres: provider => supabase.auth.signInWithOAuth({
+      provider,
+      // Microsoft vrací e-mail jen s tímto scope.
+      options: { redirectTo: zpet(), ...(provider === 'azure' ? { scopes: 'email' } : {}) },
+    }),
     zapomenuteHeslo: email => supabase.auth.resetPasswordForEmail(email, { redirectTo: zpet() }),
     noveHeslo: async heslo => { const r = await supabase.auth.updateUser({ password: heslo }); if (!r.error) setObnovaHesla(false); return r },
     ulozitProfil: udaje => supabase.auth.updateUser({ data: udaje }),

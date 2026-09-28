@@ -7,6 +7,24 @@ const primary = 'w-full bg-leaf hover:bg-leaf-dark text-white font-semibold py-3
 const MIN_HESLO = 8
 
 const SSO = {
+  'custom:seznam': {
+    label: 'Pokračovat přes Seznam',
+    icon: (
+      <svg className="w-5 h-5" viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="12" r="12" fill="#CC0000" />
+        <text x="12" y="17" textAnchor="middle" fontSize="15" fontWeight="700" fontFamily="Arial, sans-serif" fill="#fff">S</text>
+      </svg>
+    ),
+  },
+  azure: {
+    label: 'Pokračovat přes Microsoft',
+    icon: (
+      <svg className="w-5 h-5" viewBox="0 0 24 24" aria-hidden="true">
+        <rect x="1" y="1" width="10.5" height="10.5" fill="#F25022" /><rect x="12.5" y="1" width="10.5" height="10.5" fill="#7FBA00" />
+        <rect x="1" y="12.5" width="10.5" height="10.5" fill="#00A4EF" /><rect x="12.5" y="12.5" width="10.5" height="10.5" fill="#FFB900" />
+      </svg>
+    ),
+  },
   google: {
     label: 'Pokračovat přes Google',
     icon: (
