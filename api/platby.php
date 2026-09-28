@@ -29,8 +29,8 @@ try {
 
 [$ok, $radky] = $imap->prikaz('SELECT INBOX');
 $uidValidity = preg_match('/UIDVALIDITY (\d+)/', implode('', $radky), $m) ? $m[1] : '';
-if (($stav['uidvalidity'] ?? '') !== $uidValidity) {
-  $stav = ['kontrola' => $stav['kontrola'], 'uidvalidity' => $uidValidity, 'posledni' => 0, 'zpracovane' => []];
+if (($stav['uidvalidity'] ?? '') !== $uidValidity || isset($_GET['znovu'])) {
+  $stav = ['kontrola' => $stav['kontrola'], 'uidvalidity' => $uidValidity, 'posledni' => 0, 'zpracovane' => $stav['zpracovane'] ?? []];
   $hledat = 'UID SEARCH SINCE ' . date('j-M-Y', strtotime('-7 days'));
 } else {
   $hledat = 'UID SEARCH UID ' . (($stav['posledni'] ?? 0) + 1) . ':*';
@@ -41,7 +41,7 @@ foreach ($radky as $r) if (preg_match('/^\* SEARCH ([\d ]+)/', $r, $m)) $uids = 
 $uids = array_values(array_filter($uids, fn($u) => $u > ($stav['posledni'] ?? 0)));
 sort($uids);
 
-$vysledek = ['ok' => true, 'zprav' => count($uids), 'sparovano' => 0];
+$vysledek = ['ok' => true, 'zprav' => count($uids), 'z_banky' => 0, 'platby' => [], 'sparovano' => 0];
 register_shutdown_function(function () use (&$stav) { ulozit_json('stav.json', $stav); });
 foreach ($uids as $uid) {
   [, , $literaly] = $imap->prikaz("UID FETCH $uid BODY.PEEK[]");
@@ -49,8 +49,10 @@ foreach ($uids as $uid) {
   if (!$literaly) continue;
   $text = text_zpravy($literaly[0]);
   if (!str_contains($text, 'Česká spořitelna') && !str_contains($literaly[0], 'csas.cz')) continue;
+  $vysledek['z_banky']++;
   $p = platba_z_upozorneni($text);
   if (!$p) continue;
+  $vysledek['platby'][] = ['vs' => $p['vs'], 'castka' => $p['castka']];
 
   // Stejné upozornění může dorazit dvakrát (přeposlání + kopie).
   $klic = sha1($p['datum'] . '|' . $p['vs'] . '|' . $p['castka'] . '|' . $p['protiucet']);
@@ -99,5 +101,6 @@ foreach ($uids as $uid) {
 }
 $imap->konec();
 unset($stav['chyba']);
+$stav['vysledek'] = $vysledek + ['cas' => date('c')];
 ulozit_json('stav.json', $stav);
 konec($vysledek);
