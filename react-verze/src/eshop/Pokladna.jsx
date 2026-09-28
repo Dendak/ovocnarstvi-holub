@@ -5,7 +5,8 @@ import { useKosik } from './kosik'
 import { nacistUdaje, ulozitObjednavku } from './mujUcet'
 import { useAuth } from './auth'
 import { ulozitDoUctu } from './objednavkyDb'
-import { UCET, variabilniSymbol, odkazNaPlatbu } from './platba'
+import QRCode from 'qrcode'
+import { spd, variabilniSymbol } from './platba'
 
 // ============================================================
 //  PRAVIDLA OBJEDNÁVEK
@@ -34,6 +35,21 @@ function terminy(dny, pocet = 6, now = new Date()) {
     out.push(`${DNY[den.getDay()]} ${den.getDate()}. ${den.getMonth() + 1}.`)
   }
   return out
+}
+
+// Customer confirmation goes out from objednavky@ via a PHP script on the Wedos hosting
+// (FormSubmit cannot auto-reply to AJAX submissions). Failure must not block the order.
+async function poslatPotvrzeni({ email, jmeno, cislo, souhrn, castka, vs }) {
+  try {
+    const qr = castka > 0
+      ? await QRCode.toDataURL(spd({ castka, vs, zprava: `Objednavka ${cislo}` }), { margin: 1, width: 400, errorCorrectionLevel: 'M' })
+      : ''
+    await fetch(`${import.meta.env.BASE_URL}api/potvrzeni.php`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, jmeno, cislo, souhrn, castka, qr }),
+    })
+  } catch { /* the order itself is already sent */ }
 }
 
 function cisloObjednavky() {
@@ -143,17 +159,6 @@ export default function Pokladna({ onZpet, onHotovo }) {
       celkem,
       platba: prevodem ? `PŘEVODEM PŘEDEM – VS ${vs} – zkontrolovat příchod platby` : 'při převzetí',
       poznamka: f.poznamka.trim() || '—',
-      _autoresponse:
-        `Dobrý den,\n\nděkujeme – vaše objednávka ${cislo} je přijatá a platí. Nic dalšího potvrzovat nemusíte.\n\n` +
-        `${souhrn}\n\n` +
-        (prevodem
-          ? `PLATBA PŘEVODEM\nČástka: ${formatKc(kosik.soucet)}\nČíslo účtu: ${UCET.cislo}\nVariabilní symbol: ${vs}\n` +
-            `IBAN: ${UCET.iban}\nQR kód k platbě: ${odkazNaPlatbu(cislo, kosik.soucet)}\n` +
-            `Zaplaťte prosím nejpozději den před termínem.\n\n`
-          : '') +
-        `Pokud by něco z objednávky nebylo k dispozici, ozveme se vám. ` +
-        `Změnu nebo zrušení nám prosím pošlete nejpozději den před termínem do ${UZAVERKA_HODINA}:00 ` +
-        `na ${k.emailObjednavky} nebo zavolejte ${k.tel1}.\n\nOvocnářství Holub, ${k.adresa}, ${k.mesto}`,
     }
 
     try {
@@ -179,6 +184,10 @@ export default function Pokladna({ onZpet, onHotovo }) {
           ? { jmeno: f.jmeno.trim(), telefon: f.telefon.trim(), email: f.email.trim(), adresa: f.adresa.trim(), doruceni: f.doruceni }
           : null,
       )
+      await poslatPotvrzeni({
+        email: f.email.trim(), jmeno: f.jmeno.trim(), cislo, souhrn,
+        castka: prevodem ? kosik.soucet : 0, vs,
+      })
       kosik.vyprazdnit()
       onHotovo({ cislo, souhrn, email: f.email.trim(), prevodem, castka: kosik.soucet })
     } catch {
