@@ -41,10 +41,22 @@ if ($souhrn === '' || $castka < 0 || $castka > 200000) konec(400, ['ok' => false
 $vs = preg_replace('/\D/', '', $cislo);
 $odkazPlatby = WEB . '/eshop.html?' . http_build_query(['platba' => $cislo, 'castka' => $castka]);
 
-if ($castka > 0 && !is_file(data_cesta("objednavky/$vs.json"))) {
+// Uloží se každá objednávka – pro přehled rozvozu (rozvoz.php) a párování plateb (platby.php).
+$txt = fn($k, $max) => trim(mb_substr((string)($d[$k] ?? ''), 0, $max));
+if (!is_file(data_cesta("objednavky/$vs.json"))) {
   ulozit_json("objednavky/$vs.json", [
     'cislo' => $cislo, 'vs' => $vs, 'castka' => $castka, 'email' => $email, 'jmeno' => $jmeno,
     'souhrn' => $souhrn, 'vytvoreno' => date('c'), 'zaplaceno' => 0, 'platby' => [],
+    'rozvoz' => !empty($d['rozvoz']),
+    'den' => $txt('den', 40),
+    'datum' => datum_terminu($txt('den', 40)),
+    'telefon' => $txt('telefon', 40),
+    'adresa' => $txt('adresa', 200),
+    'polozky' => array_map(fn($r) => mb_substr((string)$r, 0, 200), array_slice((array)($d['polozky'] ?? []), 0, 60)),
+    'celkem' => (int)($d['celkem'] ?? 0),
+    'platba' => ($d['platba'] ?? '') === 'prevod' ? 'prevod' : 'prevzeti',
+    'poznamka' => $txt('poznamka', 1000),
+    'doruceno' => false,
   ]);
 }
 

@@ -39,7 +39,7 @@ function terminy(dny, pocet = 6, now = new Date()) {
 
 // Customer confirmation goes out from objednavky@ via a PHP script on the Wedos hosting
 // (FormSubmit cannot auto-reply to AJAX submissions). Failure must not block the order.
-async function poslatPotvrzeni({ email, jmeno, cislo, souhrn, castka, vs }) {
+async function poslatPotvrzeni({ email, jmeno, cislo, souhrn, castka, vs, detail }) {
   try {
     const qr = castka > 0
       ? await QRCode.toDataURL(spd({ castka, vs, zprava: `Objednavka ${cislo}` }), { margin: 1, width: 400, errorCorrectionLevel: 'M' })
@@ -47,7 +47,7 @@ async function poslatPotvrzeni({ email, jmeno, cislo, souhrn, castka, vs }) {
     await fetch(`${import.meta.env.BASE_URL}api/potvrzeni.php`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, jmeno, cislo, souhrn, castka, qr }),
+      body: JSON.stringify({ email, jmeno, cislo, souhrn, castka, qr, ...detail }),
     })
   } catch { /* the order itself is already sent */ }
 }
@@ -187,6 +187,12 @@ export default function Pokladna({ onZpet, onHotovo }) {
       await poslatPotvrzeni({
         email: f.email.trim(), jmeno: f.jmeno.trim(), cislo, souhrn,
         castka: prevodem ? kosik.soucet : 0, vs,
+        // For the delivery overview page on the hosting (api/rozvoz.php).
+        detail: {
+          rozvoz, den, telefon: f.telefon.trim(), adresa: rozvoz ? f.adresa.trim() : '',
+          polozky: radky, celkem: kosik.soucet, platba: prevodem ? 'prevod' : 'prevzeti',
+          poznamka: f.poznamka.trim(),
+        },
       })
       kosik.vyprazdnit()
       onHotovo({ cislo, souhrn, email: f.email.trim(), prevodem, castka: kosik.soucet })

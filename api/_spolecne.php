@@ -4,6 +4,8 @@ if (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === basename(__FILE__)) { http_r
 // Wedos CDN jinak odpovědi skriptů cachuje na 10 minut.
 header('Cache-Control: no-store, max-age=0');
 
+date_default_timezone_set('Europe/Prague');
+
 const ODESILATEL = 'objednavky@ovoce-holub.cz';
 const JMENO_ODESILATELE = 'Ovocnářství Holub';
 const WEB = 'https://ovoce-holub.cz';
@@ -11,6 +13,16 @@ const UCET = ['cislo' => '662075319/0800', 'iban' => 'CZ3008000000000662075319',
 const IMAP_SERVER = 'ssl://wes1-imap.wedos.net:993';
 const SMTP_SERVER = 'ssl://wes1-smtp.wedos.net:465';
 const DATA = __DIR__ . '/data';
+
+// Údaje prodávajícího na účtenkách. Účtenky se vystavují, až je vyplněné IČO.
+const PRODAVAJICI = [
+  'jmeno' => 'Pavel Holub',
+  'adresa' => 'Krtely 70, 384 11 Netolice',
+  'ico' => '',
+  'dic' => '',
+  'platce_dph' => false,
+  'zapis' => 'Fyzická osoba podnikající dle živnostenského zákona / zemědělský podnikatel',
+];
 
 function data_cesta(string $soubor): string {
   if (!is_dir(DATA . '/objednavky')) @mkdir(DATA . '/objednavky', 0700, true);
@@ -48,6 +60,15 @@ function limit(string $nazev, int $max, int $sekund): bool {
   $casy[] = time();
   @file_put_contents($soubor, implode("\n", $casy));
   return true;
+}
+
+// „středa 30. 9.“ → „2026-09-30“ (rok podle toho, aby termín ležel v nejbližší budoucnosti).
+function datum_terminu(string $den): string {
+  if (!preg_match('/(\d{1,2})\.\s*(\d{1,2})\./', $den, $m)) return '';
+  $rok = (int)date('Y');
+  $t = mktime(12, 0, 0, (int)$m[2], (int)$m[1], $rok);
+  if ($t < strtotime('-60 days')) $t = mktime(12, 0, 0, (int)$m[2], (int)$m[1], $rok + 1);
+  return date('Y-m-d', $t);
 }
 
 function kc(int $castka): string { return number_format($castka, 0, ',', ' ') . ' Kč'; }
@@ -254,4 +275,35 @@ function platba_z_upozorneni(string $text): ?array {
     'protiucet' => trim($p[1] ?? ''),
     'zprava' => trim($z[1] ?? ''),
   ];
+}
+
+// ---------------------------------------------------------------------------
+// Účtenky (doklady o prodeji)
+// ---------------------------------------------------------------------------
+function cil_platby(array $o): int { return (int)($o['castka'] ?: ($o['celkem'] ?? 0)); }
+function je_zaplaceno(array $o): bool {
+  return !empty($o['zaplaceno_hotove']) || (cil_platby($o) > 0 && (float)$o['zaplaceno'] + 0.001 >= cil_platby($o));
+}
+
+function odkaz_na_doklad(array $o): string {
+  $k = substr(hash_hmac('sha256', 'doklad|' . $o['vs'], nastaveni()['klic'] ?? ''), 0, 24);
+  return WEB . '/api/doklad.php?' . http_build_query(['vs' => $o['vs'], 'k' => $k]);
+}
+
+// Vystaví účtenku, když je objednávka doručená i zaplacená (a vyplněné IČO). Vrací upravenou objednávku.
+function vystavit_doklad(array $o): array {
+  if (!empty($o['doklad']) || PRODAVAJICI['ico'] === '' || empty($o['doruceno']) || !empty($o['zruseno']) || !je_zaplaceno($o)) return $o;
+  $f = fopen(data_cesta('doklady.lock'), 'c');
+  flock($f, LOCK_EX);
+  $rada = nacist_json('doklady.json', []);
+  $rok = date('Y');
+  $rada[$rok] = ($rada[$rok] ?? 0) + 1;
+  ulozit_json('doklady.json', $rada);
+  flock($f, LOCK_UN);
+  $o['doklad'] = [
+    'cislo' => sprintf('%s%04d', $rok, $rada[$rok]),
+    'vystaveno' => date('c'),
+    'uhrada' => !empty($o['zaplaceno_hotove']) ? 'hotově / na místě' : 'bankovním převodem',
+  ];
+  return $o;
 }
