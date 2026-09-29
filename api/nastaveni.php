@@ -50,6 +50,16 @@ button{margin-top:12px;background:#2f5a33;color:#fff;border:0;border-radius:6px;
   <?php if (!empty($stav['chyba'])): ?><p class="err">Poslední chyba: <?= h($stav['chyba']) ?></p><?php endif ?>
   <?php if (!$ochrana): ?><p class="err">Chybí ochrana složky s daty (.htaccess) – nezadávejte heslo a ozvěte se správci webu.</p><?php endif ?>
 </div>
+<?php if (isset($_GET['diagnostika'])): ?>
+<div class="box"><p><b>Diagnostika spojení z hostingu</b></p><pre class="muted" style="margin:0"><?php
+  foreach (array_merge([IMAP_SERVER], SMTP_SERVERY) as $srv) {
+    $t = microtime(true); $c = @stream_socket_client($srv, $en, $es, 6);
+    echo h($srv) . ': ' . ($c ? 'OK' : 'NELZE (' . h((string)$es) . ')') . ' ' . round((microtime(true) - $t) * 1000) . " ms
+";
+    if ($c) fclose($c);
+  }
+?></pre></div>
+<?php endif ?>
 <?php $log = array_slice(@file(DATA . '/log.txt', FILE_IGNORE_NEW_LINES) ?: [], -15); if ($log): ?>
 <div class="box"><p><b>Poslední odeslané e-maily</b></p>
 <pre class="muted" style="white-space:pre-wrap;margin:0"><?= h(implode("\n", array_reverse($log))) ?></pre></div>
