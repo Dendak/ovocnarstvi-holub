@@ -11,7 +11,7 @@ const JMENO_ODESILATELE = 'Ovocnářství Holub';
 const WEB = 'https://ovoce-holub.cz';
 const UCET = ['cislo' => '662075319/0800', 'iban' => 'CZ3008000000000662075319', 'majitel' => 'Pavel Holub'];
 const IMAP_SERVER = 'ssl://wes1-imap.wedos.net:993';
-const SMTP_SERVERY = ['ssl://wes1-smtp.wedos.net:465', 'tcp://wes1-smtp.wedos.net:587', 'tcp://wes1-smtp.wedos.net:25'];
+const SMTP_SERVERY = ['tcp://wes1-smtp.wedos.net:587', 'ssl://wes1-smtp.wedos.net:465'];
 const DATA = __DIR__ . '/data';
 
 // Údaje prodávajícího na účtenkách. Účtenky se vystavují, až je vyplněné IČO.
@@ -136,13 +136,13 @@ function poslat_email(string $komu, string $predmet, string $text, string $html,
 }
 
 function smtp_odeslat(string $heslo, array $prijemci, array $hlavicky, string $telo): void {
-  // Hosting může mít některé odchozí porty zavřené – zkusí se 465 (SSL), pak 587 a 25 (STARTTLS).
+  // Z hostingu Wedos je otevřený jen port 587 (STARTTLS); 465 je záloha.
   $s = null; $starttls = false;
   foreach (SMTP_SERVERY as $server) {
     $s = @stream_socket_client($server, $errno, $errstr, 8);
     if ($s) { $starttls = str_starts_with($server, 'tcp://'); break; }
   }
-  if (!$s) throw new RuntimeException('nelze se připojit (porty 465, 587, 25)');
+  if (!$s) throw new RuntimeException('nelze se připojit (porty 587, 465)');
   stream_set_timeout($s, 30);
   $cti = function (string $ocekavam) use ($s): void {
     do {
