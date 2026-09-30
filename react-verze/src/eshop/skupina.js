@@ -55,3 +55,23 @@ export function nastavitSkupinu(skupina) {
   else localStorage.removeItem(KLIC)
   return pred !== localStorage.getItem(KLIC)
 }
+
+// Pozvánka odkazem: eshop.html?kod=elektron. Kód si prohlížeč zapamatuje, dokud se zákazník
+// nezaregistruje nebo nepřihlásí – pak se uplatní sám. Z adresy se hned odstraní.
+const KLIC_POZVANKY = 'oh_kod_pozvanka'
+try {
+  const url = new URL(location.href)
+  const kod = (url.searchParams.get('kod') || '').trim().toLowerCase()
+  if (/^[a-z0-9-]{2,40}$/.test(kod)) {
+    localStorage.setItem(KLIC_POZVANKY, kod)
+    url.searchParams.delete('kod')
+    history.replaceState(null, '', url.pathname + url.search + url.hash)
+  }
+} catch { /* no storage – the code can still be typed in by hand */ }
+
+export function cekajiciKod() {
+  try { return localStorage.getItem(KLIC_POZVANKY) || '' } catch { return '' }
+}
+export function smazatCekajiciKod() {
+  try { localStorage.removeItem(KLIC_POZVANKY) } catch { /* ignore */ }
+}

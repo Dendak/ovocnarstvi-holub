@@ -1,5 +1,5 @@
 import AdresaInput from './AdresaInput'
-import { SKUPINA, overitKod } from './skupina'
+import { SKUPINA, overitKod, cekajiciKod } from './skupina'
 import { rozdelitJmeno } from './mujUcet'
 import { useState } from 'react'
 import { OBSAH } from '../data'
@@ -61,8 +61,9 @@ function Zprava({ typ, children }) {
 
 function Prihlaseni() {
   const auth = useAuth()
-  const [rezim, setRezim] = useState('prihlasit') // prihlasit | registrovat | zapomenute
-  const [f, setF] = useState({ jmeno: '', prijmeni: '', email: '', heslo: '', kod: '', souhlas: false })
+  const [pozvanka] = useState(cekajiciKod)
+  const [rezim, setRezim] = useState(pozvanka ? 'registrovat' : 'prihlasit') // prihlasit | registrovat | zapomenute
+  const [f, setF] = useState({ jmeno: '', prijmeni: '', email: '', heslo: '', kod: pozvanka, souhlas: false })
   const [stav, setStav] = useState({ nacita: false, chyba: null, ok: null })
   const set = (k, v) => setF(p => ({ ...p, [k]: v }))
   const prepnout = r => { setRezim(r); setStav({ nacita: false, chyba: null, ok: null }) }
@@ -135,7 +136,7 @@ function Prihlaseni() {
               value={f.heslo} onChange={e => set('heslo', e.target.value)} />
           )}
           {rezim === 'registrovat' && (
-            <Pole id="u-kod" label="Kód skupiny (nepovinné)" autoComplete="off" value={f.kod} onChange={e => set('kod', e.target.value)} />
+            <Pole id="u-kod" label={pozvanka ? 'Kód skupiny (vyplněno z pozvánky)' : 'Kód skupiny (nepovinné)'} autoComplete="off" value={f.kod} onChange={e => set('kod', e.target.value)} />
           )}
           {rezim === 'registrovat' && (
             <label className="flex items-start gap-2 text-xs text-ink-soft cursor-pointer">

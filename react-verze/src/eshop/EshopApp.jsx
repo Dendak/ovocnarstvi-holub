@@ -1,4 +1,4 @@
-import { SKUPINA } from './skupina'
+import { SKUPINA, cekajiciKod } from './skupina'
 import { useEffect, useMemo, useState } from 'react'
 import { OBSAH } from '../data'
 import { PRODUKTY, KATEGORIE, DORUCENI, formatKc } from './katalog'
@@ -146,6 +146,14 @@ function Katalog() {
 
   return (
     <>
+      {!SKUPINA && cekajiciKod() && (
+        <div className="bg-leaf text-white text-sm">
+          <p className="container-page py-2.5">
+            Máte pozvánku do skupiny se zvýhodněnými cenami.{' '}
+            <a href="#ucet" className="underline font-semibold">Založte si účet nebo se přihlaste</a> – ceny se pak zapnou samy.
+          </p>
+        </div>
+      )}
       {SKUPINA && (
         <div className="bg-leaf text-white text-sm">
           <p className="container-page py-2.5">

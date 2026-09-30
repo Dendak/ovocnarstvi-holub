@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import { createClient } from '@supabase/supabase-js'
-import { SKUPINA, skupinaJeCerstva, overitKod, opustitSkupinu, nastavitSkupinu } from './skupina'
+import { SKUPINA, skupinaJeCerstva, overitKod, opustitSkupinu, nastavitSkupinu, cekajiciKod, smazatCekajiciKod } from './skupina'
 import { SUPABASE_URL, SUPABASE_ANON_KEY, UCTY_ZAPNUTE, SSO_POSKYTOVATELE, VLASTNI_POSKYTOVATELE } from './supabaseConfig'
 
 // PKCE keeps the auth callback in the query string (?code=…), so it doesn't
@@ -74,6 +74,17 @@ export function AuthProvider({ children }) {
       if (nastavitSkupinu(skupina)) location.reload()
     })()
     return () => { zruseno = true }
+  }, [uzivatel, nacita])
+
+  // An invitation link (eshop.html?kod=…) is applied to the account at the first sign-in.
+  // Saving the code to the account triggers the effect above, which claims it and reloads.
+  useEffect(() => {
+    if (!supabase || nacita || !uzivatel) return
+    const kod = cekajiciKod()
+    if (!kod) return
+    smazatCekajiciKod()
+    if (uzivatel.user_metadata?.kod) return
+    supabase.auth.updateUser({ data: { kod } })
   }, [uzivatel, nacita])
 
   const value = useMemo(() => ({
