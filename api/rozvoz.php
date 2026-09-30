@@ -93,7 +93,7 @@ table{width:100%;border-collapse:collapse;font-size:15px}td{padding:6px 0;border
 input[type=password]{width:100%;padding:12px;border:1px solid var(--line);border-radius:8px;font-size:16px}
 .err{color:var(--berry);font-weight:bold}
 .akce a.waze{background:#33ccff;border-color:#33ccff;color:#0b2530;font-weight:bold}
-details.dor{flex-basis:100%}details.dor:not([open]){flex-basis:auto}details.dor summary{display:inline-block;list-style:none}details.dor summary::-webkit-details-marker{display:none}.volby{margin:8px 0 0}.volby p{margin:0 0 8px;font-weight:bold}.volby .akce{margin-top:0}
+details.dor{flex-basis:100%}details.dor:not([open]){flex-basis:auto}details.dor summary{display:inline-block;list-style:none}details.dor summary::-webkit-details-marker{display:none}.volby{margin:8px 0 0}button.odkaz{background:none;border:0;padding:0;margin:0;min-height:0;color:#a33;text-decoration:underline;font:inherit;cursor:pointer;width:auto}.zapl{display:flex;gap:8px;align-items:center;margin:0 0 12px;font-size:15px;cursor:pointer}.zapl input{width:18px;height:18px;accent-color:var(--leaf)}.volby p{margin:0 0 8px;font-weight:bold}.volby .akce{margin-top:0}
 details.qr{margin-top:10px}details.qr summary{display:inline-block;list-style:none}details.qr summary::-webkit-details-marker{display:none}
 </style></head><body>' . $obsah . '</body></html>';
   exit;
@@ -121,6 +121,28 @@ foreach (glob(DATA . '/objednavky/*.json') ?: [] as $f) {
   if (is_array($o) && !empty($o['cislo'])) $vse[$o['vs']] = $o;
 }
 
+// ---------- smazání účtenky (zkušební provoz): číslování pokračuje od nejvyššího zbývajícího čísla ----------
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['akce'] ?? '') === 'smazat-doklad' && isset($_POST['vs'], $vse[$_POST['vs']])) {
+  $vs = $_POST['vs'];
+  $o = $vse[$vs];
+  if (!empty($o['doklad'])) {
+    $f = fopen(data_cesta('doklady.lock'), 'c');
+    flock($f, LOCK_EX);
+    unset($o['doklad']);
+    $o['chce_doklad'] = false; // jinak by se při další akci vystavila znovu
+    ulozit_json("objednavky/$vs.json", $o);
+    $vse[$vs] = $o;
+    $rada = [];
+    foreach ($vse as $x) if (!empty($x['doklad']['cislo'])) {
+      $rok = substr($x['doklad']['cislo'], 0, 4);
+      $rada[$rok] = max($rada[$rok] ?? 0, (int)substr($x['doklad']['cislo'], 4));
+    }
+    ulozit_json('doklady.json', $rada);
+    flock($f, LOCK_UN);
+  }
+  header('Location: ' . (isset($_POST['zpet']) ? 'rozvoz.php?uctenky=1' : 'rozvoz.php?den=' . urlencode($_POST['den'] ?? '') . '#o' . $vs)); exit;
+}
+
 // ---------- akce (doručeno, zaplaceno hotově, zrušeno) ----------
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['vs'], $vse[$_POST['vs']])) {
   $vs = $_POST['vs'];
@@ -131,7 +153,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['vs'], $vse[$_POST['vs
     if ($akce === 'doklad') $o['chce_doklad'] = true;             // dodatečné vystavení účtenky
     else $o[$pole] = empty($o[$pole]);
     // Při označení „doručeno“ farma volí, jestli se má vystavit účtenka.
-    if ($akce === 'doruceno' && $o['doruceno']) $o['chce_doklad'] = ($_POST['uctenka'] ?? '') === '1';
+    if ($akce === 'doruceno' && $o['doruceno']) {
+      $o['chce_doklad'] = ($_POST['uctenka'] ?? '') === '1';
+      // Při předání jde rovnou potvrdit i platbu na místě.
+      if (($_POST['zaplaceno'] ?? '') === '1' && !je_zaplaceno($o)) $o['zaplaceno_hotove'] = true;
+    }
     $melDoklad = !empty($o['doklad']);
     $o = vystavit_doklad($o);
     $uctenka = !empty($o['doklad'])
@@ -175,6 +201,12 @@ Ovocnářství Holub
   }
   header('Location: rozvoz.php?den=' . urlencode($_POST['den'] ?? '') . '#o' . $vs); exit;
 }
+
+// Tlačítko „Smazat“ u účtenky (s potvrzením).
+$smazatDoklad = fn(array $o, bool $zPrehledu = false) => '<form method="post" style="display:inline" onsubmit="return confirm(' . h(json_encode("Smazat účtenku č. {$o['doklad']['cislo']} ({$o['jmeno']})? Číslování bude pokračovat od nejvyššího zbývajícího čísla.", JSON_UNESCAPED_UNICODE)) . ')">'
+  . '<input type="hidden" name="vs" value="' . h($o['vs']) . '"><input type="hidden" name="akce" value="smazat-doklad">'
+  . ($zPrehledu ? '<input type="hidden" name="zpet" value="1">' : '<input type="hidden" name="den" value="' . h($GLOBALS['vybrany'] ?? '') . '">')
+  . '<button class="odkaz">Smazat</button></form>';
 
 // ---------- skupiny s kódem: kdo kód používá, uvolnění místa ----------
 if (isset($_GET['skupiny']) || ($_POST['akce'] ?? '') === 'odebrat-clena') {
@@ -256,7 +288,7 @@ if (isset($_GET['uctenky'])) {
         $poSazbach[$sz]['zaklad'] = ($poSazbach[$sz]['zaklad'] ?? 0) + $x['zaklad'];
         $poSazbach[$sz]['dan'] = ($poSazbach[$sz]['dan'] ?? 0) + $x['dan'];
       }
-      $obsah .= '<tr><td><a href="' . h(odkaz_na_doklad($o)) . '">' . h($o['doklad']['cislo']) . '</a><br><span class="muted">' . h(date('j. n.', strtotime($o['doklad']['vystaveno']))) . ' · ' . h($o['doklad']['uhrada']) . '</span></td>'
+      $obsah .= '<tr><td><a href="' . h(odkaz_na_doklad($o)) . '">' . h($o['doklad']['cislo']) . '</a><br><span class="muted">' . h(date('j. n.', strtotime($o['doklad']['vystaveno']))) . ' · ' . h($o['doklad']['uhrada']) . ' · ' . $smazatDoklad($o, true) . '</span></td>'
         . '<td>' . h($o['jmeno']) . '<br><span class="muted">' . h($o['cislo']) . '</span></td><td class="r">' . h(kc($c)) . '</td></tr>';
     }
     ksort($poSazbach);
@@ -400,17 +432,24 @@ $spd = fn(array $o) => implode('*', ['SPD*1.0', 'ACC:' . UCET['iban'] . '+GIBACZ
 $tlacitko = fn($o, $akce, $text, $hl = false) => '<form method="post"' . ($akce === 'zruseno' && empty($o['zruseno']) ? ' onsubmit="return confirm(' . h(json_encode("Opravdu stornovat objednávku {$o['cislo']} ({$o['jmeno']})?", JSON_UNESCAPED_UNICODE)) . ')"' : '') . '><input type="hidden" name="vs" value="' . h($o['vs']) . '">'
   . '<input type="hidden" name="akce" value="' . $akce . '"><input type="hidden" name="den" value="' . h($GLOBALS['vybrany']) . '">'
   . '<button' . ($hl ? ' class="hl"' : '') . '>' . $text . '</button></form>';
-// „✓ Doručeno“ se rozbalí na dvě volby: s účtenkou / bez účtenky.
+// „✓ Doručeno“ se rozbalí: potvrzení platby na místě (u nezaplacených) a volba s účtenkou / bez účtenky.
 $doruceno = function (array $o): string {
   $popis = !empty($o['rozvoz']) ? '✓ Doručeno' : '✓ Vyzvednuto';
-  $volba = fn(string $uctenka, string $text, bool $hl) => '<form method="post"><input type="hidden" name="vs" value="' . h($o['vs']) . '">'
-    . '<input type="hidden" name="akce" value="doruceno"><input type="hidden" name="uctenka" value="' . $uctenka . '">'
-    . '<input type="hidden" name="den" value="' . h($GLOBALS['vybrany']) . '"><button' . ($hl ? ' class="hl"' : '') . '>' . $text . '</button></form>';
-  if (PRODAVAJICI['ico'] === '') return $volba('0', $popis, true);
-  return '<details class="dor"><summary class="btn hl">' . $popis . '</summary><div class="box volby"><p>Vystavit k objednávce účtenku?</p><div class="akce">'
-    . $volba('1', 'Ano, s účtenkou', true) . $volba('0', 'Ne, bez účtenky', false) . '</div></div></details>';
+  $nezaplaceno = !je_zaplaceno($o);
+  // Platba na místě bývá při předání zaplacená; u převodu se čeká na banku, proto tam není předvolená.
+  $predvoleno = $nezaplaceno && ($o['platba'] ?? '') !== 'prevod' && !$o['castka'];
+  $pole = '<input type="hidden" name="vs" value="' . h($o['vs']) . '"><input type="hidden" name="akce" value="doruceno">'
+    . '<input type="hidden" name="den" value="' . h($GLOBALS['vybrany']) . '">';
+  $tl = fn(string $uctenka, string $text, bool $hl) => '<button name="uctenka" value="' . $uctenka . '"' . ($hl ? ' class="hl"' : '') . '>' . $text . '</button>';
+  if (PRODAVAJICI['ico'] === '' && !$nezaplaceno) return '<form method="post">' . $pole . $tl('0', $popis, true) . '</form>';
+  return '<details class="dor"><summary class="btn hl">' . $popis . '</summary><form method="post" class="box volby" style="display:block">' . $pole
+    . ($nezaplaceno ? '<label class="zapl"><input type="checkbox" name="zaplaceno" value="1"' . ($predvoleno ? ' checked' : '') . '> Zákazník zaplatil na místě ('
+        . h(kc(cil_platby($o) - (int)$o['zaplaceno'])) . ')</label>' : '')
+    . (PRODAVAJICI['ico'] === '' ? '<div class="akce">' . $tl('0', 'Potvrdit', true) . '</div>'
+        : '<p>Vystavit k objednávce účtenku?</p><div class="akce">' . $tl('1', 'Ano, s účtenkou', true) . $tl('0', 'Ne, bez účtenky', false) . '</div>')
+    . '</form></details>';
 };
-$karta = function (array $o, ?int $cislo) use ($platba, $tlacitko, $zaplaceno, $spd, $cil, $doruceno): string {
+$karta = function (array $o, ?int $cislo) use ($platba, $tlacitko, $zaplaceno, $spd, $cil, $doruceno, $smazatDoklad): string {
   $hotovo = !empty($o['doruceno']);
   $s = '<div class="box obj' . ($hotovo ? ' hotovo' : '') . '" id="o' . h($o['vs']) . '">'
     . ($cislo ? '<span class="cislo">' . $cislo . '</span>' : '')
@@ -434,7 +473,7 @@ $karta = function (array $o, ?int $cislo) use ($platba, $tlacitko, $zaplaceno, $
       . '<p style="margin:8px 0 0"><b>' . h(kc($cil($o) - (int)$o['zaplaceno'])) . '</b> · VS ' . h($o['vs']) . '<br><span class="muted">' . h(UCET['cislo']) . '</span></p>'
       . '<p class="muted" style="margin:6px 0 0">Po připsání platby se objednávka označí jako zaplacená sama.</p></div></details>';
   }
-  if (!empty($o['doklad'])) $s .= '<div style="margin-top:8px"><a href="' . h(odkaz_na_doklad($o)) . '">Účtenka č. ' . h($o['doklad']['cislo']) . '</a></div>';
+  if (!empty($o['doklad'])) $s .= '<div style="margin-top:8px"><a href="' . h(odkaz_na_doklad($o)) . '">Účtenka č. ' . h($o['doklad']['cislo']) . '</a> <span class="muted">· ' . $smazatDoklad($o) . '</span></div>';
   elseif ($hotovo && !empty($o['chce_doklad'])) $s .= '<div class="muted" style="margin-top:8px">Účtenka se vystaví, jakmile bude objednávka zaplacená.</div>';
   elseif ($hotovo) $s .= '<div class="muted" style="margin-top:8px">Bez účtenky.</div>';
   if (!empty($o['rozvoz'])) {
