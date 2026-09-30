@@ -303,9 +303,10 @@ function odkaz_na_doklad(array $o): string {
   return WEB . '/api/doklad.php?' . http_build_query(['vs' => $o['vs'], 'k' => $k]);
 }
 
-// Vystaví účtenku, když je objednávka doručená i zaplacená (a vyplněné IČO). Vrací upravenou objednávku.
+// Vystaví účtenku, když o ni farma při doručení stála (chce_doklad) a objednávka je doručená i zaplacená.
+// Vrací upravenou objednávku.
 function vystavit_doklad(array $o): array {
-  if (!empty($o['doklad']) || PRODAVAJICI['ico'] === '' || empty($o['doruceno']) || !empty($o['zruseno']) || !je_zaplaceno($o)) return $o;
+  if (!empty($o['doklad']) || empty($o['chce_doklad']) || PRODAVAJICI['ico'] === '' || empty($o['doruceno']) || !empty($o['zruseno']) || !je_zaplaceno($o)) return $o;
   $f = fopen(data_cesta('doklady.lock'), 'c');
   flock($f, LOCK_EX);
   $rada = nacist_json('doklady.json', []);

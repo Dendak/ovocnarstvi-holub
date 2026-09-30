@@ -93,6 +93,7 @@ table{width:100%;border-collapse:collapse;font-size:15px}td{padding:6px 0;border
 input[type=password]{width:100%;padding:12px;border:1px solid var(--line);border-radius:8px;font-size:16px}
 .err{color:var(--berry);font-weight:bold}
 .akce a.waze{background:#33ccff;border-color:#33ccff;color:#0b2530;font-weight:bold}
+details.dor{flex-basis:100%}details.dor:not([open]){flex-basis:auto}details.dor summary{display:inline-block;list-style:none}details.dor summary::-webkit-details-marker{display:none}.volby{margin:8px 0 0}.volby p{margin:0 0 8px;font-weight:bold}.volby .akce{margin-top:0}
 details.qr{margin-top:10px}details.qr summary{display:inline-block;list-style:none}details.qr summary::-webkit-details-marker{display:none}
 </style></head><body>' . $obsah . '</body></html>';
   exit;
@@ -124,9 +125,13 @@ foreach (glob(DATA . '/objednavky/*.json') ?: [] as $f) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['vs'], $vse[$_POST['vs']])) {
   $vs = $_POST['vs'];
   $o = $vse[$vs];
-  $pole = ['doruceno' => 'doruceno', 'hotove' => 'zaplaceno_hotove', 'zruseno' => 'zruseno'][$_POST['akce'] ?? ''] ?? null;
+  $akce = $_POST['akce'] ?? '';
+  $pole = ['doruceno' => 'doruceno', 'hotove' => 'zaplaceno_hotove', 'zruseno' => 'zruseno', 'doklad' => 'chce_doklad'][$akce] ?? null;
   if ($pole) {
-    $o[$pole] = empty($o[$pole]);
+    if ($akce === 'doklad') $o['chce_doklad'] = true;             // dodatečné vystavení účtenky
+    else $o[$pole] = empty($o[$pole]);
+    // Při označení „doručeno“ farma volí, jestli se má vystavit účtenka.
+    if ($akce === 'doruceno' && $o['doruceno']) $o['chce_doklad'] = ($_POST['uctenka'] ?? '') === '1';
     $melDoklad = !empty($o['doklad']);
     $o = vystavit_doklad($o);
     $uctenka = !empty($o['doklad'])
@@ -235,7 +240,7 @@ if (isset($_GET['uctenky'])) {
   }
   $obsah = '<header><h1 style="font-size:19px">Účtenky</h1><span><a href="rozvoz.php">Objednávky</a> · <a href="?odhlasit=1">Odhlásit</a></span></header><main>';
   if (PRODAVAJICI['ico'] === '') $obsah .= '<p class="box">Účtenky se začnou vystavovat po doplnění IČO.</p>';
-  $obsah .= '<p class="muted">Účtenka se vystaví sama, když je objednávka doručená a zaplacená. Zákazník dostane odkaz e-mailem.</p>';
+  $obsah .= '<p class="muted">Účtenka se vystaví, když ji při označení „Doručeno“ zvolíte a objednávka je zaplacená. Zákazník dostane odkaz e-mailem.</p>';
   if (!$doklady) {
     $obsah .= '<p class="box">Zatím žádné účtenky.</p>';
   } else {
@@ -387,7 +392,17 @@ $spd = fn(array $o) => implode('*', ['SPD*1.0', 'ACC:' . UCET['iban'] . '+GIBACZ
 $tlacitko = fn($o, $akce, $text, $hl = false) => '<form method="post"' . ($akce === 'zruseno' && empty($o['zruseno']) ? ' onsubmit="return confirm(' . h(json_encode("Opravdu stornovat objednávku {$o['cislo']} ({$o['jmeno']})?", JSON_UNESCAPED_UNICODE)) . ')"' : '') . '><input type="hidden" name="vs" value="' . h($o['vs']) . '">'
   . '<input type="hidden" name="akce" value="' . $akce . '"><input type="hidden" name="den" value="' . h($GLOBALS['vybrany']) . '">'
   . '<button' . ($hl ? ' class="hl"' : '') . '>' . $text . '</button></form>';
-$karta = function (array $o, ?int $cislo) use ($platba, $tlacitko, $zaplaceno, $spd, $cil): string {
+// „✓ Doručeno“ se rozbalí na dvě volby: s účtenkou / bez účtenky.
+$doruceno = function (array $o): string {
+  $popis = !empty($o['rozvoz']) ? '✓ Doručeno' : '✓ Vyzvednuto';
+  $volba = fn(string $uctenka, string $text, bool $hl) => '<form method="post"><input type="hidden" name="vs" value="' . h($o['vs']) . '">'
+    . '<input type="hidden" name="akce" value="doruceno"><input type="hidden" name="uctenka" value="' . $uctenka . '">'
+    . '<input type="hidden" name="den" value="' . h($GLOBALS['vybrany']) . '"><button' . ($hl ? ' class="hl"' : '') . '>' . $text . '</button></form>';
+  if (PRODAVAJICI['ico'] === '') return $volba('0', $popis, true);
+  return '<details class="dor"><summary class="btn hl">' . $popis . '</summary><div class="box volby"><p>Vystavit k objednávce účtenku?</p><div class="akce">'
+    . $volba('1', 'Ano, s účtenkou', true) . $volba('0', 'Ne, bez účtenky', false) . '</div></div></details>';
+};
+$karta = function (array $o, ?int $cislo) use ($platba, $tlacitko, $zaplaceno, $spd, $cil, $doruceno): string {
   $hotovo = !empty($o['doruceno']);
   $s = '<div class="box obj' . ($hotovo ? ' hotovo' : '') . '" id="o' . h($o['vs']) . '">'
     . ($cislo ? '<span class="cislo">' . $cislo . '</span>' : '')
@@ -412,6 +427,8 @@ $karta = function (array $o, ?int $cislo) use ($platba, $tlacitko, $zaplaceno, $
       . '<p class="muted" style="margin:6px 0 0">Po připsání platby se objednávka označí jako zaplacená sama.</p></div></details>';
   }
   if (!empty($o['doklad'])) $s .= '<div style="margin-top:8px"><a href="' . h(odkaz_na_doklad($o)) . '">Účtenka č. ' . h($o['doklad']['cislo']) . '</a></div>';
+  elseif ($hotovo && !empty($o['chce_doklad'])) $s .= '<div class="muted" style="margin-top:8px">Účtenka se vystaví, jakmile bude objednávka zaplacená.</div>';
+  elseif ($hotovo) $s .= '<div class="muted" style="margin-top:8px">Bez účtenky.</div>';
   if (!empty($o['rozvoz'])) {
     $kam = $o['plna_adresa'] ?? $o['adresa'];
     $waze = !empty($o['gps'])
@@ -423,14 +440,15 @@ $karta = function (array $o, ?int $cislo) use ($platba, $tlacitko, $zaplaceno, $
       . '<a class="nav" href="' . h($gmaps) . '">Google Maps</a></div>';
   }
   $s .= '<div class="akce">'
-    . $tlacitko($o, 'doruceno', $hotovo ? 'Vrátit: nedoručeno' : (!empty($o['rozvoz']) ? '✓ Doručeno' : '✓ Vyzvednuto'), !$hotovo)
+    . ($hotovo ? $tlacitko($o, 'doruceno', 'Vrátit: nedoručeno') : $doruceno($o))
+    . ($hotovo && empty($o['doklad']) && empty($o['chce_doklad']) && PRODAVAJICI['ico'] !== '' ? $tlacitko($o, 'doklad', 'Vystavit účtenku') : '')
     . (!$zaplaceno($o) || !empty($o['zaplaceno_hotove']) ? $tlacitko($o, 'hotove', empty($o['zaplaceno_hotove']) ? 'Zaplaceno na místě' : 'Zrušit: zaplaceno na místě') : '')
     . $tlacitko($o, 'zruseno', empty($o['zruseno']) ? 'Stornovat' : 'Obnovit objednávku')
     . '</div></div>';
   return $s;
 };
 
-$obsah = '<header><h1 style="font-size:19px">Objednávky a rozvoz</h1><span><a href="?uctenky=1">Účtenky</a> · <a href="?skupiny=1">Skupiny</a> · <a href="?odhlasit=1">Odhlásit</a></span></header><main>';
+$obsah = '<header><h1 style="font-size:19px">Objednávky</h1><span><a href="?uctenky=1">Účtenky</a> · <a href="?skupiny=1">Skupiny</a> · <a href="?odhlasit=1">Odhlásit</a></span></header><main>';
 if (!$dny) {
   $obsah .= '<p class="box">Zatím žádné objednávky z e-shopu.</p>';
 } else {
