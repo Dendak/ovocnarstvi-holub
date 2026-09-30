@@ -10,9 +10,10 @@ export default function HeroBlock({ kicker, title, text, actions, facts }) {
       <img src={`${import.meta.env.BASE_URL}${HERO_FOTO}`} alt="" fetchPriority="high" decoding="async"
         className="absolute inset-0 w-full h-full object-cover" style={{ objectPosition: 'center 40%' }} />
       <div className="absolute inset-0 bg-gradient-to-r from-forest/85 via-forest/55 to-forest/10" />
-      <div className="absolute inset-0 bg-gradient-to-t from-forest/80 via-transparent to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-b from-forest/75 via-forest/15 to-transparent" />
+      <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-forest/80 to-transparent" />
 
-      <div className="relative flex-1 flex flex-col justify-end container-page pt-16 pb-12">
+      <div className="relative flex-1 flex flex-col justify-start container-page pt-14 sm:pt-20 pb-12">
         <p className="text-[0.95rem] font-medium text-white/80 mb-4">{kicker}</p>
         <h1 className="font-serif font-medium leading-[1.05] max-w-3xl mb-6"
           style={{ fontSize: 'clamp(2.6rem, min(6.4vw, 9svh), 5rem)' }}>
