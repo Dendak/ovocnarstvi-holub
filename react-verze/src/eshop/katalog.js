@@ -127,27 +127,42 @@ const MOSTY_FOTO = {
   autor: 'Flunse (Patrick Geltinger)', licence: 'CC BY-SA 3.0',
   zdroj: 'https://commons.wikimedia.org/wiki/File:Apple_juice_with_3apples.jpg',
 }
-const produktyMosty = OBSAH.mosty.skupiny.flatMap(sk => sk.polozky.map(p => ({
-  id: `most-${p.nazev.replace(/[^\p{L}\p{N}]+/gu, '-').toLowerCase()}`,
+// Jedna položka „Domácí mošt“: zákazník volí příchuť a velikost balení (místo karty pro každou příchuť).
+const VELIKOSTI = [{ id: '3l', label: '3 l', klic: 'cena3l' }, { id: '5l', label: '5 l', klic: 'cena5l' }]
+const prichute = OBSAH.mosty.skupiny.flatMap(sk => sk.polozky.map(p => {
+  const nazev = p.nazev.replace(/^\p{Extended_Pictographic}\s*/u, '')
+  return {
+    id: nazev.replace(/[^\p{L}\p{N}]+/gu, '-').toLowerCase(),
+    nazev,
+    // název na objednávce a účtence: „Mošt hruška“, „Vánoční mošt“
+    nazevPolozky: /mošt/i.test(nazev) ? nazev : `Mošt ${nazev.toLowerCase()}`,
+    dostupne: p.dostupne !== false,
+    ceny: Object.fromEntries(VELIKOSTI.map(v => [v.id, cenaSkupiny('mosty', sk[v.klic])])),
+  }
+}))
+const produktyMosty = [{
+  id: 'most',
   druh: 'mosty',
   druhNazev: 'Mošty',
-  nazev: (n => /mošt/i.test(n) ? n : `Mošt ${n}`)(p.nazev.replace(/^\p{Extended_Pictographic}\s*/u, '')),
+  nazev: 'Domácí mošt',
   chut: null,
-  popis: 'Domácí mošt z jablek z vlastního sadu, bez přidaných cukrů a konzervantů. Balení bag-in-box vydrží po otevření několik týdnů.',
+  popis: 'Mošt z jablek z vlastního sadu, bez přidaných cukrů a konzervantů. Vyberte si příchuť a velikost balení bag-in-box – po otevření vydrží několik týdnů.',
   hodiSe: [],
   sklizen: 'celoročně',
   foto: MOSTY_FOTO.foto,
   fotoIlustracni: false,
   fotoInfo: MOSTY_FOTO,
   vSezone: true,
-  dostupne: p.dostupne !== false,
+  dostupne: prichute.some(p => p.dostupne),
   jednotka: 'ks',
-  varianty: [
-    { id: '3l', label: '3 l', cena: cenaSkupiny('mosty', sk.cena3l) },
-    { id: '5l', label: '5 l', cena: cenaSkupiny('mosty', sk.cena5l) },
-  ],
+  prichute,
+  velikosti: VELIKOSTI.map(({ id, label }) => ({ id, label })),
+  varianty: prichute.filter(p => p.dostupne).flatMap(p => VELIKOSTI.map(v => ({
+    id: `${p.id}-${v.id}`, label: v.label, nazev: p.nazevPolozky, cena: p.ceny[v.id],
+  }))),
   cenaZaJednotku: null,
-})))
+  cenaOd: Math.min(...prichute.filter(p => p.dostupne).flatMap(p => Object.values(p.ceny))),
+}]
 
 export const PRODUKTY = [...produktyOvoce, ...produktyMosty]
 
@@ -163,6 +178,11 @@ export const DORUCENI = {
 
 
 // „5 kg“ u ovoce na váhu, „2× 5 l“ u moštů.
+// Název položky v košíku a na objednávce (u moštu podle zvolené příchuti).
+export function nazevPolozky(produkt, varianta) {
+  return varianta?.nazev || produkt.nazev
+}
+
 export function formatMnozstvi(produkt, varianta, pocet) {
   return produkt.jednotka === 'kg' ? `${pocet} kg` : `${pocet}× ${varianta.label}`
 }

@@ -5,7 +5,13 @@ import { useKosik } from './kosik'
 
 export default function ProduktKarta({ produkt }) {
   const { pridat } = useKosik()
-  const [variantaId, setVariantaId] = useState(produkt.varianty[0].id)
+  // Juice: flavour + size make up the variant; other products have plain variants.
+  const prichute = produkt.prichute
+  const [prichutId, setPrichutId] = useState(prichute?.find(p => p.dostupne)?.id)
+  const [velikost, setVelikost] = useState(produkt.velikosti?.[0].id)
+  const [vlastniVarianta, setVariantaId] = useState(produkt.varianty[0].id)
+  const variantaId = prichute ? `${prichutId}-${velikost}` : vlastniVarianta
+  const prichut = prichute?.find(p => p.id === prichutId)
   const [pocetText, setPocetText] = useState('1')
   const [pridano, setPridano] = useState(false)
   const varianta = produkt.varianty.find(v => v.id === variantaId)
@@ -53,6 +59,12 @@ export default function ProduktKarta({ produkt }) {
       <div className="p-5 flex flex-col flex-1">
         <div className="flex items-start justify-between gap-3 mb-1">
           <h3 className="font-serif text-xl font-semibold text-ink leading-tight">{produkt.nazev}</h3>
+          {produkt.cenaOd != null && (
+            <p className="text-right shrink-0">
+              <span className="font-semibold text-lg text-ink tabular-nums">od {formatKc(produkt.cenaOd)}</span>
+              <span className="text-muted text-xs block -mt-0.5">za balení</span>
+            </p>
+          )}
           {produkt.cenaZaJednotku != null && (
             <p className="text-right shrink-0">
               {produkt.cenaBezna != null && <span className="text-muted text-sm line-through tabular-nums mr-1.5">{formatKc(produkt.cenaBezna)}</span>}
@@ -74,7 +86,34 @@ export default function ProduktKarta({ produkt }) {
 
         {produkt.dostupne ? (
           <div className="mt-auto space-y-3">
-            {!naKg && (
+            {prichute && (
+              <div className="space-y-3">
+                <div>
+                  <label htmlFor={`prichut-${produkt.id}`} className="text-xs font-medium text-ink-soft mb-1 block">Příchuť</label>
+                  <select id={`prichut-${produkt.id}`} value={prichutId} onChange={e => setPrichutId(e.target.value)}
+                    className="border border-line rounded-lg px-3 py-2 text-sm w-full bg-white focus:outline-none focus:ring-2 focus:ring-leaf/20">
+                    {prichute.map(p => (
+                      <option key={p.id} value={p.id} disabled={!p.dostupne}>
+                        {p.nazev}{p.dostupne ? ` – ${produkt.velikosti.map(v => `${v.label} ${formatKc(p.ceny[v.id])}`).join(' · ')}` : ' – vyprodáno'}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Balení">
+                  {produkt.velikosti.map(v => (
+                    <button key={v.id} type="button" role="radio" aria-checked={v.id === velikost}
+                      onClick={() => setVelikost(v.id)}
+                      className={`text-sm px-3 py-1.5 rounded-lg border transition cursor-pointer ${
+                        v.id === velikost ? 'border-leaf bg-leaf text-white' : 'border-line text-ink-soft hover:border-leaf'
+                      }`}>
+                      {v.label}
+                      <span className={`ml-1.5 ${v.id === velikost ? 'text-white/70' : 'text-muted'}`}>{formatKc(prichut.ceny[v.id])}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+            {!naKg && !prichute && (
               <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Balení">
                 {produkt.varianty.map(v => (
                   <button key={v.id} type="button" role="radio" aria-checked={v.id === variantaId}

@@ -1,7 +1,7 @@
 import { SKUPINA, cekajiciKod } from './skupina'
 import { useEffect, useMemo, useState } from 'react'
 import { OBSAH } from '../data'
-import { PRODUKTY, KATEGORIE, DORUCENI, formatKc } from './katalog'
+import { PRODUKTY, KATEGORIE, DORUCENI, formatKc, nazevPolozky } from './katalog'
 import { KosikProvider, useKosik } from './kosik'
 import ProduktKarta from './ProduktKarta'
 import Pokladna from './Pokladna'
@@ -96,7 +96,7 @@ function KosikPanel({ open, onClose, onPokladna }) {
               {kosik.polozky.map(p => (
                 <li key={p.key} className="py-4 flex gap-3">
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-ink">{p.produkt.nazev}</p>
+                    <p className="font-medium text-ink">{nazevPolozky(p.produkt, p.varianta)}</p>
                     <p className="text-xs text-muted">{p.produkt.druhNazev}{p.produkt.jednotka === 'kg' ? '' : ` · ${p.varianta.label}`}{p.varianta.cena != null && ` · ${formatKc(p.varianta.cena)} ${p.produkt.jednotka === 'kg' ? 'za kg' : 'za kus'}`}</p>
                     <div className="flex items-center gap-3 mt-2">
                       <div className="flex items-center border border-line rounded-lg">
@@ -138,7 +138,7 @@ function Katalog() {
     return PRODUKTY
       .filter(p => kategorie === 'vse' || p.druh === kategorie)
       .filter(p => !jenDostupne || p.dostupne)
-      .filter(p => !q || `${p.nazev} ${p.druhNazev} ${p.chut || ''} ${p.hodiSe.join(' ')}`.toLowerCase().includes(q))
+      .filter(p => !q || `${p.nazev} ${p.druhNazev} ${p.chut || ''} ${p.hodiSe.join(' ')} ${(p.prichute || []).map(x => x.nazev).join(' ')}`.toLowerCase().includes(q))
       .sort((a, b) => Number(b.dostupne) - Number(a.dostupne))
   }, [kategorie, jenDostupne, hledat])
 
