@@ -30,7 +30,7 @@ $stav = nacist_json('stav.json', []);
 $ochrana = @file_get_contents(DATA . '/.htaccess') !== false;
 ?><!doctype html>
 <html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="robots" content="noindex"><title>Párování plateb</title>
+<meta name="robots" content="noindex"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><title>Párování plateb</title>
 <style>
 body{margin:0;background:#f8f5ef;color:#1d231c;font:16px/1.5 Arial,Helvetica,sans-serif}
 main{max-width:520px;margin:0 auto;padding:40px 16px}

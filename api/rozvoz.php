@@ -71,7 +71,7 @@ if (($_GET['odhlasit'] ?? '') === '1') {
 
 function stranka(string $titulek, string $obsah, string $hlava = ''): void {
   echo '<!doctype html><html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
-    . '<meta name="robots" content="noindex"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#17241a">'
+    . '<meta name="robots" content="noindex"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="theme-color" content="#17241a">'
     . '<title>' . h($titulek) . '</title>' . $hlava . '<style>
 :root{--paper:#f8f5ef;--line:#dfd7c9;--ink:#1d231c;--muted:#6b6f66;--leaf:#2f5a33;--berry:#8c2f2b;--amber:#8a5a00}
 *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.45 Arial,Helvetica,sans-serif}

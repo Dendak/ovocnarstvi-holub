@@ -30,7 +30,7 @@ $kc2 = fn(float $x) => number_format($x, 2, ',', ' ') . ' Kč';
 $datum = date('j. n. Y', strtotime($d['vystaveno']));
 ?><!doctype html>
 <html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="robots" content="noindex"><title>Účtenka <?= h($d['cislo']) ?> – Ovocnářství Holub</title>
+<meta name="robots" content="noindex"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><title>Účtenka <?= h($d['cislo']) ?> – Ovocnářství Holub</title>
 <style>
 body{margin:0;background:#f8f5ef;color:#1d231c;font:15px/1.45 Arial,Helvetica,sans-serif}
 .list{max-width:640px;margin:24px auto;background:#fff;border:1px solid #dfd7c9;border-radius:8px;padding:28px}
