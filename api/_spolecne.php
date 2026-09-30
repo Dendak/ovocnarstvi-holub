@@ -88,7 +88,7 @@ function email_html(string $nadpis, string $obsah): string {
     . '</div></body></html>';
 }
 
-function poslat_email(string $komu, string $predmet, string $text, string $html, ?string $png = null, bool $kopie = true): bool {
+function poslat_email(string $komu, string $predmet, string $text, string $html, ?string $png = null, bool $kopie = true, ?string $odpovedNa = null): bool {
   $eol = "\r\n";
   $b1 = 'oh1_' . bin2hex(random_bytes(8));
   $b2 = 'oh2_' . bin2hex(random_bytes(8));
@@ -108,7 +108,7 @@ function poslat_email(string $komu, string $predmet, string $text, string $html,
   }
   $od = '=?UTF-8?B?' . base64_encode(JMENO_ODESILATELE) . '?= <' . ODESILATEL . '>';
   $predmetMime = '=?UTF-8?B?' . base64_encode($predmet) . '?=';
-  $hlavicky = ['From: ' . $od, 'Reply-To: ' . $od, 'MIME-Version: 1.0', 'Content-Type: ' . $typ];
+  $hlavicky = ['From: ' . $od, 'Reply-To: ' . ($odpovedNa ?: $od), 'MIME-Version: 1.0', 'Content-Type: ' . $typ];
   $prijemci = [$komu];
   if ($kopie && strcasecmp($komu, ODESILATEL) !== 0) $prijemci[] = ODESILATEL;
   $komuLog = preg_replace('/^(.).*(@.*)$/', '$1…$2', $komu);
@@ -131,7 +131,7 @@ function poslat_email(string $komu, string $predmet, string $text, string $html,
   }
 
   if (count($prijemci) > 1) $hlavicky[] = 'Bcc: ' . ODESILATEL;
-  $ok = mail($komu, $predmetMime, $telo, implode($eol, $hlavicky), '-f' . ODESILATEL);
+  $ok = function_exists('mail') && mail($komu, $predmetMime, $telo, implode($eol, $hlavicky), '-f' . ODESILATEL);
   zapsat_log(($ok ? 'odesláno (mail)' : 'CHYBA mail()') . ": $predmet → $komuLog");
   return $ok;
 }

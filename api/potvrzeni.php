@@ -1,6 +1,6 @@
 <?php
-// Potvrzení objednávky zákazníkovi – posílá se z objednavky@ovoce-holub.cz přes PHP mail() na Wedos.
-// Objednávky placené převodem se uloží, aby se k nim daly spárovat příchozí platby (platby.php).
+// Příjem objednávky z e-shopu: uloží ji (přehled rozvozu, párování plateb), pošle ji farmě
+// na objednavky@ovoce-holub.cz a zákazníkovi pošle potvrzení (u převodu s QR platbou).
 require __DIR__ . '/_spolecne.php';
 
 const POVOLENE_ORIGINY = ['https://ovoce-holub.cz', 'https://www.ovoce-holub.cz'];
@@ -22,7 +22,7 @@ function konec(int $kod, array $data): void {
 if ($_SERVER['REQUEST_METHOD'] === 'GET') konec(200, ['ok' => true, 'mail' => function_exists('mail')]);
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') konec(405, ['ok' => false]);
 if ($origin !== '' && !in_array($origin, POVOLENE_ORIGINY, true)) konec(403, ['ok' => false]);
-if (!limit('potvrzeni', 6, 3600)) konec(429, ['ok' => false]);
+if (!limit('potvrzeni', 30, 3600)) konec(429, ['ok' => false]);
 
 $d = json_decode(file_get_contents('php://input', false, null, 0, 200000), true);
 if (!is_array($d)) konec(400, ['ok' => false]);
@@ -43,8 +43,7 @@ $odkazPlatby = WEB . '/eshop.html?' . http_build_query(['platba' => $cislo, 'cas
 
 // Uloží se každá objednávka – pro přehled rozvozu (rozvoz.php) a párování plateb (platby.php).
 $txt = fn($k, $max) => trim(mb_substr((string)($d[$k] ?? ''), 0, $max));
-if (!is_file(data_cesta("objednavky/$vs.json"))) {
-  ulozit_json("objednavky/$vs.json", [
+$zaznam = [
     'cislo' => $cislo, 'vs' => $vs, 'castka' => $castka, 'email' => $email, 'jmeno' => $jmeno,
     'souhrn' => $souhrn, 'vytvoreno' => date('c'), 'zaplaceno' => 0, 'platby' => [],
     'rozvoz' => !empty($d['rozvoz']),
@@ -64,7 +63,44 @@ if (!is_file(data_cesta("objednavky/$vs.json"))) {
     'poznamka' => $txt('poznamka', 1000),
     'skupina' => $txt('skupina', 40),
     'doruceno' => false,
-  ]);
+  ];
+// Číslo objednávky je náhodné; kdyby se trefilo do existující jiné objednávky, neukládat přes ni.
+$existuje = nacist_json("objednavky/$vs.json");
+if ($existuje && ($existuje['email'] !== $email || $existuje['souhrn'] !== $souhrn)) konec(409, ['ok' => false, 'ulozeno' => false, 'kolize' => true]);
+$nova = !$existuje;
+if ($nova) ulozit_json("objednavky/$vs.json", $zaznam);
+
+// Oznámení farmě (jen poprvé – opakované odeslání téže objednávky ho neposílá znovu).
+$farma = true;
+if ($nova) {
+  $z = $zaznam;
+  $adresa = $z['rozvoz']
+    ? ($z['adresa_overena'] !== '' ? $z['adresa_overena'] . (($d['pevnaAdresa'] ?? false) ? ' (pevná adresa skupiny)' : ' (ověřeno v registru adres)')
+        : $z['adresa'] . ', ' . trim($z['psc'] . ' ' . $z['mesto']) . ' – NEOVĚŘENO, zkontrolovat')
+    : '— (osobní odběr)';
+  $celkemText = kc($z['celkem']);
+  $radky = [
+    'Objednávka' => $cislo,
+    'Termín' => ($z['rozvoz'] ? 'Rozvoz' : 'Osobní odběr') . ' – ' . $z['den'],
+    'Jméno' => $jmeno . ($z['ico'] !== '' ? " (IČO {$z['ico']})" : ''),
+    'Telefon' => $z['telefon'],
+    'E-mail' => $email,
+    'Adresa' => $adresa,
+    'Položky' => implode("\n", $z['polozky']),
+    'Celkem' => $celkemText,
+    'Platba' => $z['platba'] === 'prevod' ? "PŘEVODEM PŘEDEM – VS $vs – označí se sama po příchodu platby" : 'při převzetí',
+    'Poznámka' => $z['poznamka'] !== '' ? $z['poznamka'] : '—',
+  ];
+  if ($z['skupina'] !== '') $radky['Skupina'] = $z['skupina'];
+  $predmetFarma = ($z['rozvoz'] ? 'ROZVOZ' : 'ODBĚR') . " {$z['den']} | $cislo | $jmeno | $celkemText" . ($z['skupina'] !== '' ? " | skupina {$z['skupina']}" : '');
+  $textFarma = ''; $htmlFarma = '<table style="border-collapse:collapse;font-size:14px">';
+  foreach ($radky as $k => $v) {
+    $textFarma .= "$k: $v\n";
+    $htmlFarma .= '<tr><td style="padding:6px 16px 6px 0;color:#6b6f66;vertical-align:top">' . h($k) . '</td><td style="padding:6px 0">' . nl2br(h($v)) . '</td></tr>';
+  }
+  $htmlFarma .= '</table><p style="margin:16px 0 0"><a href="' . WEB . '/api/rozvoz.php" style="color:#2f5a33">Otevřít přehled objednávek</a></p>';
+  $farma = poslat_email(ODESILATEL, $predmetFarma, $textFarma . "\nPřehled: " . WEB . "/api/rozvoz.php\n", email_html("Nová objednávka $cislo", $htmlFarma), null, false,
+    '=?UTF-8?B?' . base64_encode($jmeno) . '?= <' . $email . '>');
 }
 
 $qrPng = null;
@@ -103,4 +139,5 @@ $obsah .= '<p style="font-size:13px;color:#6b6f66;line-height:1.5;margin:0">Poku
   . 'Změnu nebo zrušení nám napište nejpozději den před termínem do 18:00 – stačí odpovědět na tento e-mail.</p>';
 
 $ok = poslat_email($email, "Potvrzení objednávky $cislo – Ovocnářství Holub", $text, email_html("Objednávka $cislo je přijatá", $obsah), $qrPng);
-konec($ok ? 200 : 500, ['ok' => $ok]);
+// Objednávka je uložená, i kdyby se e-maily nepodařilo odeslat – farma ji vidí v přehledu rozvozu.
+konec(200, ['ok' => $ok, 'ulozeno' => true, 'farma' => $farma]);

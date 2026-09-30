@@ -42,19 +42,23 @@ function terminy(dny, pocet = 6, now = new Date()) {
   return out
 }
 
-// Customer confirmation goes out from objednavky@ via a PHP script on the Wedos hosting
-// (FormSubmit cannot auto-reply to AJAX submissions). Failure must not block the order.
-async function poslatPotvrzeni({ email, jmeno, cislo, souhrn, castka, vs, detail }) {
+// The order goes to our own hosting (api/potvrzeni.php): it stores the order, e-mails the farm and
+// sends the customer confirmation. Returns { ulozeno, farma } – stored there / farm e-mail sent.
+async function odeslatNaHosting({ email, jmeno, cislo, souhrn, castka, vs, detail }) {
   try {
     const qr = castka > 0
       ? await QRCode.toDataURL(spd({ castka, vs, zprava: `Objednavka ${cislo}` }), { margin: 1, width: 400, errorCorrectionLevel: 'M' })
       : ''
-    await fetch(`${import.meta.env.BASE_URL}api/potvrzeni.php`, {
+    const res = await fetch(`${import.meta.env.BASE_URL}api/potvrzeni.php`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, jmeno, cislo, souhrn, castka, qr, ...detail }),
     })
-  } catch { /* the order itself is already sent */ }
+    const d = await res.json().catch(() => null)
+    return { ulozeno: !!d?.ulozeno, farma: !!d?.farma }
+  } catch {
+    return { ulozeno: false, farma: false }
+  }
 }
 
 const VYCHOZI_MESTO = 'České Budějovice'
@@ -281,12 +285,30 @@ export default function Pokladna({ onZpet, onHotovo }) {
     }
 
     try {
-      const res = await fetch(`https://formsubmit.co/ajax/${k.emailObjednavky}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify(payload),
+      const { ulozeno, farma } = await odeslatNaHosting({
+        email: f.email.trim(), jmeno: celeJmeno, cislo, souhrn,
+        castka: prevodem ? kosik.soucet : 0, vs,
+        // For the delivery overview page on the hosting (api/rozvoz.php).
+        detail: {
+          rozvoz, den, telefon: f.telefon.trim(), adresa: rozvoz ? f.adresa.trim() : '',
+          psc: rozvoz ? f.psc.trim() : '', mesto: rozvoz ? f.mesto.trim() : '', ico,
+          adresaOverena: rozvoz && adr?.vybrana ? adr.vybrana.adresa : '', gps: rozvoz && adr?.vybrana ? adr.vybrana.gps : null,
+          pevnaAdresa: !!PEVNA_ADRESA,
+          polozky: radky, celkem: kosik.soucet, platba: prevodem ? 'prevod' : 'prevzeti',
+          poznamka: f.poznamka.trim(),
+          skupina: SKUPINA?.nazev || '',
+        },
       })
-      if (!res.ok) throw new Error()
+      // Fallback through the external form service: required when the hosting did not store the order,
+      // best-effort when it stored it but could not e-mail the farm.
+      if (!ulozeno || !farma) {
+        const res = await fetch(`https://formsubmit.co/ajax/${k.emailObjednavky}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify(payload),
+        }).catch(() => null)
+        if (!ulozeno && !res?.ok) throw new Error()
+      }
       const zaznam = {
         cislo, datum: new Date().toISOString(), termin: `${rozvoz ? 'Dovoz' : 'Odběr'} ${den}`, celkem,
         ...(prevodem ? { prevod: kosik.soucet } : {}),
@@ -307,19 +329,6 @@ export default function Pokladna({ onZpet, onHotovo }) {
           }
           : null,
       )
-      await poslatPotvrzeni({
-        email: f.email.trim(), jmeno: celeJmeno, cislo, souhrn,
-        castka: prevodem ? kosik.soucet : 0, vs,
-        // For the delivery overview page on the hosting (api/rozvoz.php).
-        detail: {
-          rozvoz, den, telefon: f.telefon.trim(), adresa: rozvoz ? f.adresa.trim() : '',
-          psc: rozvoz ? f.psc.trim() : '', mesto: rozvoz ? f.mesto.trim() : '', ico,
-          adresaOverena: rozvoz && adr?.vybrana ? adr.vybrana.adresa : '', gps: rozvoz && adr?.vybrana ? adr.vybrana.gps : null,
-          polozky: radky, celkem: kosik.soucet, platba: prevodem ? 'prevod' : 'prevzeti',
-          poznamka: f.poznamka.trim(),
-          skupina: SKUPINA?.nazev || '',
-        },
-      })
       kosik.vyprazdnit()
       onHotovo({ cislo, souhrn, email: f.email.trim(), prevodem, castka: kosik.soucet })
     } catch {
