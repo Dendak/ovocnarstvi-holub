@@ -7,7 +7,6 @@ import ProduktKarta from './ProduktKarta'
 import BedynkaKarta from './BedynkaKarta'
 import Pokladna from './Pokladna'
 import Footer from '../components/Footer'
-import { nacistObjednavky, smazatVse } from './mujUcet'
 import { AuthProvider, useAuth } from './auth'
 import { nacistZUctu, STAVY } from './objednavkyDb'
 import Ucet from './Ucet'
@@ -249,11 +248,10 @@ function Hotovo({ info, onZpet }) {
 function MojeObjednavky({ onKosik }) {
   const { pridat } = useKosik()
   const auth = useAuth()
-  const [mistni, setMistni] = useState(nacistObjednavky)
   const [zUctu, setZUctu] = useState(null)
   const [info, setInfo] = useState(null)
   const prihlasen = !!auth.uzivatel
-  const objednavky = prihlasen ? (zUctu || []) : mistni
+  const objednavky = zUctu || []
 
   useEffect(() => {
     if (!prihlasen) return
@@ -277,16 +275,16 @@ function MojeObjednavky({ onKosik }) {
       <p className="text-muted text-sm mb-8">
         {prihlasen
           ? 'Všechny objednávky z vašeho účtu, i jejich aktuální stav.'
-          : 'Objednávky odeslané z tohoto zařízení. Údaje jsou uložené jen ve vašem prohlížeči, na jiném zařízení je neuvidíte.'}
+          : 'Přehled objednávek je součástí zákaznického účtu.'}
       </p>
       {auth.zapnuto && !prihlasen && (
         <p className="text-sm bg-paper-2 text-ink rounded-md px-4 py-3 mb-6">
-          <a href="#ucet" className="font-semibold underline">Přihlaste se nebo si založte účet</a> – objednávky pak uvidíte na všech zařízeních i s jejich stavem.
+          <a href="#ucet" className="font-semibold underline">Přihlaste se nebo si založte účet</a> – uvidíte tu všechny své objednávky i jejich stav. Potvrzení každé objednávky vám přijde také e-mailem.
         </p>
       )}
       {prihlasen && zUctu === null && <p className="text-muted py-10 text-center">Načítám…</p>}
       {info && <p className="text-sm text-ink-soft bg-paper-2 rounded-md px-4 py-3 mb-6">{info}</p>}
-      {prihlasen && zUctu === null ? null : objednavky.length === 0 ? (
+      {!prihlasen || zUctu === null ? null : objednavky.length === 0 ? (
         <div className="text-center py-16 text-muted">
           <p className="mb-3">Zatím tu nejsou žádné objednávky.</p>
           <a href="#" className="text-leaf font-medium hover:underline">Vybrat ovoce →</a>
@@ -320,12 +318,6 @@ function MojeObjednavky({ onKosik }) {
             </li>
           ))}
         </ul>
-      )}
-      {!prihlasen && objednavky.length > 0 && (
-        <button onClick={() => { smazatVse(); setMistni([]) }}
-          className="mt-8 text-xs text-muted hover:text-berry cursor-pointer">
-          Smazat historii a uložené údaje z tohoto zařízení
-        </button>
       )}
     </div>
   )

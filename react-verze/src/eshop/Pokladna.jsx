@@ -4,7 +4,7 @@ import { DORUCENI, formatKc, formatMnozstvi, nazevPolozky, radekPolozky } from '
 import { useKosik } from './kosik'
 import AdresaInput from './AdresaInput'
 import { SKUPINA } from './skupina'
-import { nacistUdaje, ulozitObjednavku, rozdelitJmeno } from './mujUcet'
+import { rozdelitJmeno } from './mujUcet'
 import { useAuth } from './auth'
 import { ulozitDoUctu } from './objednavkyDb'
 import QRCode from 'qrcode'
@@ -137,17 +137,11 @@ export default function Pokladna({ onZpet, onHotovo }) {
   const kosik = useKosik()
   const [terminyRozvozu] = useState(() => terminy(DNY_ROZVOZU))
   const [terminyOdberu] = useState(() => terminy(DNY_ODBERU))
-  const [f, setF] = useState(() => {
-    const u = nacistUdaje()
-    return {
-      jmeno: u?.prijmeni != null ? (u.jmeno || '') : rozdelitJmeno(u?.jmeno)[0],
-      prijmeni: u?.prijmeni != null ? u.prijmeni : rozdelitJmeno(u?.jmeno)[1],
-      firma: !!u?.firma, nazevFirmy: u?.nazevFirmy || '', ico: u?.ico || '',
-      telefon: u?.telefon || '', email: u?.email || '',
-      adresa: PEVNA_ADRESA || u?.adresa || '', psc: u?.psc || '', mesto: u?.mesto || VYCHOZI_MESTO,
-      doruceni: PEVNA_ADRESA ? 'rozvoz' : (u?.doruceni || 'rozvoz'), termin: terminyRozvozu[0], terminOdberu: terminyOdberu[0],
-      platba: 'prevzeti', poznamka: '', souhlas: false, zapamatovat: true,
-    }
+  const [f, setF] = useState({
+    jmeno: '', prijmeni: '', firma: false, nazevFirmy: '', ico: '', telefon: '', email: '',
+    adresa: PEVNA_ADRESA || '', psc: '', mesto: VYCHOZI_MESTO,
+    doruceni: 'rozvoz', termin: terminyRozvozu[0], terminOdberu: terminyOdberu[0],
+    platba: 'prevzeti', poznamka: '', souhlas: false,
   })
   const [chyby, setChyby] = useState({})
   const [stav, setStav] = useState(null)
@@ -157,8 +151,8 @@ export default function Pokladna({ onZpet, onHotovo }) {
   const auth = useAuth()
   const uzivatel = auth.uzivatel
 
-  // Signed-in customers: the account wins over details remembered on this device (those may belong
-  // to someone else who ordered here before). The e-mail is always the account's – it ties the order to it.
+  // Signed-in customers get the details saved with their account. The e-mail is always the
+  // account's – it ties the order to it.
   useEffect(() => {
     if (!uzivatel) return
     const m = uzivatel.user_metadata || {}
@@ -316,18 +310,9 @@ export default function Pokladna({ onZpet, onHotovo }) {
       if (uzivatel) {
         // The order e-mail already went out; the account copy is best-effort.
         await ulozitDoUctu(zaznam).catch(() => false)
-        if (f.zapamatovat) await auth.ulozitProfil({ jmeno: f.jmeno.trim(), prijmeni: f.prijmeni.trim(), telefon: f.telefon.trim(), ...(PEVNA_ADRESA ? {} : { adresa: f.adresa.trim(), psc: f.psc.trim(), mesto: f.mesto.trim() }) }).catch(() => null)
+        // Delivery details are kept with the account for next time (company orders are one-off).
+        if (!f.firma) await auth.ulozitProfil({ jmeno: f.jmeno.trim(), prijmeni: f.prijmeni.trim(), telefon: f.telefon.trim(), ...(PEVNA_ADRESA || !rozvoz ? {} : { adresa: f.adresa.trim(), psc: f.psc.trim(), mesto: f.mesto.trim() }) }).catch(() => null)
       }
-      ulozitObjednavku(
-        zaznam,
-        f.zapamatovat
-          ? {
-            jmeno: f.jmeno.trim(), prijmeni: f.prijmeni.trim(), firma: f.firma, nazevFirmy: f.nazevFirmy.trim(), ico: f.ico.trim(),
-            telefon: f.telefon.trim(), email: f.email.trim(), doruceni: f.doruceni,
-            ...(PEVNA_ADRESA ? {} : { adresa: f.adresa.trim(), psc: f.psc.trim(), mesto: f.mesto.trim() }),
-          }
-          : null,
-      )
       kosik.vyprazdnit()
       onHotovo({ cislo, souhrn, email: f.email.trim(), prevodem, castka: kosik.soucet })
     } catch {
@@ -489,10 +474,6 @@ export default function Pokladna({ onZpet, onHotovo }) {
             </span>
           </label>
           <Chyba text={chyby.souhlas} />
-          <label className="flex items-start gap-2 text-xs text-ink-soft mt-2 cursor-pointer">
-            <input type="checkbox" checked={f.zapamatovat} onChange={e => set('zapamatovat', e.target.checked)} className="mt-0.5 accent-leaf" />
-            <span>Zapamatovat mé údaje na tomto zařízení pro příští objednávku</span>
-          </label>
 
           {stav === 'chyba' && (
             <p className="text-berry text-sm mt-3">Objednávku se nepodařilo odeslat. Zkuste to prosím znovu, nebo zavolejte {OBSAH.kontakt.tel1}.</p>
