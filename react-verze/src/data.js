@@ -17,13 +17,21 @@ export const OBSAH = {
     { nazev: 'Meruňky', fotky: ['merunky/WhatsApp Image 2026-03-15 at 13.39.21.jpeg', 'merunky/IMG_2376.JPEG'], sezona: 'červenec – srpen', sezonaOd: [7, 1], sezonaDo: [8, 31], barva: 'orange', popis: 'Voňavé a šťavnaté, skvělé čerstvé i na zavařování.' },
     { nazev: 'Broskve', fotky: ['broskve/IMG_8553.JPEG'], sezona: 'srpen – září', sezonaOd: [8, 1], sezonaDo: [9, 30], barva: 'orange', popis: 'Šťavnaté broskve na vrcholu léta.' },
     { nazev: 'Švestky', fotky: ['svestky/WhatsApp Image 2026-03-15 at 13.42.01.jpeg', 'svestky/IMG_2471.JPEG', 'svestky/IMG_2476.JPEG', 'svestky/IMG_2713.JPEG', 'svestky/IMG_2820.JPEG', 'svestky/c5b58f3a-5ae9-4fff-95eb-e7e45471e0d6.jpg'], sezona: '1. 8. – 15. 10.', sezonaOd: [8, 1], sezonaDo: [10, 15], barva: 'purple', popis: 'Švestky přímo ze sadu – skvělé na zavařování i do koláče.', odrudy: ['Haganta', 'Top King', 'Topend Plus', 'Čačanská', 'Stanley'] },
-    { nazev: 'Hrušky',  fotky: ['hrusky/119992199_2437457283066181_6907105438319047381_n.jpg', 'hrusky/542007542_1218005136796557_6760772214935127534_n.jpg', 'hrusky/hrusky.jpg', 'hrusky/5a349822-0f8a-429d-90d5-3bbaaafeb442.jpg', 'hrusky/94ae6d72-e62e-4f8b-bfdc-778ca23dbc24.jpg', 'hrusky/IMG_0622.jpeg', 'hrusky/IMG_0868.jpeg', 'hrusky/IMG_1134.JPEG', 'hrusky/IMG_1416.JPEG', 'hrusky/IMG_2480.JPEG', 'hrusky/IMG_2787.JPEG', 'hrusky/c993f4e2-fc75-4b5f-b42f-2ba935d8a624.jpg'], sezona: '1. 8. – 31. 1.', sezonaOd: [8, 1], sezonaDo: [1, 31], barva: 'yellow', popis: 'Šťavnaté hrušky různých odrůd.', odrudy: ['Konference', 'Williams', 'Lucasova', 'Bohemica', 'Packahams'] },
+    { nazev: 'Hrušky',  fotky: ['hrusky/119992199_2437457283066181_6907105438319047381_n.jpg', 'hrusky/542007542_1218005136796557_6760772214935127534_n.jpg', 'hrusky/hrusky.jpg', 'hrusky/5a349822-0f8a-429d-90d5-3bbaaafeb442.jpg', 'hrusky/94ae6d72-e62e-4f8b-bfdc-778ca23dbc24.jpg', 'hrusky/IMG_0622.jpeg', 'hrusky/IMG_0868.jpeg', 'hrusky/IMG_1134.JPEG', 'hrusky/IMG_1416.JPEG', 'hrusky/IMG_2480.JPEG', 'hrusky/IMG_2787.JPEG', 'hrusky/c993f4e2-fc75-4b5f-b42f-2ba935d8a624.jpg'], sezona: '1. 8. – 31. 1.', sezonaOd: [8, 1], sezonaDo: [1, 31], barva: 'yellow', popis: 'Šťavnaté hrušky různých odrůd.', odrudy: ['Konference', 'Williams', 'Lucasova', 'Novembra', 'Bohemica', 'Packahams'] },
     { nazev: 'Jablka',  fotky: ['jablka/119992725_2437457233066186_4983175529147161289_n.jpg', 'jablka/IMG_0889.jpeg', 'jablka/IMG_2863.JPEG', 'jablka/IMG_2866.JPEG', 'jablka/IMG_2867.JPEG', 'jablka/IMG_3016.JPG'], sezona: '15. 8. – 31. 3.', sezonaOd: [8, 15], sezonaDo: [3, 31], barva: 'green', popis: 'Více než 15 odrůd, sklizené z vlastního sadu a skladované pro vás.', odrudy: ['Bohemia', 'Rubinola', 'Topaz', 'Golden', 'Gala', 'Rozela', 'Idared', 'Sirius', 'Lucy', 'Jonagold', 'Jonaprince', 'Fuji', 'Braeburn'], wide: true, vzdy: true },
   ],
   aktuality: {
     // Ovoce v sezóně se doplňuje automaticky podle data (sezonaOd/sezonaDo);
     // sem patří jen to, co je k dispozici vždy nebo navíc.
     skladem: ['Domácí mošty – dostupné celoročně'],
+    // AKTUÁLNÍ NABÍDKA – co je právě teď k mání (web i e-shop se řídí tímto seznamem).
+    // Druh, který tu není, se v e-shopu ukáže jako nedostupný. Prázdný seznam [] = všechny odrůdy druhu.
+    // Celé `nabidka` smažte (nebo dejte null), má-li se dostupnost řídit jen sezónou.
+    nabidka: {
+      Jablka: ['Bohemia', 'Rubinola', 'Gala'],
+      Hrušky: ['Novembra', 'Lucasova'],
+      Švestky: [],
+    },
   },
   mosty: {
     platnostOd: '15. 3. 2026',
@@ -53,6 +61,15 @@ export function imgPos(path) {
 }
 
 // Je ovoce právě v sezóně? Rozsah [měsíc, den] může jít přes přelom roku.
+// Je druh (a případně odrůda) v aktuální nabídce? Bez seznamu `aktuality.nabidka` platí vše.
+export function vNabidce(druh, odruda) {
+  const n = OBSAH.aktuality.nabidka
+  if (!n) return true
+  const odrudy = n[druh]
+  if (!odrudy) return false
+  return !odruda || odrudy.length === 0 || odrudy.includes(odruda)
+}
+
 export function isInSeason(o, now) {
   if (!(now instanceof Date)) now = new Date()
   if (o.vzdy) return true

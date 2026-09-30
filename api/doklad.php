@@ -47,7 +47,7 @@ table{width:100%;border-collapse:collapse;margin-top:12px}td{padding:8px 0;borde
   <div class="strany">
     <div><b>Prodávající</b><?= h($p['jmeno']) ?><br><?= h($p['adresa']) ?><br>IČO: <?= h($p['ico']) ?><?= $p['dic'] ? '<br>DIČ: ' . h($p['dic']) : '' ?><?= !empty($p['telefon']) ? '<br>Tel.: ' . h($p['telefon']) : '' ?>
       <?= $p['zapis'] ? '<br><span class="muted">' . h($p['zapis']) . '</span>' : '' ?></div>
-    <div><b>Kupující</b><?= h($o['jmeno']) ?><?= !empty($o['adresa']) ? '<br>' . h($o['adresa']) . ', České Budějovice' : '' ?></div>
+    <div><b>Kupující</b><?= h($o['jmeno']) ?><?= !empty($o['adresa_overena']) ? '<br>' . h($o['adresa_overena']) : (!empty($o['adresa']) ? '<br>' . h($o['adresa']) . (str_contains($o['adresa'], 'Budějovice') ? '' : ', České Budějovice') : '') ?></div>
   </div>
   <p>Datum vystavení: <?= h($datum) ?><br><?= $p['platce_dph'] ? 'Datum uskutečnění zdanitelného plnění' : 'Datum prodeje' ?>: <?= h(!empty($o['datum']) ? date('j. n. Y', strtotime($o['datum'])) : $datum) ?><br>
     Úhrada: <?= h($d['uhrada']) ?> – uhrazeno</p>

@@ -1,3 +1,4 @@
+import AdresaInput from './AdresaInput'
 import { useState } from 'react'
 import { OBSAH } from '../data'
 import { useAuth, prelozChybu } from './auth'
@@ -219,7 +220,10 @@ function Profil() {
         <Pole id="p-jmeno" label="Jméno a příjmení" autoComplete="name" value={f.jmeno} onChange={e => set('jmeno', e.target.value)} />
         <div className="grid sm:grid-cols-2 gap-4">
           <Pole id="p-telefon" label="Telefon" type="tel" autoComplete="tel" value={f.telefon} onChange={e => set('telefon', e.target.value)} />
-          <Pole id="p-adresa" label="Adresa v Českých Budějovicích" autoComplete="street-address" value={f.adresa} onChange={e => set('adresa', e.target.value)} />
+          <div>
+            <label htmlFor="p-adresa" className="text-xs font-medium text-ink-soft mb-1 block">Adresa v Českých Budějovicích</label>
+            <AdresaInput id="p-adresa" value={f.adresa} onChange={v => set('adresa', v)} placeholder="Začněte psát ulici a číslo domu" className={field} />
+          </div>
         </div>
         <Zprava typ="chyba">{stav.chyba}</Zprava>
         <Zprava typ="ok">{stav.ok}</Zprava>

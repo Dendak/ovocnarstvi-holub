@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { OBSAH } from '../data'
 import { DORUCENI, formatKc, formatMnozstvi } from './katalog'
 import { useKosik } from './kosik'
+import AdresaInput from './AdresaInput'
 import { nacistUdaje, ulozitObjednavku } from './mujUcet'
 import { useAuth } from './auth'
 import { ulozitDoUctu } from './objednavkyDb'
@@ -174,6 +175,17 @@ export default function Pokladna({ onZpet, onHotovo }) {
     return v
   }
 
+  // A suggestion picked from the address register is verified by definition; fetch its coordinates if missing.
+  const vybratNavrh = async k => {
+    setChyby(c => ({ ...c, adresa: undefined }))
+    setNeovereneOK(false)
+    if (k.gps) { setOvereni({ q: k.adresa, stav: 'ok', kandidati: [k], vybrana: k }); return }
+    setOvereni({ q: k.adresa, stav: 'overuji', kandidati: [] })
+    const v = await overitAdresu(k.adresa)
+    const presna = v.kandidati.find(x => x.adresa === k.adresa)
+    setOvereni(presna ? { q: k.adresa, stav: 'ok', kandidati: [presna], vybrana: presna } : { q: k.adresa, ...v })
+  }
+
   const odeslat = async ev => {
     ev.preventDefault()
     const e = validovat()
@@ -329,8 +341,8 @@ export default function Pokladna({ onZpet, onHotovo }) {
                 </div>
                 <div>
                   <label htmlFor="adresa" className="text-xs font-medium text-ink-soft mb-1 block">Adresa v Českých Budějovicích *</label>
-                  <input id="adresa" autoComplete="street-address" value={f.adresa} onChange={e => set('adresa', e.target.value)}
-                    onBlur={zkontrolovatAdresu} placeholder="Ulice a číslo domu" className={field} />
+                  <AdresaInput id="adresa" value={f.adresa} onChange={v => set('adresa', v)} onVyber={vybratNavrh}
+                    onBlur={zkontrolovatAdresu} placeholder="Začněte psát ulici a číslo domu" className={field} />
                   <OvereniAdresy overeni={overeni} aktualni={f.adresa.trim()}
                     vybrat={k => { setOvereni(o => ({ ...o, vybrana: k })); setChyby(c => ({ ...c, adresa: undefined })) }} />
                   <Chyba text={chyby.adresa} />

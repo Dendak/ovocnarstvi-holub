@@ -1,4 +1,4 @@
-import { OBSAH, isInSeason } from '../data'
+import { OBSAH, isInSeason, vNabidce } from '../data'
 import { FOTO_ODRUD } from './fotoOdrud'
 
 // ============================================================
@@ -7,6 +7,7 @@ import { FOTO_ODRUD } from './fotoOdrud'
 //  cenaKg:   cena za 1 kg v Kč u druhu (platí pro všechny odrůdy);
 //            odrůda může mít vlastní cenaKg. Bez ceny = „cena na dotaz“
 //  dostupne: false = odrůda se v e-shopu ukáže jako vyprodaná
+//  Co je právě teď k mání, určuje seznam `aktuality.nabidka` v src/data.js.
 //  Zákazník si volí libovolný počet kg (min. 1 kg); doprava je v ceně.
 // ============================================================
 
@@ -39,6 +40,7 @@ const DRUHY_OVOCE = [
     odrudy: [
       { id: 'konference', nazev: 'Konference', chut: 'sladká, máslová', popis: 'Protáhlé plody s rezavou slupkou a sladkou, máslově jemnou dužinou. Dobře skladovatelná.', hodiSe: ['přímá konzumace', 'skladování'] },
       { id: 'williams', nazev: 'Williams', chut: 'sladká, velmi aromatická', popis: 'Williamsova čáslavka – nejaromatičtější hruška, šťavnatá a sladká.', hodiSe: ['přímá konzumace', 'kompoty', 'pálenka'] },
+      { id: 'novembra', nazev: 'Novembra', chut: 'sladkokyselá, šťavnatá', popis: 'Pozdní zimní odrůda s velkými plody a šťavnatou dužinou. Dobře se skladuje.', hodiSe: ['přímá konzumace', 'skladování'] },
       { id: 'lucasova', nazev: 'Lucasova', chut: 'sladká, šťavnatá', popis: 'Alexander Lucas – velké zimní hrušky se šťavnatou dužinou.', hodiSe: ['přímá konzumace', 'skladování'] },
       { id: 'bohemica', nazev: 'Bohemica', chut: 'sladká, šťavnatá', popis: 'Česká odrůda se sladkými a šťavnatými plody.', hodiSe: ['přímá konzumace'] },
       { id: 'packhams', nazev: 'Packhams', chut: 'sladká s jemnou kyselinkou', popis: 'Packham’s Triumph – zelenožluté zimní hrušky, šťavnaté a dobře skladovatelné.', hodiSe: ['přímá konzumace', 'skladování'] },
@@ -112,7 +114,7 @@ const produktyOvoce = DRUHY_OVOCE.flatMap(d => {
     fotoIlustracni: !vlastni,
     fotoInfo: vlastni || null,
     vSezone,
-    dostupne: vSezone && o.dostupne !== false,
+    dostupne: vSezone && o.dostupne !== false && vNabidce(d.nazev, o.nazev),
     jednotka: 'kg',
     varianty: [{ id: 'kg', label: '1 kg', cena: cenaKg }],
     cenaZaJednotku: cenaKg,

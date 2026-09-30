@@ -31,6 +31,35 @@ function ruian(string $dotaz): array {
 
 $q = trim(mb_substr((string)($_GET['q'] ?? ''), 0, 120));
 if (mb_strlen($q) < 3) konec(['kandidati' => []]);
+
+// Našeptávač při psaní: nabídne adresy v Českých Budějovicích začínající na zadaný text.
+if (isset($_GET['naseptat'])) {
+  $klic = 'n:' . mb_strtolower($q);
+  $cache = nacist_json('adresy-naseptavac.json', []);
+  if (isset($cache[$klic])) konec($cache[$klic]);
+  if (!limit('naseptavac', 400, 3600)) konec(['kandidati' => [], 'limit' => true]);
+
+  $text = preg_match('/budějovic|budejovic/iu', $q) ? $q : "$q " . MESTO;
+  $out = [];
+  // 1) suggest zvládá i psaní bez diakritiky, ale potřebuje přesné číslo domu
+  $s = http_json('https://ags.cuzk.cz/arcgis/rest/services/RUIAN/Vyhledavaci_sluzba_nad_daty_RUIAN/MapServer/exts/GeocodeSOE/suggest?'
+    . http_build_query(['text' => $text, 'maxSuggestions' => 10, 'f' => 'json']));
+  foreach ($s['suggestions'] ?? [] as $x) {
+    if (($x['type'] ?? '') === 'AdresniMisto' && str_contains($x['text'], MESTO)) $out[$x['text']] = ['adresa' => $x['text'], 'gps' => null, 'vMeste' => true];
+  }
+  // 2) hledání podle názvu ulice vrátí první adresy v ulici (i se souřadnicemi)
+  if (count($out) < 5) {
+    foreach (ruian(preg_match('/budějovic|budejovic/iu', $q) ? $q : "$q, " . MESTO) as $k) {
+      if ($k['vMeste']) $out[$k['adresa']] = $k;
+    }
+  }
+  $vysledek = ['kandidati' => array_slice(array_values($out), 0, 7)];
+  $cache = array_slice($cache, -1500, null, true);
+  $cache[$klic] = $vysledek;
+  ulozit_json('adresy-naseptavac.json', $cache);
+  konec($vysledek);
+}
+
 if (!preg_match('/\d/', $q)) konec(['kandidati' => [], 'chybiCislo' => true]);
 
 $klic = mb_strtolower($q);
