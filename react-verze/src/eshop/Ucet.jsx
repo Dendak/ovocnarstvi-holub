@@ -7,12 +7,14 @@ const primary = 'w-full bg-leaf hover:bg-leaf-dark text-white font-semibold py-3
 const MIN_HESLO = 8
 
 const SSO = {
+  // Oficiální „esko“ a varianta tlačítka podle manuálu Seznamu (vyvojari.seznam.cz/oauth/doc):
+  // červená #CC0000 na bílé, text přesně „Přihlásit přes Seznam“, esko min. 18 px, bez úprav tvaru.
   'custom:seznam': {
-    label: 'Pokračovat přes Seznam',
+    label: 'Přihlásit přes Seznam',
+    className: 'text-[#CC0000] font-bold',
     icon: (
-      <svg className="w-5 h-5" viewBox="0 0 24 24" aria-hidden="true">
-        <circle cx="12" cy="12" r="12" fill="#CC0000" />
-        <text x="12" y="17" textAnchor="middle" fontSize="15" fontWeight="700" fontFamily="Arial, sans-serif" fill="#fff">S</text>
+      <svg className="w-5 h-5" viewBox="0 0 32 32" aria-hidden="true">
+        <path fill="#CC0000" d="M22.012.034c.167-.053.365-.068.529.135.36.448.73.89 1.064 1.36.243.346.48.693.709 1.046.636.985 1.078 2.247.689 3.414-.272.801-1.204 1.26-1.93 1.548-.846.337-1.76.494-2.647.703-.334.078-.667.151-1.002.222-1.136.245-2.287.441-3.414.732a8.95 8.95 0 0 0-1.099.342c-.383.156-.852.324-.988.758-.194.607.505 1.054.932 1.314.348.207.7.4 1.061.576.306.15.62.292.935.424.745.317 1.51.592 2.282.846 1.363.447 2.74.865 4.096 1.332a25.081 25.081 0 0 1 2.626 1.052c.288.133.573.272.851.418.988.517 1.913 1.128 2.737 1.883.442.408.866.85 1.176 1.367a4.61 4.61 0 0 1 .608 1.79c.077.68-.042 1.39-.292 2.025-.734 1.785-2.142 2.535-4.403 3.53-.59.26-3.091 1.118-4.649 1.604a36.7 36.7 0 0 1-1.106.327c-.563.155-1.126.3-1.693.434a85.469 85.469 0 0 1-5.988 1.191c-1.614.265-3.23.496-4.84.764-4.445.599-6.524.781-7.303.825-.56.033.195-.143.396-.19.226-.05.452-.111.679-.161.778-.171 1.557-.34 2.336-.512l2.049-.445c.326-.072.646-.141.973-.207.543-.114 1.092-.23 1.638-.347a86.73 86.73 0 0 0 2.852-.664c.952-.24 1.912-.5 2.854-.747a94.05 94.05 0 0 0 2.803-.794 44.95 44.95 0 0 0 4.81-1.726c1.05-.448 2.138-1.12 2.764-2.104.24-.38.369-.817.354-1.266a2.714 2.714 0 0 0-.4-1.326 3.53 3.53 0 0 0-.955-1.032c-.571-.423-1.242-.717-1.89-1.01-.621-.285-1.286-.497-1.908-.724-1.001-.365-2.03-.676-3.04-1.014l-.963-.319a42.926 42.926 0 0 1-3.293-1.225 92.455 92.455 0 0 1-3.386-1.542 22.843 22.843 0 0 1-3.134-1.803c-.33-.23-.657-.47-.963-.731-.932-.799-1.742-1.874-1.735-3.159.004-.437.143-.888.344-1.269.216-.402.438-.78.706-1.147.38-.513.831-.957 1.315-1.366a9.562 9.562 0 0 1 2.66-1.573c.493-.191.99-.357 1.495-.517.521-.167 1.068-.287 1.6-.423.577-.146 1.16-.263 1.745-.388.884-.192 1.77-.36 2.664-.505C21.181.826 21.79.11 22.012.034z" />
       </svg>
     ),
   },
@@ -101,7 +103,7 @@ function Prihlaseni() {
       <div className="bg-white rounded-lg p-6 space-y-4">
         {rezim !== 'zapomenute' && auth.poskytovatele.filter(p => SSO[p]).map(p => (
           <button key={p} type="button" onClick={() => sso(p)} disabled={stav.nacita}
-            className="w-full flex items-center justify-center gap-3 border border-line hover:border-ink/40 rounded-md py-3 text-sm font-medium text-ink-soft cursor-pointer disabled:opacity-60">
+            className={`w-full flex items-center justify-center gap-3 border border-line hover:border-ink/40 rounded-md py-3 text-sm cursor-pointer disabled:opacity-60 ${SSO[p].className || 'font-medium text-ink-soft'}`}>
             {SSO[p].icon}{SSO[p].label}
           </button>
         ))}
