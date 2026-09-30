@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { OBSAH } from '../data'
-import { DORUCENI, formatKc, formatMnozstvi, nazevPolozky } from './katalog'
+import { DORUCENI, formatKc, formatMnozstvi, nazevPolozky, radekPolozky } from './katalog'
 import { useKosik } from './kosik'
 import AdresaInput from './AdresaInput'
 import { SKUPINA } from './skupina'
@@ -245,7 +245,7 @@ export default function Pokladna({ onZpet, onHotovo }) {
     const k = OBSAH.kontakt
     const cislo = cisloObjednavky()
     const radky = kosik.polozky.map(p =>
-      `${formatMnozstvi(p.produkt, p.varianta, p.pocet)} ${nazevPolozky(p.produkt, p.varianta)} (${p.produkt.druhNazev}) – ${p.cena == null ? 'cena na dotaz' : formatKc(p.cena)}`)
+      `${radekPolozky(p)} – ${p.cena == null ? 'cena na dotaz' : formatKc(p.cena)}`)
     const rozvoz = f.doruceni === 'rozvoz'
     const den = rozvoz ? f.termin : f.terminOdberu
     const prevzeti = rozvoz
@@ -459,7 +459,7 @@ export default function Pokladna({ onZpet, onHotovo }) {
           <ul className="divide-y divide-line mb-4">
             {kosik.polozky.map(p => (
               <li key={p.key} className="py-2 flex justify-between gap-3 text-sm">
-                <span className="text-ink-soft">{formatMnozstvi(p.produkt, p.varianta, p.pocet)} {nazevPolozky(p.produkt, p.varianta)}</span>
+                <span className="text-ink-soft">{formatMnozstvi(p.produkt, p.varianta, p.pocet)} {nazevPolozky(p.produkt, p.varianta)}{p.varianta.slozeni && <span className="block text-xs text-muted">{p.varianta.slozeni}</span>}</span>
                 <span className="tabular-nums font-medium whitespace-nowrap">{p.cena == null ? 'na dotaz' : formatKc(p.cena)}</span>
               </li>
             ))}

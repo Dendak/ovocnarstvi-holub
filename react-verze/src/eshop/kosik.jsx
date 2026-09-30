@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useReducer } from 'react'
-import { PRODUKTY } from './katalog'
+import { PRODUKTY, variantaBedynky } from './katalog'
 
 const STORAGE_KEY = 'ovoce-holub-kosik'
 const MAX = 500
@@ -46,7 +46,7 @@ export function KosikProvider({ children }) {
     const polozky = Object.entries(state).flatMap(([key, pocet]) => {
       const [produktId, variantaId] = key.split('|')
       const produkt = PRODUKTY.find(p => p.id === produktId)
-      const varianta = produkt?.varianty.find(v => v.id === variantaId)
+      const varianta = produkt?.bedynka ? variantaBedynky(produkt, variantaId) : produkt?.varianty.find(v => v.id === variantaId)
       if (!produkt || !varianta) return []
       return [{ key, produkt, varianta, pocet, cena: varianta.cena == null ? null : varianta.cena * pocet }]
     })

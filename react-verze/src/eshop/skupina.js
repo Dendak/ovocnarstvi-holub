@@ -1,7 +1,7 @@
 // Zákaznická skupina s kódem (např. zaměstnanci ústavu): vlastní ceny a pevná doručovací adresa.
 // Kód se ověřuje na hostingu (api/skupina.php); výsledek si prohlížeč pamatuje, aby se ceny
 // v katalogu spočítaly hned při načtení stránky. Po změně skupiny se stránka načte znovu.
-const KLIC = 'oh_skupina2'
+const KLIC = 'oh_skupina3'
 const DEN = 24 * 3600 * 1000
 
 function nacist() {

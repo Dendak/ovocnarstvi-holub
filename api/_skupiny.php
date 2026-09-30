@@ -12,6 +12,10 @@ const SUPABASE_KLIC = 'sb_publishable_CBcBegREJoaGr_o0BYnyuw_Vp0xkCHB'; // veře
 //  sleva:  sleva v % na vše ostatní (včetně moštů), 0 = bez slevy
 //  adresa: pevná doručovací adresa skupiny (zákazník ji nemůže změnit)
 //  max:    nejvyšší počet zákaznických účtů, které mohou kód používat (0 = bez omezení)
+//  bedynky: bedýnky jen pro skupinu – váha v kg, pevná cena v Kč a druhy ovoce, ze kterých se skládají
+//           volba 'slozeni' = zákazník si naklikává kila jednotlivých odrůd (i celou bedýnku jedné odrůdy)
+//           volba 'odruda'  = celá bedýnka jedné odrůdy
+//           mix = text volby „nechám na vás“ (bez ní mix nabídnut není)
 //  Nový kód: klíčem je sha256 kódu psaného malými písmeny.
 // ============================================================
 function skupiny(): array {
@@ -25,6 +29,16 @@ function skupiny(): array {
       'gps' => [48.978241, 14.446492],
       'popis' => 'Dovoz na Branišovskou 1160/31 společně s ostatními objednávkami skupiny.',
       'max' => 10,
+      'bedynky' => [
+        ['id' => 'mix3', 'nazev' => 'Bedýnka 3 kg', 'kg' => 3, 'cena' => 100, 'druhy' => ['jablka', 'hrusky'], 'volba' => 'slozeni',
+          'popis' => 'Poskládejte si 3 kg po kilech z jablek a hrušek, které právě máme – klidně i všechna kila jedné odrůdy.'],
+        ['id' => 'hrusky5', 'nazev' => 'Bedýnka hrušek 5 kg', 'kg' => 5, 'cena' => 150, 'druhy' => ['hrusky'], 'volba' => 'odruda',
+          'mix' => 'Mix odrůd půl na půl',
+          'popis' => '5 kg hrušek – buď mix odrůd půl na půl, nebo celá bedýnka jedné odrůdy.'],
+        ['id' => 'jablka5', 'nazev' => 'Bedýnka jablek 5 kg', 'kg' => 5, 'cena' => 140, 'druhy' => ['jablka'], 'volba' => 'slozeni',
+          'mix' => 'Mix aktuálních odrůd – výběr nechám na vás',
+          'popis' => '5 kg jablek – navolte si odrůdy po kilech, nebo výběr nechte na nás.'],
+      ],
     ],
   ];
 }

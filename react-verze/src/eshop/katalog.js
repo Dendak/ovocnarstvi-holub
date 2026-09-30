@@ -1,6 +1,6 @@
 import { OBSAH, isInSeason, vNabidce } from '../data'
 import { FOTO_ODRUD } from './fotoOdrud'
-import { cenaSkupiny } from './skupina'
+import { cenaSkupiny, SKUPINA } from './skupina'
 
 // ============================================================
 //  KATALOG E-SHOPU – sem se píšou ceny, dostupnost a popisy
@@ -164,9 +164,54 @@ const produktyMosty = [{
   cenaOd: Math.min(...prichute.filter(p => p.dostupne).flatMap(p => Object.values(p.ceny))),
 }]
 
-export const PRODUKTY = [...produktyOvoce, ...produktyMosty]
+// Bedýnky jen pro zákaznickou skupinu: pevná váha za pevnou cenu, složená z odrůd, které jsou
+// právě k dispozici. Složení (nebo „mix“) je zakódované ve „variantě“ položky košíku.
+const produktyBedynka = (SKUPINA?.bedynky || []).flatMap(b => {
+  const slozky = produktyOvoce.filter(p => b.druhy.includes(p.druh) && p.dostupne)
+  if (!slozky.length) return []
+  return [{
+    id: `bedynka-${b.id}`,
+    druh: 'bedynky',
+    druhNazev: 'Bedýnky',
+    nazev: b.nazev,
+    chut: null,
+    popis: b.popis || '',
+    hodiSe: [],
+    sklizen: 'podle aktuální nabídky',
+    foto: slozky[0].foto,
+    fotoIlustracni: false,
+    fotoInfo: null,
+    vSezone: true,
+    dostupne: true,
+    jednotka: 'ks',
+    bedynka: {
+      kg: b.kg, cena: b.cena, volba: b.volba, mix: b.mix || null,
+      slozky: slozky.map(p => ({ id: p.id, nazev: p.nazev, druhNazev: p.druhNazev })),
+    },
+    varianty: [],
+    cenaZaJednotku: b.cena,
+  }]
+})
+
+// „jablka-bohemia:2,hrusky-novembra:1“ – stabilní klíč složení (stejné složení = stejná položka košíku)
+export function klicBedynky(slozeni) {
+  return Object.entries(slozeni).filter(([, n]) => n > 0).sort(([a], [b]) => a.localeCompare(b)).map(([id, n]) => `${id}:${n}`).join(',')
+}
+
+// Z klíče složení (nebo „mix“) udělá „variantu“ pro košík; null, pokud neodpovídá aktuální nabídce.
+export function variantaBedynky(produkt, klic) {
+  const { kg, cena, slozky, mix } = produkt.bedynka
+  const zaklad = { id: klic, label: `${kg} kg`, cena, nazev: produkt.nazev }
+  if (klic === 'mix') return mix ? { ...zaklad, slozeni: mix } : null
+  const casti = String(klic).split(',').map(c => c.split(':')).map(([id, n]) => ({ slozka: slozky.find(s => s.id === id), n: Number(n) }))
+  if (casti.some(c => !c.slozka || !Number.isInteger(c.n) || c.n < 1) || casti.reduce((s, c) => s + c.n, 0) !== kg) return null
+  return { ...zaklad, slozeni: casti.map(c => `${c.n} kg ${c.slozka.nazev} (${c.slozka.druhNazev})`).join(' + ') }
+}
+
+export const PRODUKTY = [...produktyBedynka, ...produktyOvoce, ...produktyMosty]
 
 export const KATEGORIE = [
+  ...(produktyBedynka.length ? [{ id: 'bedynky', nazev: 'Bedýnky' }] : []),
   ...DRUHY_OVOCE.map(d => ({ id: d.id, nazev: d.nazev })),
   { id: 'mosty', nazev: 'Mošty' },
 ]
@@ -184,7 +229,15 @@ export function nazevPolozky(produkt, varianta) {
 }
 
 export function formatMnozstvi(produkt, varianta, pocet) {
+  if (produkt.bedynka) return `${pocet}×`
   return produkt.jednotka === 'kg' ? `${pocet} kg` : `${pocet}× ${varianta.label}`
+}
+
+// Řádek objednávky pro e-mail, přehled rozvozu a účtenku (bez ceny).
+export function radekPolozky(p) {
+  const mnozstvi = formatMnozstvi(p.produkt, p.varianta, p.pocet)
+  if (p.produkt.bedynka) return `${mnozstvi} ${p.varianta.nazev}: ${p.varianta.slozeni}`
+  return `${mnozstvi} ${nazevPolozky(p.produkt, p.varianta)} (${p.produkt.druhNazev})`
 }
 
 export function formatKc(n) {

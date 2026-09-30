@@ -369,6 +369,14 @@ if ($farma && $sGps) {
 // ---------- co naložit ----------
 $nalozit = [];
 foreach ($aktivni as $o) foreach ($o['polozky'] ?? [] as $r) {
+  // Bedýnka: „2× Bedýnka 3 kg: 2 kg Bohemia (Jablka) + 1 kg Novembra (Hrušky) – 200 Kč“ → rozpad na odrůdy
+  if (preg_match('/^(\d+)×\s*(Bedýnka[^:]*):\s*(.+?)\s+–/u', $r, $m)) {
+    $nalozit["{$m[2]} (počet bedýnek)|×"] = ($nalozit["{$m[2]} (počet bedýnek)|×"] ?? 0) + (int)$m[1];
+    foreach (explode(' + ', $m[3]) as $cast) {
+      if (preg_match('/^(\d+)\s*kg\s+(.+)$/u', trim($cast), $c)) $nalozit[$c[2] . '|kg'] = ($nalozit[$c[2] . '|kg'] ?? 0) + (int)$c[1] * (int)$m[1];
+    }
+    continue;
+  }
   if (preg_match('/^(\d+(?:[.,]\d+)?)\s*(kg|ks|×|x)?\s*(.+?)\s+–/u', $r, $m)) {
     $k = $m[3] . '|' . ($m[2] ?: 'ks');
     $nalozit[$k] = ($nalozit[$k] ?? 0) + (float)str_replace(',', '.', $m[1]);

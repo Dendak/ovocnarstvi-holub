@@ -4,6 +4,7 @@ import { OBSAH } from '../data'
 import { PRODUKTY, KATEGORIE, DORUCENI, formatKc, nazevPolozky } from './katalog'
 import { KosikProvider, useKosik } from './kosik'
 import ProduktKarta from './ProduktKarta'
+import BedynkaKarta from './BedynkaKarta'
 import Pokladna from './Pokladna'
 import Footer from '../components/Footer'
 import { nacistObjednavky, smazatVse } from './mujUcet'
@@ -97,7 +98,7 @@ function KosikPanel({ open, onClose, onPokladna }) {
                 <li key={p.key} className="py-4 flex gap-3">
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-ink">{nazevPolozky(p.produkt, p.varianta)}</p>
-                    <p className="text-xs text-muted">{p.produkt.druhNazev}{p.produkt.jednotka === 'kg' ? '' : ` · ${p.varianta.label}`}{p.varianta.cena != null && ` · ${formatKc(p.varianta.cena)} ${p.produkt.jednotka === 'kg' ? 'za kg' : 'za kus'}`}</p>
+                    <p className="text-xs text-muted">{p.varianta.slozeni || p.produkt.druhNazev}{p.produkt.jednotka === 'kg' ? '' : ` · ${p.varianta.label}`}{p.varianta.cena != null && ` · ${formatKc(p.varianta.cena)} ${p.produkt.jednotka === 'kg' ? 'za kg' : 'za kus'}`}</p>
                     <div className="flex items-center gap-3 mt-2">
                       <div className="flex items-center border border-line rounded-lg">
                         <button onClick={() => kosik.nastavit(p.key, p.pocet - 1)} aria-label="Méně" className="w-8 h-8 text-ink-soft cursor-pointer">−</button>
@@ -214,7 +215,7 @@ function Katalog() {
           </div>
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {produkty.map(p => <ProduktKarta key={p.id} produkt={p} />)}
+            {produkty.map(p => (p.bedynka ? <BedynkaKarta key={p.id} produkt={p} /> : <ProduktKarta key={p.id} produkt={p} />))}
           </div>
         )}
       </section>
