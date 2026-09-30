@@ -279,7 +279,8 @@ $farma = $souradnice(FARMA) ?? $souradnice('Krtely, Česko');
 $body = [];
 foreach ($rozvoz as $i => $o) {
   // Adresa ověřená při objednávce v registru adres (RÚIAN) má přesné souřadnice; jinak dohledání přes OpenStreetMap.
-  $adr = !empty($o['adresa_overena']) ? $o['adresa_overena'] : $o['adresa'] . ', České Budějovice';
+  $adr = !empty($o['adresa_overena']) ? $o['adresa_overena']
+    : $o['adresa'] . ', ' . trim(($o['psc'] ?? '') . ' ' . (($o['mesto'] ?? '') ?: 'České Budějovice'));
   $rozvoz[$i]['plna_adresa'] = $adr;
   $rozvoz[$i]['gps'] = $o['gps_overena'] ?? $souradnice($adr);
 }
@@ -419,7 +420,7 @@ if (!$dny) {
   }
 
   if ($rozvoz) {
-    $obsah .= '<h2>Rozvoz – Č. Budějovice</h2>';
+    $obsah .= '<h2>Rozvoz</h2>';
     $gps = [];
     foreach ($rozvoz as $i => $o) if ($o['gps']) $gps[] = [
       'n' => $i + 1, 'gps' => $o['gps'], 'jm' => $o['jmeno'], 'adr' => $o['adresa'],

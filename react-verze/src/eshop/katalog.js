@@ -161,7 +161,7 @@ export const KATEGORIE = [
 
 export const DORUCENI = {
   odber: { label: 'Osobní odběr', detail: 'Krtely 70, Netolice – ve zvolený den' },
-  rozvoz: { label: 'Dovoz až domů – České Budějovice', detail: 'doprava v ceně · pondělí, středa, pátek dopoledne' },
+  rozvoz: { label: 'Dovoz až domů', detail: 'České Budějovice a okolí · doprava v ceně · pondělí, středa, pátek dopoledne' },
 }
 
 

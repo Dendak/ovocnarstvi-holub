@@ -4,7 +4,7 @@ import { DORUCENI, formatKc, formatMnozstvi } from './katalog'
 import { useKosik } from './kosik'
 import AdresaInput from './AdresaInput'
 import { SKUPINA } from './skupina'
-import { nacistUdaje, ulozitObjednavku } from './mujUcet'
+import { nacistUdaje, ulozitObjednavku, rozdelitJmeno } from './mujUcet'
 import { useAuth } from './auth'
 import { ulozitDoUctu } from './objednavkyDb'
 import QRCode from 'qrcode'
@@ -57,19 +57,19 @@ async function poslatPotvrzeni({ email, jmeno, cislo, souhrn, castka, vs, detail
   } catch { /* the order itself is already sent */ }
 }
 
+const VYCHOZI_MESTO = 'České Budějovice'
+
 // Address check against the official Czech address register (api/adresa.php → RÚIAN).
-// Returns { stav: 'ok' | 'vice' | 'nenalezeno' | 'mimo' | 'chyba', kandidati }.
-async function overitAdresu(adresa) {
+// Returns { stav: 'ok' | 'vice' | 'nenalezeno' | 'chyba', kandidati }.
+async function overitAdresu(adresa, mesto = '') {
   try {
-    const res = await fetch(`${import.meta.env.BASE_URL}api/adresa.php?q=${encodeURIComponent(adresa)}`)
+    const res = await fetch(`${import.meta.env.BASE_URL}api/adresa.php?q=${encodeURIComponent(adresa)}&mesto=${encodeURIComponent(mesto)}`)
     if (!res.ok) throw new Error()
     const d = await res.json()
     if (d.limit) return { stav: 'chyba', kandidati: [] }
     const k = d.kandidati || []
-    const vMeste = k.filter(x => x.vMeste)
-    if (vMeste.length === 1) return { stav: 'ok', kandidati: vMeste, vybrana: vMeste[0] }
-    if (vMeste.length > 1) return { stav: 'vice', kandidati: vMeste }
-    if (k.length) return { stav: 'mimo', kandidati: k }
+    if (k.length === 1) return { stav: 'ok', kandidati: k, vybrana: k[0] }
+    if (k.length > 1) return { stav: 'vice', kandidati: k }
     return { stav: 'nenalezeno', kandidati: [], chybiCislo: d.chybiCislo }
   } catch {
     return { stav: 'chyba', kandidati: [] }
@@ -89,7 +89,14 @@ function Chyba({ text }) {
 function OvereniAdresy({ overeni, aktualni, vybrat }) {
   if (!overeni.stav || overeni.q !== aktualni || overeni.stav === 'chyba') return null
   if (overeni.stav === 'overuji') return <p className="text-xs text-muted mt-1.5">Ověřuji adresu…</p>
-  if (overeni.stav === 'ok') return <p className="text-xs text-leaf font-medium mt-1.5">✓ {overeni.vybrana.adresa}</p>
+  if (overeni.stav === 'ok') return (
+    <>
+      <p className="text-xs text-leaf font-medium mt-1.5">✓ {overeni.vybrana.adresa}</p>
+      {!overeni.vybrana.adresa.includes(VYCHOZI_MESTO) && (
+        <p className="text-xs text-ink-soft mt-1">Mimo České Budějovice dovážíme po domluvě – po objednávce se vám ozveme s termínem.</p>
+      )}
+    </>
+  )
   if (overeni.stav === 'vice') return (
     <fieldset className="mt-2 space-y-1.5">
       <legend className="text-xs font-medium text-ink mb-1">Upřesněte prosím adresu:</legend>
@@ -101,12 +108,9 @@ function OvereniAdresy({ overeni, aktualni, vybrat }) {
       ))}
     </fieldset>
   )
-  if (overeni.stav === 'mimo') return (
-    <p className="text-xs text-berry mt-1.5">Adresa vychází mimo České Budějovice ({overeni.kandidati[0].adresa}). Dovážíme jen po Budějovicích – případně zvolte osobní odběr.</p>
-  )
   return (
     <p className="text-xs text-berry mt-1.5">
-      {overeni.chybiCislo ? 'Doplňte prosím číslo domu.' : 'Tuto adresu jsme nenašli v registru adres. Zkontrolujte název ulice a číslo domu.'}
+      {overeni.chybiCislo ? 'Doplňte prosím číslo domu.' : 'Tuto adresu jsme nenašli v registru adres. Zkontrolujte ulici, číslo domu a město.'}
     </p>
   )
 }
@@ -132,8 +136,11 @@ export default function Pokladna({ onZpet, onHotovo }) {
   const [f, setF] = useState(() => {
     const u = nacistUdaje()
     return {
-      jmeno: u?.jmeno || '', telefon: u?.telefon || '', email: u?.email || '',
-      adresa: PEVNA_ADRESA || u?.adresa || '',
+      jmeno: u?.prijmeni != null ? (u.jmeno || '') : rozdelitJmeno(u?.jmeno)[0],
+      prijmeni: u?.prijmeni != null ? u.prijmeni : rozdelitJmeno(u?.jmeno)[1],
+      firma: !!u?.firma, nazevFirmy: u?.nazevFirmy || '', ico: u?.ico || '',
+      telefon: u?.telefon || '', email: u?.email || '',
+      adresa: PEVNA_ADRESA || u?.adresa || '', psc: u?.psc || '', mesto: u?.mesto || VYCHOZI_MESTO,
       doruceni: PEVNA_ADRESA ? 'rozvoz' : (u?.doruceni || 'rozvoz'), termin: terminyRozvozu[0], terminOdberu: terminyOdberu[0],
       platba: 'prevzeti', poznamka: '', souhlas: false, zapamatovat: true,
     }
@@ -153,42 +160,60 @@ export default function Pokladna({ onZpet, onHotovo }) {
     setF(prev => ({
       ...prev,
       email: prev.email || uzivatel.email || '',
-      jmeno: prev.jmeno || m.jmeno || m.full_name || m.name || '',
+      ...(prev.jmeno || prev.prijmeni ? {} : m.prijmeni != null
+        ? { jmeno: m.jmeno || '', prijmeni: m.prijmeni }
+        : (([j, p]) => ({ jmeno: j, prijmeni: p }))(rozdelitJmeno(m.jmeno || m.full_name || m.name))),
       telefon: prev.telefon || m.telefon || '',
       adresa: PEVNA_ADRESA || prev.adresa || m.adresa || '',
+      psc: prev.psc || m.psc || '',
+      mesto: prev.adresa ? prev.mesto : (m.mesto || prev.mesto),
     }))
   }, [uzivatel])
 
   const validovat = () => {
     const e = {}
-    if (!f.jmeno.trim()) e.jmeno = 'Vyplňte jméno.'
+    if (f.firma) {
+      if (!f.nazevFirmy.trim()) e.nazevFirmy = 'Vyplňte název firmy.'
+      if (f.ico.trim() && !/^\d{8}$/.test(f.ico.trim())) e.ico = 'IČO má 8 číslic.'
+    } else {
+      if (!f.jmeno.trim()) e.jmeno = 'Vyplňte jméno.'
+      if (!f.prijmeni.trim()) e.prijmeni = 'Vyplňte příjmení.'
+    }
     if (!/^[+\d\s\-()]{9,}$/.test(f.telefon.trim())) e.telefon = 'Vyplňte telefon – hodí se při předání objednávky.'
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email.trim())) e.email = 'Vyplňte e-mail – pošleme na něj potvrzení objednávky.'
-    if (f.doruceni === 'rozvoz' && !f.adresa.trim()) e.adresa = 'Vyplňte adresu pro dovoz.'
+    if (f.doruceni === 'rozvoz' && !f.adresa.trim()) e.adresa = 'Vyplňte ulici a číslo domu.'
+    if (f.doruceni === 'rozvoz' && !PEVNA_ADRESA && !f.mesto.trim()) e.mesto = 'Vyplňte město.'
     if (!f.souhlas) e.souhlas = 'Bez souhlasu nemůžeme objednávku zpracovat.'
     return e
   }
 
+  // The check is valid for one street + town pair.
+  const klicAdresy = `${f.adresa.trim()}|${f.mesto.trim()}`
+
   const zkontrolovatAdresu = async () => {
-    const q = f.adresa.trim()
-    if (f.doruceni !== 'rozvoz' || q.length < 3) return overeni
+    const q = klicAdresy
+    if (f.doruceni !== 'rozvoz' || f.adresa.trim().length < 3) return overeni
     if (overeni.q === q && overeni.stav && overeni.stav !== 'overuji') return overeni
     setOvereni({ q, stav: 'overuji', kandidati: [] })
-    const v = { q, ...(await overitAdresu(q)) }
+    const v = { q, ...(await overitAdresu(f.adresa.trim(), f.mesto.trim())) }
     setOvereni(v)
     setNeovereneOK(false)
+    if (v.vybrana?.psc) set('psc', v.vybrana.psc)
     return v
   }
 
-  // A suggestion picked from the address register is verified by definition; fetch its coordinates if missing.
+  // A suggestion picked from the address register is verified by definition; it also fills in the
+  // postcode and town. Coordinates are fetched if the suggestion came without them.
   const vybratNavrh = async k => {
-    setChyby(c => ({ ...c, adresa: undefined }))
+    setChyby(c => ({ ...c, adresa: undefined, mesto: undefined }))
     setNeovereneOK(false)
-    if (k.gps) { setOvereni({ q: k.adresa, stav: 'ok', kandidati: [k], vybrana: k }); return }
-    setOvereni({ q: k.adresa, stav: 'overuji', kandidati: [] })
+    setF(prev => ({ ...prev, adresa: k.ulice, psc: k.psc || prev.psc, mesto: k.mesto || prev.mesto }))
+    const q = `${k.ulice}|${k.mesto || f.mesto.trim()}`
+    if (k.gps) { setOvereni({ q, stav: 'ok', kandidati: [k], vybrana: k }); return }
+    setOvereni({ q, stav: 'overuji', kandidati: [] })
     const v = await overitAdresu(k.adresa)
     const presna = v.kandidati.find(x => x.adresa === k.adresa)
-    setOvereni(presna ? { q: k.adresa, stav: 'ok', kandidati: [presna], vybrana: presna } : { q: k.adresa, ...v })
+    setOvereni(presna ? { q, stav: 'ok', kandidati: [presna], vybrana: presna } : { q, ...v })
   }
 
   const odeslat = async ev => {
@@ -206,14 +231,16 @@ export default function Pokladna({ onZpet, onHotovo }) {
         setChyby({ adresa: 'Vyberte prosím přesnou adresu ze seznamu.' })
         return
       }
-      if ((adr.stav === 'nenalezeno' || adr.stav === 'mimo') && !neovereneOK) {
+      if (adr.stav === 'nenalezeno' && !neovereneOK) {
         setNeovereneOK(true)
         setChyby({ adresa: 'Zkontrolujte prosím adresu. Pokud je správně, klikněte znovu na Objednat.' })
         return
       }
     }
     setStav('odesilam')
-    const adresaDovozu = adr?.vybrana ? adr.vybrana.adresa : `${f.adresa.trim()}, České Budějovice`
+    const adresaDovozu = adr?.vybrana ? adr.vybrana.adresa : `${f.adresa.trim()}, ${`${f.psc.trim()} ${f.mesto.trim()}`.trim()}`
+    const celeJmeno = f.firma ? f.nazevFirmy.trim() : `${f.jmeno.trim()} ${f.prijmeni.trim()}`.trim()
+    const ico = f.firma ? f.ico.trim() : ''
 
     const k = OBSAH.kontakt
     const cislo = cisloObjednavky()
@@ -238,12 +265,12 @@ export default function Pokladna({ onZpet, onHotovo }) {
 
     const payload = {
       // The subject starts with the day so the day's orders sort together in the inbox.
-      _subject: `${rozvoz ? 'ROZVOZ' : 'ODBĚR'} ${den} | ${cislo} | ${f.jmeno.trim()} | ${celkem}${SKUPINA ? ` | skupina ${SKUPINA.nazev}` : ''}`,
+      _subject: `${rozvoz ? 'ROZVOZ' : 'ODBĚR'} ${den} | ${cislo} | ${celeJmeno} | ${celkem}${SKUPINA ? ` | skupina ${SKUPINA.nazev}` : ''}`,
       _template: 'box',
       _replyto: f.email.trim(),
       objednavka: cislo,
       termin: `${rozvoz ? 'Rozvoz' : 'Osobní odběr'} – ${den}`,
-      jmeno: f.jmeno.trim(),
+      jmeno: ico ? `${celeJmeno} (IČO ${ico})` : celeJmeno,
       telefon: f.telefon.trim(),
       email: f.email.trim(),
       adresa: rozvoz ? `${adresaDovozu}${PEVNA_ADRESA ? ' (pevná adresa skupiny)' : adr?.vybrana ? ' (ověřeno v registru adres)' : ' – NEOVĚŘENO, zkontrolovat'}` : '— (osobní odběr)',
@@ -268,20 +295,25 @@ export default function Pokladna({ onZpet, onHotovo }) {
       if (uzivatel) {
         // The order e-mail already went out; the account copy is best-effort.
         await ulozitDoUctu(zaznam).catch(() => false)
-        if (f.zapamatovat) await auth.ulozitProfil({ jmeno: f.jmeno.trim(), telefon: f.telefon.trim(), adresa: f.adresa.trim() }).catch(() => null)
+        if (f.zapamatovat) await auth.ulozitProfil({ jmeno: f.jmeno.trim(), prijmeni: f.prijmeni.trim(), telefon: f.telefon.trim(), ...(PEVNA_ADRESA ? {} : { adresa: f.adresa.trim(), psc: f.psc.trim(), mesto: f.mesto.trim() }) }).catch(() => null)
       }
       ulozitObjednavku(
         zaznam,
         f.zapamatovat
-          ? { jmeno: f.jmeno.trim(), telefon: f.telefon.trim(), email: f.email.trim(), adresa: f.adresa.trim(), doruceni: f.doruceni }
+          ? {
+            jmeno: f.jmeno.trim(), prijmeni: f.prijmeni.trim(), firma: f.firma, nazevFirmy: f.nazevFirmy.trim(), ico: f.ico.trim(),
+            telefon: f.telefon.trim(), email: f.email.trim(), doruceni: f.doruceni,
+            ...(PEVNA_ADRESA ? {} : { adresa: f.adresa.trim(), psc: f.psc.trim(), mesto: f.mesto.trim() }),
+          }
           : null,
       )
       await poslatPotvrzeni({
-        email: f.email.trim(), jmeno: f.jmeno.trim(), cislo, souhrn,
+        email: f.email.trim(), jmeno: celeJmeno, cislo, souhrn,
         castka: prevodem ? kosik.soucet : 0, vs,
         // For the delivery overview page on the hosting (api/rozvoz.php).
         detail: {
           rozvoz, den, telefon: f.telefon.trim(), adresa: rozvoz ? f.adresa.trim() : '',
+          psc: rozvoz ? f.psc.trim() : '', mesto: rozvoz ? f.mesto.trim() : '', ico,
           adresaOverena: rozvoz && adr?.vybrana ? adr.vybrana.adresa : '', gps: rozvoz && adr?.vybrana ? adr.vybrana.gps : null,
           polozky: radky, celkem: kosik.soucet, platba: prevodem ? 'prevod' : 'prevzeti',
           poznamka: f.poznamka.trim(),
@@ -310,11 +342,37 @@ export default function Pokladna({ onZpet, onHotovo }) {
         <div className="space-y-6">
           <div className="bg-white rounded-lg p-6 space-y-4">
             <h2 className="font-semibold text-lg text-ink">Kontaktní údaje</h2>
-            <div>
-              <label htmlFor="jmeno" className="text-xs font-medium text-ink-soft mb-1 block">Jméno a příjmení *</label>
-              <input id="jmeno" autoComplete="name" value={f.jmeno} onChange={e => set('jmeno', e.target.value)} className={field} />
-              <Chyba text={chyby.jmeno} />
-            </div>
+            {f.firma ? (
+              <div className="grid sm:grid-cols-[1fr_11rem] gap-4">
+                <div>
+                  <label htmlFor="nazevFirmy" className="text-xs font-medium text-ink-soft mb-1 block">Název firmy *</label>
+                  <input id="nazevFirmy" autoComplete="organization" value={f.nazevFirmy} onChange={e => set('nazevFirmy', e.target.value)} className={field} />
+                  <Chyba text={chyby.nazevFirmy} />
+                </div>
+                <div>
+                  <label htmlFor="ico" className="text-xs font-medium text-ink-soft mb-1 block">IČO (nepovinné)</label>
+                  <input id="ico" inputMode="numeric" autoComplete="off" value={f.ico} onChange={e => set('ico', e.target.value)} className={field} />
+                  <Chyba text={chyby.ico} />
+                </div>
+              </div>
+            ) : (
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="jmeno" className="text-xs font-medium text-ink-soft mb-1 block">Jméno *</label>
+                  <input id="jmeno" autoComplete="given-name" value={f.jmeno} onChange={e => set('jmeno', e.target.value)} className={field} />
+                  <Chyba text={chyby.jmeno} />
+                </div>
+                <div>
+                  <label htmlFor="prijmeni" className="text-xs font-medium text-ink-soft mb-1 block">Příjmení *</label>
+                  <input id="prijmeni" autoComplete="family-name" value={f.prijmeni} onChange={e => set('prijmeni', e.target.value)} className={field} />
+                  <Chyba text={chyby.prijmeni} />
+                </div>
+              </div>
+            )}
+            <label className="flex items-center gap-2 text-sm text-ink-soft cursor-pointer">
+              <input type="checkbox" checked={f.firma} onChange={e => set('firma', e.target.checked)} className="accent-leaf" />
+              Objednávám na firmu
+            </label>
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
                 <label htmlFor="email" className="text-xs font-medium text-ink-soft mb-1 block">E-mail * (přijde na něj potvrzení)</label>
@@ -356,14 +414,27 @@ export default function Pokladna({ onZpet, onHotovo }) {
                     {terminyRozvozu.map(t => <option key={t}>{t}</option>)}
                   </select>
                 </div>
-                {!PEVNA_ADRESA && <div>
-                  <label htmlFor="adresa" className="text-xs font-medium text-ink-soft mb-1 block">Adresa v Českých Budějovicích *</label>
-                  <AdresaInput id="adresa" value={f.adresa} onChange={v => set('adresa', v)} onVyber={vybratNavrh}
-                    onBlur={zkontrolovatAdresu} placeholder="Začněte psát ulici a číslo domu" className={field} />
-                  <OvereniAdresy overeni={overeni} aktualni={f.adresa.trim()}
-                    vybrat={k => { setOvereni(o => ({ ...o, vybrana: k })); setChyby(c => ({ ...c, adresa: undefined })) }} />
-                  <Chyba text={chyby.adresa} />
-                </div>}
+                {!PEVNA_ADRESA && <>
+                  <div>
+                    <label htmlFor="adresa" className="text-xs font-medium text-ink-soft mb-1 block">Ulice a číslo domu *</label>
+                    <AdresaInput id="adresa" value={f.adresa} mesto={f.mesto} onChange={v => set('adresa', v)} onVyber={vybratNavrh}
+                      onBlur={zkontrolovatAdresu} placeholder="Začněte psát, např. Lannova 12" className={field} />
+                    <OvereniAdresy overeni={overeni} aktualni={klicAdresy}
+                      vybrat={k => { setOvereni(o => ({ ...o, vybrana: k })); setF(p => ({ ...p, psc: k.psc || p.psc })); setChyby(c => ({ ...c, adresa: undefined })) }} />
+                    <Chyba text={chyby.adresa} />
+                  </div>
+                  <div className="grid grid-cols-[8rem_1fr] gap-4">
+                    <div>
+                      <label htmlFor="psc" className="text-xs font-medium text-ink-soft mb-1 block">PSČ</label>
+                      <input id="psc" inputMode="numeric" autoComplete="postal-code" value={f.psc} onChange={e => set('psc', e.target.value)} className={field} />
+                    </div>
+                    <div>
+                      <label htmlFor="mesto" className="text-xs font-medium text-ink-soft mb-1 block">Město / obec *</label>
+                      <input id="mesto" autoComplete="address-level2" value={f.mesto} onChange={e => set('mesto', e.target.value)} onBlur={zkontrolovatAdresu} className={field} />
+                      <Chyba text={chyby.mesto} />
+                    </div>
+                  </div>
+                </>}
               </div>
             )}
             <p className="text-xs text-muted">Objednávky přijímáme nejpozději den předem do {UZAVERKA_HODINA}:00.</p>

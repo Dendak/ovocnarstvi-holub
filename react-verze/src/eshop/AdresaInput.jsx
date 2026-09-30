@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 
 // Address field with suggestions from the Czech address register (api/adresa.php?naseptat=1).
-// `onVyber(kandidat)` fires when the customer picks a suggestion: { adresa, gps | null }.
-export default function AdresaInput({ id, value, onChange, onVyber, onBlur, className, placeholder }) {
+// `mesto` narrows the search to one town. Picking a suggestion puts just the street line into the field;
+// `onVyber(kandidat)` gets the whole record: { adresa, ulice, psc, mesto, gps | null }.
+export default function AdresaInput({ id, value, mesto = '', onChange, onVyber, onBlur, className, placeholder }) {
   const [navrhy, setNavrhy] = useState([])
   const [otevreno, setOtevreno] = useState(false)
   const [aktivni, setAktivni] = useState(-1)
@@ -17,7 +18,7 @@ export default function AdresaInput({ id, value, onChange, onVyber, onBlur, clas
     const t = setTimeout(async () => {
       setHleda(true)
       try {
-        const res = await fetch(`${import.meta.env.BASE_URL}api/adresa.php?naseptat=1&q=${encodeURIComponent(q)}`, { signal: ctrl.signal })
+        const res = await fetch(`${import.meta.env.BASE_URL}api/adresa.php?naseptat=1&q=${encodeURIComponent(q)}&mesto=${encodeURIComponent(mesto.trim())}`, { signal: ctrl.signal })
         const d = res.ok ? await res.json() : {}
         setNavrhy(d.kandidati || [])
         setProCo(q)
@@ -26,13 +27,13 @@ export default function AdresaInput({ id, value, onChange, onVyber, onBlur, clas
       setHleda(false)
     }, 300)
     return () => { clearTimeout(t); ctrl.abort() }
-  }, [value, vybrane])
+  }, [value, vybrane, mesto])
 
   const vybrat = k => {
-    setVybrane(k.adresa)
+    setVybrane(k.ulice)
     setOtevreno(false)
     setNavrhy([])
-    onChange(k.adresa)
+    onChange(k.ulice)
     onVyber?.(k)
   }
 
@@ -65,7 +66,7 @@ export default function AdresaInput({ id, value, onChange, onVyber, onBlur, clas
             </li>
           ))}
           {navrhy.length === 0 && (
-            <li className="px-4 py-2.5 text-muted">Žádnou takovou adresu v Českých Budějovicích jsme nenašli. Zkuste ulici a číslo domu.</li>
+            <li className="px-4 py-2.5 text-muted">Žádnou takovou adresu jsme nenašli. Zkuste ulici a číslo domu, případně upravte město.</li>
           )}
         </ul>
       )}

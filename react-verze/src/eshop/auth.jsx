@@ -80,8 +80,8 @@ export function AuthProvider({ children }) {
     obnovaHesla,
     poskytovatele,
     prihlasit: (email, heslo) => supabase.auth.signInWithPassword({ email, password: heslo }),
-    registrovat: (email, heslo, jmeno, kod) => supabase.auth.signUp({
-      email, password: heslo, options: { data: { jmeno, ...(kod ? { kod } : {}) }, emailRedirectTo: zpet() },
+    registrovat: (email, heslo, udaje) => supabase.auth.signUp({
+      email, password: heslo, options: { data: udaje, emailRedirectTo: zpet() },
     }),
     prihlasitPres: provider => supabase.auth.signInWithOAuth({
       provider,

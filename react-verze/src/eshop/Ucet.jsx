@@ -1,5 +1,6 @@
 import AdresaInput from './AdresaInput'
 import { SKUPINA, overitKod } from './skupina'
+import { rozdelitJmeno } from './mujUcet'
 import { useState } from 'react'
 import { OBSAH } from '../data'
 import { useAuth, prelozChybu } from './auth'
@@ -61,7 +62,7 @@ function Zprava({ typ, children }) {
 function Prihlaseni() {
   const auth = useAuth()
   const [rezim, setRezim] = useState('prihlasit') // prihlasit | registrovat | zapomenute
-  const [f, setF] = useState({ jmeno: '', email: '', heslo: '', kod: '', souhlas: false })
+  const [f, setF] = useState({ jmeno: '', prijmeni: '', email: '', heslo: '', kod: '', souhlas: false })
   const [stav, setStav] = useState({ nacita: false, chyba: null, ok: null })
   const set = (k, v) => setF(p => ({ ...p, [k]: v }))
   const prepnout = r => { setRezim(r); setStav({ nacita: false, chyba: null, ok: null }) }
@@ -83,7 +84,7 @@ function Prihlaseni() {
         if (chyba) return setStav({ chyba: 'Kód se teď nepodařilo ověřit. Zkuste to prosím za chvíli, nebo ho zadejte později v účtu.' })
         if (!skupina) return setStav({ chyba: 'Tento kód skupiny neznáme. Zkontrolujte ho, nebo pole nechte prázdné.' })
       }
-      const { data, error } = await auth.registrovat(email, f.heslo, f.jmeno.trim(), kod)
+      const { data, error } = await auth.registrovat(email, f.heslo, { jmeno: f.jmeno.trim(), prijmeni: f.prijmeni.trim(), ...(kod ? { kod } : {}) })
       if (error) return setStav({ chyba: prelozChybu(error) })
       setStav({ ok: data.session ? null : `Hotovo! Na ${email} jsme poslali odkaz pro potvrzení účtu. Po kliknutí na něj budete přihlášeni.` })
     } else {
@@ -121,7 +122,10 @@ function Prihlaseni() {
 
         <form onSubmit={odeslat} noValidate className="space-y-4">
           {rezim === 'registrovat' && (
-            <Pole id="u-jmeno" label="Jméno a příjmení" autoComplete="name" value={f.jmeno} onChange={e => set('jmeno', e.target.value)} />
+            <div className="grid grid-cols-2 gap-4">
+              <Pole id="u-jmeno" label="Jméno" autoComplete="given-name" value={f.jmeno} onChange={e => set('jmeno', e.target.value)} />
+              <Pole id="u-prijmeni" label="Příjmení" autoComplete="family-name" value={f.prijmeni} onChange={e => set('prijmeni', e.target.value)} />
+            </div>
           )}
           <Pole id="u-email" label="E-mail" type="email" autoComplete="email" value={f.email} onChange={e => set('email', e.target.value)} />
           {rezim !== 'zapomenute' && (
@@ -242,7 +246,10 @@ function Profil() {
   const u = auth.uzivatel
   const meta = u.user_metadata || {}
   const [f, setF] = useState({
-    jmeno: meta.jmeno || meta.full_name || meta.name || '', telefon: meta.telefon || '', adresa: meta.adresa || '',
+    ...(meta.prijmeni != null
+      ? { jmeno: meta.jmeno || '', prijmeni: meta.prijmeni }
+      : (([jmeno, prijmeni]) => ({ jmeno, prijmeni }))(rozdelitJmeno(meta.jmeno || meta.full_name || meta.name))),
+    telefon: meta.telefon || '', adresa: meta.adresa || '', psc: meta.psc || '', mesto: meta.mesto || 'České Budějovice',
   })
   const [heslo, setHeslo] = useState('')
   const [stav, setStav] = useState({})
@@ -253,7 +260,10 @@ function Profil() {
   const ulozit = async e => {
     e.preventDefault()
     setStav({ nacita: true })
-    const { error } = await auth.ulozitProfil({ jmeno: f.jmeno.trim(), telefon: f.telefon.trim(), adresa: f.adresa.trim() })
+    const { error } = await auth.ulozitProfil({
+      jmeno: f.jmeno.trim(), prijmeni: f.prijmeni.trim(), telefon: f.telefon.trim(),
+      adresa: f.adresa.trim(), psc: f.psc.trim(), mesto: f.mesto.trim(),
+    })
     setStav(error ? { chyba: prelozChybu(error) } : { ok: 'Uloženo. Údaje se vám předvyplní při objednávce.' })
   }
   const zmenitHeslo = async e => {
@@ -278,13 +288,20 @@ function Profil() {
 
       <form onSubmit={ulozit} noValidate className="bg-white rounded-lg p-6 space-y-4">
         <h2 className="font-semibold text-lg text-ink">Doručovací údaje</h2>
-        <Pole id="p-jmeno" label="Jméno a příjmení" autoComplete="name" value={f.jmeno} onChange={e => set('jmeno', e.target.value)} />
         <div className="grid sm:grid-cols-2 gap-4">
-          <Pole id="p-telefon" label="Telefon" type="tel" autoComplete="tel" value={f.telefon} onChange={e => set('telefon', e.target.value)} />
-          <div>
-            <label htmlFor="p-adresa" className="text-xs font-medium text-ink-soft mb-1 block">Adresa v Českých Budějovicích</label>
-            <AdresaInput id="p-adresa" value={f.adresa} onChange={v => set('adresa', v)} placeholder="Začněte psát ulici a číslo domu" className={field} />
-          </div>
+          <Pole id="p-jmeno" label="Jméno" autoComplete="given-name" value={f.jmeno} onChange={e => set('jmeno', e.target.value)} />
+          <Pole id="p-prijmeni" label="Příjmení" autoComplete="family-name" value={f.prijmeni} onChange={e => set('prijmeni', e.target.value)} />
+        </div>
+        <Pole id="p-telefon" label="Telefon" type="tel" autoComplete="tel" value={f.telefon} onChange={e => set('telefon', e.target.value)} />
+        <div>
+          <label htmlFor="p-adresa" className="text-xs font-medium text-ink-soft mb-1 block">Ulice a číslo domu</label>
+          <AdresaInput id="p-adresa" value={f.adresa} mesto={f.mesto} onChange={v => set('adresa', v)}
+            onVyber={k => setF(p => ({ ...p, adresa: k.ulice, psc: k.psc || p.psc, mesto: k.mesto || p.mesto }))}
+            placeholder="Začněte psát, např. Lannova 12" className={field} />
+        </div>
+        <div className="grid grid-cols-[8rem_1fr] gap-4">
+          <Pole id="p-psc" label="PSČ" inputMode="numeric" autoComplete="postal-code" value={f.psc} onChange={e => set('psc', e.target.value)} />
+          <Pole id="p-mesto" label="Město / obec" autoComplete="address-level2" value={f.mesto} onChange={e => set('mesto', e.target.value)} />
         </div>
         <Zprava typ="chyba">{stav.chyba}</Zprava>
         <Zprava typ="ok">{stav.ok}</Zprava>

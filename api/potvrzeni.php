@@ -52,6 +52,9 @@ if (!is_file(data_cesta("objednavky/$vs.json"))) {
     'datum' => datum_terminu($txt('den', 40)),
     'telefon' => $txt('telefon', 40),
     'adresa' => $txt('adresa', 200),
+    'psc' => $txt('psc', 10),
+    'mesto' => $txt('mesto', 60),
+    'ico' => preg_replace('/\D/', '', $txt('ico', 12)),
     'adresa_overena' => $txt('adresaOverena', 200),
     'gps_overena' => (is_array($d['gps'] ?? null) && count($d['gps']) === 2 && abs((float)$d['gps'][0] - 49) < 2 && abs((float)$d['gps'][1] - 15) < 4)
       ? [(float)$d['gps'][0], (float)$d['gps'][1]] : null,

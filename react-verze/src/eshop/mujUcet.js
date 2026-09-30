@@ -32,3 +32,9 @@ export function ulozitObjednavku(objednavka, udaje) {
 export function smazatVse() {
   try { localStorage.removeItem(KEY) } catch { /* ignore */ }
 }
+
+// Starší uložené údaje (a účty přes Google/Seznam) mají celé jméno v jednom poli.
+export function rozdelitJmeno(cele = '') {
+  const c = cele.trim().split(/\s+/)
+  return c.length > 1 ? [c.slice(0, -1).join(' '), c[c.length - 1]] : [c[0] || '', '']
+}
