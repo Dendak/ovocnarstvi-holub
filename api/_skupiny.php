@@ -26,7 +26,7 @@ function skupiny(): array {
       'ceny' => [],
       'sleva' => 0,
       'adresa' => 'Branišovská 1160/31, 370 05 České Budějovice',
-      'gps' => [48.978241, 14.446492],
+      'gps' => [48.976019, 14.447006], // místo předání podle Waze (zadal majitel)
       'popis' => 'Dovoz na Branišovskou 1160/31 společně s ostatními objednávkami skupiny.',
       'max' => 10,
       'bedynky' => [
