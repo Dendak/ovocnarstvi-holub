@@ -1,5 +1,6 @@
 import { OBSAH, isInSeason, vNabidce } from '../data'
 import { FOTO_ODRUD } from './fotoOdrud'
+import { cenaSkupiny } from './skupina'
 
 // ============================================================
 //  KATALOG E-SHOPU – sem se píšou ceny, dostupnost a popisy
@@ -99,7 +100,8 @@ const produktyOvoce = DRUHY_OVOCE.flatMap(d => {
   const fotky = d.zdroj?.fotky || []
   const vSezone = d.zdroj ? isInSeason(d.zdroj) : true
   return d.odrudy.map((o, i) => {
-    const cenaKg = o.cenaKg ?? d.cenaKg ?? null
+    const cenaBezna = o.cenaKg ?? d.cenaKg ?? null
+    const cenaKg = cenaSkupiny(d.id, cenaBezna)
     const vlastni = FOTO_ODRUD[o.id]
     return {
     id: `${d.id}-${o.id}`,
@@ -118,6 +120,7 @@ const produktyOvoce = DRUHY_OVOCE.flatMap(d => {
     jednotka: 'kg',
     varianty: [{ id: 'kg', label: '1 kg', cena: cenaKg }],
     cenaZaJednotku: cenaKg,
+    cenaBezna: cenaBezna !== cenaKg ? cenaBezna : null,
   }})
 })
 
@@ -143,8 +146,8 @@ const produktyMosty = OBSAH.mosty.skupiny.flatMap(sk => sk.polozky.map(p => ({
   dostupne: p.dostupne !== false,
   jednotka: 'ks',
   varianty: [
-    { id: '3l', label: '3 l', cena: sk.cena3l },
-    { id: '5l', label: '5 l', cena: sk.cena5l },
+    { id: '3l', label: '3 l', cena: cenaSkupiny('mosty', sk.cena3l) },
+    { id: '5l', label: '5 l', cena: cenaSkupiny('mosty', sk.cena5l) },
   ],
   cenaZaJednotku: null,
 })))

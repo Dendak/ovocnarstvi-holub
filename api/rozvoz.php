@@ -358,7 +358,8 @@ $karta = function (array $o, ?int $cislo) use ($platba, $tlacitko, $zaplaceno, $
   $hotovo = !empty($o['doruceno']);
   $s = '<div class="box obj' . ($hotovo ? ' hotovo' : '') . '" id="o' . h($o['vs']) . '">'
     . ($cislo ? '<span class="cislo">' . $cislo . '</span>' : '')
-    . '<span class="jm">' . h($o['jmeno']) . '</span> <span class="muted">' . h($o['cislo']) . '</span>';
+    . '<span class="jm">' . h($o['jmeno']) . '</span> <span class="muted">' . h($o['cislo']) . '</span>'
+    . (!empty($o['skupina']) ? ' <span class="stitek ok">skupina ' . h($o['skupina']) . '</span>' : '');
   if (!empty($o['rozvoz'])) {
     $s .= '<div><a href="https://www.google.com/maps/dir/?api=1&destination=' . urlencode($o['plna_adresa'] ?? $o['adresa']) . '">' . h($o['adresa']) . '</a>'
       . (!empty($o['adresa_overena'])

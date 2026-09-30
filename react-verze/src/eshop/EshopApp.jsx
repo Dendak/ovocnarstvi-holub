@@ -1,3 +1,4 @@
+import { SKUPINA } from './skupina'
 import { useEffect, useMemo, useState } from 'react'
 import { OBSAH } from '../data'
 import { PRODUKTY, KATEGORIE, DORUCENI, formatKc } from './katalog'
@@ -145,6 +146,13 @@ function Katalog() {
 
   return (
     <>
+      {SKUPINA && (
+        <div className="bg-leaf text-white text-sm">
+          <p className="container-page py-2.5">
+            Skupina <strong>{SKUPINA.nazev}</strong>: vidíte zvýhodněné ceny{SKUPINA.adresa ? <>, dovážíme na <strong>{SKUPINA.adresa}</strong></> : null}.
+          </p>
+        </div>
+      )}
       <header className="bg-forest text-white">
         <div className="container-page pt-14 pb-10 sm:pt-16">
           <p className="text-[0.95rem] font-medium text-white/70 mb-3">E-shop Ovocnářství Holub</p>

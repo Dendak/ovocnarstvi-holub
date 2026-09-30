@@ -59,6 +59,7 @@ if (!is_file(data_cesta("objednavky/$vs.json"))) {
     'celkem' => (int)($d['celkem'] ?? 0),
     'platba' => ($d['platba'] ?? '') === 'prevod' ? 'prevod' : 'prevzeti',
     'poznamka' => $txt('poznamka', 1000),
+    'skupina' => $txt('skupina', 40),
     'doruceno' => false,
   ]);
 }

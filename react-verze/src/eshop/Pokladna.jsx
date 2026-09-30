@@ -3,6 +3,7 @@ import { OBSAH } from '../data'
 import { DORUCENI, formatKc, formatMnozstvi } from './katalog'
 import { useKosik } from './kosik'
 import AdresaInput from './AdresaInput'
+import { SKUPINA } from './skupina'
 import { nacistUdaje, ulozitObjednavku } from './mujUcet'
 import { useAuth } from './auth'
 import { ulozitDoUctu } from './objednavkyDb'
@@ -17,6 +18,9 @@ import { spd, variabilniSymbol } from './platba'
 const UZAVERKA_HODINA = 18          // objednat nejpozději den předem do 18:00
 const DNY_ROZVOZU = [1, 3, 5]       // po, st, pá
 const DNY_ODBERU = [1, 2, 3, 4, 5, 6] // po–so
+
+// A customer group can have one fixed delivery address (no pickup, no address entry).
+const PEVNA_ADRESA = SKUPINA?.adresa || null
 
 const DNY = ['neděle', 'pondělí', 'úterý', 'středa', 'čtvrtek', 'pátek', 'sobota']
 
@@ -128,8 +132,9 @@ export default function Pokladna({ onZpet, onHotovo }) {
   const [f, setF] = useState(() => {
     const u = nacistUdaje()
     return {
-      jmeno: u?.jmeno || '', telefon: u?.telefon || '', email: u?.email || '', adresa: u?.adresa || '',
-      doruceni: u?.doruceni || 'rozvoz', termin: terminyRozvozu[0], terminOdberu: terminyOdberu[0],
+      jmeno: u?.jmeno || '', telefon: u?.telefon || '', email: u?.email || '',
+      adresa: PEVNA_ADRESA || u?.adresa || '',
+      doruceni: PEVNA_ADRESA ? 'rozvoz' : (u?.doruceni || 'rozvoz'), termin: terminyRozvozu[0], terminOdberu: terminyOdberu[0],
       platba: 'prevzeti', poznamka: '', souhlas: false, zapamatovat: true,
     }
   })
@@ -150,7 +155,7 @@ export default function Pokladna({ onZpet, onHotovo }) {
       email: prev.email || uzivatel.email || '',
       jmeno: prev.jmeno || m.jmeno || m.full_name || m.name || '',
       telefon: prev.telefon || m.telefon || '',
-      adresa: prev.adresa || m.adresa || '',
+      adresa: PEVNA_ADRESA || prev.adresa || m.adresa || '',
     }))
   }, [uzivatel])
 
@@ -193,7 +198,9 @@ export default function Pokladna({ onZpet, onHotovo }) {
     if (Object.keys(e).length) return
 
     let adr = null
-    if (f.doruceni === 'rozvoz') {
+    if (PEVNA_ADRESA) {
+      adr = { stav: 'ok', vybrana: { adresa: PEVNA_ADRESA, gps: SKUPINA.gps || null } }
+    } else if (f.doruceni === 'rozvoz') {
       adr = await zkontrolovatAdresu()
       if (adr.stav === 'vice' && !adr.vybrana) {
         setChyby({ adresa: 'Vyberte prosím přesnou adresu ze seznamu.' })
@@ -225,12 +232,13 @@ export default function Pokladna({ onZpet, onHotovo }) {
       `Celkem: ${celkem}${rozvoz ? ' (doprava v ceně)' : ''}`,
       prevzeti,
       prevodem ? `Platba: převodem předem, VS ${vs}` : 'Platba: při převzetí',
+      ...(SKUPINA ? [`Skupina: ${SKUPINA.nazev} (zvýhodněné ceny)`] : []),
       ...(f.poznamka.trim() ? [`Poznámka: ${f.poznamka.trim()}`] : []),
     ].join('\n')
 
     const payload = {
       // The subject starts with the day so the day's orders sort together in the inbox.
-      _subject: `${rozvoz ? 'ROZVOZ' : 'ODBĚR'} ${den} | ${cislo} | ${f.jmeno.trim()} | ${celkem}`,
+      _subject: `${rozvoz ? 'ROZVOZ' : 'ODBĚR'} ${den} | ${cislo} | ${f.jmeno.trim()} | ${celkem}${SKUPINA ? ` | skupina ${SKUPINA.nazev}` : ''}`,
       _template: 'box',
       _replyto: f.email.trim(),
       objednavka: cislo,
@@ -238,7 +246,7 @@ export default function Pokladna({ onZpet, onHotovo }) {
       jmeno: f.jmeno.trim(),
       telefon: f.telefon.trim(),
       email: f.email.trim(),
-      adresa: rozvoz ? `${adresaDovozu}${adr?.vybrana ? ' (ověřeno v registru adres)' : ' – NEOVĚŘENO, zkontrolovat'}` : '— (osobní odběr)',
+      adresa: rozvoz ? `${adresaDovozu}${PEVNA_ADRESA ? ' (pevná adresa skupiny)' : adr?.vybrana ? ' (ověřeno v registru adres)' : ' – NEOVĚŘENO, zkontrolovat'}` : '— (osobní odběr)',
       polozky: radky.join('\n'),
       celkem,
       platba: prevodem ? `PŘEVODEM PŘEDEM – VS ${vs} – zkontrolovat příchod platby` : 'při převzetí',
@@ -277,6 +285,7 @@ export default function Pokladna({ onZpet, onHotovo }) {
           adresaOverena: rozvoz && adr?.vybrana ? adr.vybrana.adresa : '', gps: rozvoz && adr?.vybrana ? adr.vybrana.gps : null,
           polozky: radky, celkem: kosik.soucet, platba: prevodem ? 'prevod' : 'prevzeti',
           poznamka: f.poznamka.trim(),
+          skupina: SKUPINA?.nazev || '',
         },
       })
       kosik.vyprazdnit()
@@ -322,8 +331,16 @@ export default function Pokladna({ onZpet, onHotovo }) {
 
           <div className="bg-white rounded-lg p-6 space-y-3">
             <h2 className="font-semibold text-lg text-ink">Převzetí</h2>
-            <Volba name="doruceni" current={f.doruceni} onChange={set} value="rozvoz" label={DORUCENI.rozvoz.label} detail={DORUCENI.rozvoz.detail} />
-            <Volba name="doruceni" current={f.doruceni} onChange={set} value="odber" label={DORUCENI.odber.label} detail={DORUCENI.odber.detail} />
+            {PEVNA_ADRESA ? (
+              <div className="rounded-md bg-paper-2 px-4 py-3 text-sm text-ink">
+                <p className="font-medium">Dovoz pro skupinu {SKUPINA.nazev}</p>
+                <p className="mt-0.5">{PEVNA_ADRESA}</p>
+                {SKUPINA.popis && <p className="text-muted text-xs mt-1">{SKUPINA.popis}</p>}
+              </div>
+            ) : <>
+              <Volba name="doruceni" current={f.doruceni} onChange={set} value="rozvoz" label={DORUCENI.rozvoz.label} detail={DORUCENI.rozvoz.detail} />
+              <Volba name="doruceni" current={f.doruceni} onChange={set} value="odber" label={DORUCENI.odber.label} detail={DORUCENI.odber.detail} />
+            </>}
             {f.doruceni === 'odber' ? (
               <div className="pt-2">
                 <label htmlFor="terminOdberu" className="text-xs font-medium text-ink-soft mb-1 block">Den vyzvednutí</label>
@@ -339,14 +356,14 @@ export default function Pokladna({ onZpet, onHotovo }) {
                     {terminyRozvozu.map(t => <option key={t}>{t}</option>)}
                   </select>
                 </div>
-                <div>
+                {!PEVNA_ADRESA && <div>
                   <label htmlFor="adresa" className="text-xs font-medium text-ink-soft mb-1 block">Adresa v Českých Budějovicích *</label>
                   <AdresaInput id="adresa" value={f.adresa} onChange={v => set('adresa', v)} onVyber={vybratNavrh}
                     onBlur={zkontrolovatAdresu} placeholder="Začněte psát ulici a číslo domu" className={field} />
                   <OvereniAdresy overeni={overeni} aktualni={f.adresa.trim()}
                     vybrat={k => { setOvereni(o => ({ ...o, vybrana: k })); setChyby(c => ({ ...c, adresa: undefined })) }} />
                   <Chyba text={chyby.adresa} />
-                </div>
+                </div>}
               </div>
             )}
             <p className="text-xs text-muted">Objednávky přijímáme nejpozději den předem do {UZAVERKA_HODINA}:00.</p>

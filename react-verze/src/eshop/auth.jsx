@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import { createClient } from '@supabase/supabase-js'
+import { SKUPINA, overitKod, nastavitSkupinu } from './skupina'
 import { SUPABASE_URL, SUPABASE_ANON_KEY, UCTY_ZAPNUTE, SSO_POSKYTOVATELE, VLASTNI_POSKYTOVATELE } from './supabaseConfig'
 
 // PKCE keeps the auth callback in the query string (?code=…), so it doesn't
@@ -57,6 +58,21 @@ export function AuthProvider({ children }) {
     return () => sub.subscription.unsubscribe()
   }, [])
 
+  // Group prices belong to the signed-in account: apply the account's code, drop it on sign-out.
+  // A change reloads the page once, because catalogue prices are computed at load.
+  useEffect(() => {
+    if (!supabase || nacita) return
+    const kod = uzivatel?.user_metadata?.kod || ''
+    if (kod === (SKUPINA?.kod || '')) return
+    let zruseno = false
+    ;(async () => {
+      const { skupina, chyba } = kod ? await overitKod(kod) : { skupina: null }
+      if (zruseno || chyba) return
+      if (nastavitSkupinu(skupina)) location.reload()
+    })()
+    return () => { zruseno = true }
+  }, [uzivatel, nacita])
+
   const value = useMemo(() => ({
     zapnuto: !!supabase,
     uzivatel,
@@ -64,8 +80,8 @@ export function AuthProvider({ children }) {
     obnovaHesla,
     poskytovatele,
     prihlasit: (email, heslo) => supabase.auth.signInWithPassword({ email, password: heslo }),
-    registrovat: (email, heslo, jmeno) => supabase.auth.signUp({
-      email, password: heslo, options: { data: { jmeno }, emailRedirectTo: zpet() },
+    registrovat: (email, heslo, jmeno, kod) => supabase.auth.signUp({
+      email, password: heslo, options: { data: { jmeno, ...(kod ? { kod } : {}) }, emailRedirectTo: zpet() },
     }),
     prihlasitPres: provider => supabase.auth.signInWithOAuth({
       provider,

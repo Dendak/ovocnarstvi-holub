@@ -55,6 +55,7 @@ export default function ProduktKarta({ produkt }) {
           <h3 className="font-serif text-xl font-semibold text-ink leading-tight">{produkt.nazev}</h3>
           {produkt.cenaZaJednotku != null && (
             <p className="text-right shrink-0">
+              {produkt.cenaBezna != null && <span className="text-muted text-sm line-through tabular-nums mr-1.5">{formatKc(produkt.cenaBezna)}</span>}
               <span className="font-semibold text-lg text-ink tabular-nums">{formatKc(produkt.cenaZaJednotku)}</span>
               <span className="text-muted text-xs block -mt-0.5">{naKg ? 'za 1 kg vč. dovozu' : `za 1 ${produkt.jednotka}`}</span>
             </p>

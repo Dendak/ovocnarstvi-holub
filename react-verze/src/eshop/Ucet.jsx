@@ -1,4 +1,5 @@
 import AdresaInput from './AdresaInput'
+import { SKUPINA, overitKod } from './skupina'
 import { useState } from 'react'
 import { OBSAH } from '../data'
 import { useAuth, prelozChybu } from './auth'
@@ -60,7 +61,7 @@ function Zprava({ typ, children }) {
 function Prihlaseni() {
   const auth = useAuth()
   const [rezim, setRezim] = useState('prihlasit') // prihlasit | registrovat | zapomenute
-  const [f, setF] = useState({ jmeno: '', email: '', heslo: '', souhlas: false })
+  const [f, setF] = useState({ jmeno: '', email: '', heslo: '', kod: '', souhlas: false })
   const [stav, setStav] = useState({ nacita: false, chyba: null, ok: null })
   const set = (k, v) => setF(p => ({ ...p, [k]: v }))
   const prepnout = r => { setRezim(r); setStav({ nacita: false, chyba: null, ok: null }) }
@@ -76,7 +77,13 @@ function Prihlaseni() {
       const { error } = await auth.prihlasit(email, f.heslo)
       setStav(error ? { chyba: prelozChybu(error) } : { ok: null })
     } else if (rezim === 'registrovat') {
-      const { data, error } = await auth.registrovat(email, f.heslo, f.jmeno.trim())
+      const kod = f.kod.trim().toLowerCase()
+      if (kod) {
+        const { skupina, chyba } = await overitKod(kod)
+        if (chyba) return setStav({ chyba: 'Kód se teď nepodařilo ověřit. Zkuste to prosím za chvíli, nebo ho zadejte později v účtu.' })
+        if (!skupina) return setStav({ chyba: 'Tento kód skupiny neznáme. Zkontrolujte ho, nebo pole nechte prázdné.' })
+      }
+      const { data, error } = await auth.registrovat(email, f.heslo, f.jmeno.trim(), kod)
       if (error) return setStav({ chyba: prelozChybu(error) })
       setStav({ ok: data.session ? null : `Hotovo! Na ${email} jsme poslali odkaz pro potvrzení účtu. Po kliknutí na něj budete přihlášeni.` })
     } else {
@@ -121,6 +128,9 @@ function Prihlaseni() {
             <Pole id="u-heslo" label={rezim === 'registrovat' ? `Heslo (aspoň ${MIN_HESLO} znaků)` : 'Heslo'} type="password"
               autoComplete={rezim === 'registrovat' ? 'new-password' : 'current-password'}
               value={f.heslo} onChange={e => set('heslo', e.target.value)} />
+          )}
+          {rezim === 'registrovat' && (
+            <Pole id="u-kod" label="Kód skupiny (nepovinné)" autoComplete="off" value={f.kod} onChange={e => set('kod', e.target.value)} />
           )}
           {rezim === 'registrovat' && (
             <label className="flex items-start gap-2 text-xs text-ink-soft cursor-pointer">
@@ -172,6 +182,57 @@ function NoveHeslo() {
         <Zprava typ="chyba">{stav.chyba}</Zprava>
         <button type="submit" disabled={stav.nacita} className={primary}>{stav.nacita ? 'Ukládám…' : 'Uložit heslo'}</button>
       </form>
+    </div>
+  )
+}
+
+// Group code (e.g. a workplace): better prices and a fixed delivery address. Stored with the account;
+// AuthProvider applies it to the catalogue and reloads the page.
+function KodSkupiny() {
+  const auth = useAuth()
+  const [kod, setKod] = useState('')
+  const [stav, setStav] = useState({})
+
+  const pouzit = async e => {
+    e.preventDefault()
+    const k = kod.trim().toLowerCase()
+    if (!k) return
+    setStav({ nacita: true })
+    const { skupina, chyba } = await overitKod(k)
+    if (chyba) return setStav({ chyba: 'Kód se teď nepodařilo ověřit. Zkuste to prosím za chvíli.' })
+    if (!skupina) return setStav({ chyba: 'Tento kód skupiny neznáme.' })
+    const { error } = await auth.ulozitProfil({ kod: k })
+    setStav(error ? { chyba: prelozChybu(error) } : { nacita: true })
+  }
+  const zrusit = async () => {
+    setStav({ nacita: true })
+    const { error } = await auth.ulozitProfil({ kod: null })
+    setStav(error ? { chyba: prelozChybu(error) } : { nacita: true })
+  }
+
+  return (
+    <div className="bg-white rounded-lg p-6 space-y-4">
+      <h2 className="font-semibold text-lg text-ink">Kód skupiny</h2>
+      {SKUPINA ? (
+        <>
+          <p className="text-sm text-ink-soft">
+            Máte aktivní skupinu <strong>{SKUPINA.nazev}</strong>: zvýhodněné ceny{SKUPINA.adresa ? <> a dovoz na adresu <strong>{SKUPINA.adresa}</strong></> : null}.
+          </p>
+          <Zprava typ="chyba">{stav.chyba}</Zprava>
+          <button type="button" onClick={zrusit} disabled={stav.nacita} className="text-sm text-leaf hover:underline cursor-pointer disabled:opacity-60">
+            {stav.nacita ? 'Moment…' : 'Zrušit kód a nakupovat za běžné ceny'}
+          </button>
+        </>
+      ) : (
+        <form onSubmit={pouzit} noValidate className="space-y-4">
+          <p className="text-sm text-muted">Máte kód od svého zaměstnavatele nebo spolku? Zadejte ho a uvidíte zvýhodněné ceny.</p>
+          <Pole id="p-kod" label="Kód" autoComplete="off" value={kod} onChange={e => setKod(e.target.value)} />
+          <Zprava typ="chyba">{stav.chyba}</Zprava>
+          <button type="submit" disabled={stav.nacita} className="bg-leaf hover:bg-leaf-dark text-white font-semibold px-6 py-2.5 rounded-md disabled:opacity-60 cursor-pointer">
+            {stav.nacita ? 'Ověřuji…' : 'Použít kód'}
+          </button>
+        </form>
+      )}
     </div>
   )
 }
@@ -231,6 +292,8 @@ function Profil() {
           {stav.nacita ? 'Ukládám…' : 'Uložit údaje'}
         </button>
       </form>
+
+      <KodSkupiny />
 
       <form onSubmit={zmenitHeslo} noValidate className="bg-white rounded-lg p-6 space-y-4">
         <h2 className="font-semibold text-lg text-ink">{pouzeGoogle ? 'Nastavit heslo' : 'Změna hesla'}</h2>
