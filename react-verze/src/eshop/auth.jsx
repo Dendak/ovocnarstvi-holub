@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import { createClient } from '@supabase/supabase-js'
-import { SKUPINA, overitKod, nastavitSkupinu } from './skupina'
+import { SKUPINA, skupinaJeCerstva, overitKod, opustitSkupinu, nastavitSkupinu } from './skupina'
 import { SUPABASE_URL, SUPABASE_ANON_KEY, UCTY_ZAPNUTE, SSO_POSKYTOVATELE, VLASTNI_POSKYTOVATELE } from './supabaseConfig'
 
 // PKCE keeps the auth callback in the query string (?code=…), so it doesn't
@@ -58,15 +58,18 @@ export function AuthProvider({ children }) {
     return () => sub.subscription.unsubscribe()
   }, [])
 
-  // Group prices belong to the signed-in account: apply the account's code, drop it on sign-out.
+  // Group prices belong to the signed-in account: the account's code is claimed on the server
+  // (groups have a limited number of accounts), re-checked daily and dropped on sign-out.
   // A change reloads the page once, because catalogue prices are computed at load.
   useEffect(() => {
     if (!supabase || nacita) return
     const kod = uzivatel?.user_metadata?.kod || ''
-    if (kod === (SKUPINA?.kod || '')) return
+    if (kod === (SKUPINA?.kod || '') && (!kod || skupinaJeCerstva())) return
     let zruseno = false
     ;(async () => {
-      const { skupina, chyba } = kod ? await overitKod(kod) : { skupina: null }
+      const token = uzivatel ? (await supabase.auth.getSession()).data.session?.access_token : null
+      if (uzivatel && !kod && SKUPINA?.kod && token) await opustitSkupinu(SKUPINA.kod, token)
+      const { skupina, chyba } = kod && token ? await overitKod(kod, token) : { skupina: null }
       if (zruseno || chyba) return
       if (nastavitSkupinu(skupina)) location.reload()
     })()
@@ -92,6 +95,7 @@ export function AuthProvider({ children }) {
     noveHeslo: async heslo => { const r = await supabase.auth.updateUser({ password: heslo }); if (!r.error) setObnovaHesla(false); return r },
     ulozitProfil: udaje => supabase.auth.updateUser({ data: udaje }),
     odhlasit: () => supabase.auth.signOut(),
+    token: async () => (await supabase.auth.getSession()).data.session?.access_token || null,
   }), [uzivatel, nacita, obnovaHesla, poskytovatele])
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

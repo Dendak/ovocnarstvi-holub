@@ -1,7 +1,8 @@
 // Zákaznická skupina s kódem (např. zaměstnanci ústavu): vlastní ceny a pevná doručovací adresa.
 // Kód se ověřuje na hostingu (api/skupina.php); výsledek si prohlížeč pamatuje, aby se ceny
 // v katalogu spočítaly hned při načtení stránky. Po změně skupiny se stránka načte znovu.
-const KLIC = 'oh_skupina'
+const KLIC = 'oh_skupina2'
+const DEN = 24 * 3600 * 1000
 
 function nacist() {
   try {
@@ -20,18 +21,31 @@ export function cenaSkupiny(druhId, cena) {
   return SKUPINA.sleva > 0 ? Math.round(cena * (100 - SKUPINA.sleva) / 100) : cena
 }
 
-// Ověří kód na serveru. Vrací skupinu, nebo null (neplatný kód / chyba spojení → `chyba: true`).
-export async function overitKod(kod) {
+// Členství se na serveru ověřuje znovu nejvýš jednou denně (skupina má omezený počet účtů).
+export const skupinaJeCerstva = () => !!SKUPINA && Date.now() - (SKUPINA.overeno || 0) < DEN
+
+// Ověří kód na serveru. S přístupovým tokenem přihlášeného zákazníka ho zároveň zapíše mezi členy skupiny.
+// Vrací { skupina } | { skupina: null, plno } (skupina má plno) | { skupina: null, chyba } (spojení).
+export async function overitKod(kod, token) {
   kod = kod.trim().toLowerCase()
   if (!kod) return { skupina: null }
   try {
-    const res = await fetch(`${import.meta.env.BASE_URL}api/skupina.php?kod=${encodeURIComponent(kod)}`)
-    if (!res.ok) return { skupina: null, chyba: true }
-    const d = await res.json()
-    return { skupina: d.ok ? { ...d.skupina, kod } : null }
+    const res = await fetch(`${import.meta.env.BASE_URL}api/skupina.php?kod=${encodeURIComponent(kod)}`,
+      token ? { headers: { Authorization: `Bearer ${token}` } } : undefined)
+    const d = await res.json().catch(() => null)
+    if (!d || d.limit || d.prihlaseni) return { skupina: null, chyba: true }
+    if (!d.ok) return { skupina: null, plno: !!d.plno }
+    return { skupina: { ...d.skupina, kod, overeno: Date.now() }, neprihlasen: !!d.neprihlasen }
   } catch {
     return { skupina: null, chyba: true }
   }
+}
+
+// Uvolní místo ve skupině (zákazník kód zrušil).
+export async function opustitSkupinu(kod, token) {
+  try {
+    await fetch(`${import.meta.env.BASE_URL}api/skupina.php?odebrat=1&kod=${encodeURIComponent(kod)}`, { headers: { Authorization: `Bearer ${token}` } })
+  } catch { /* the slot stays taken until the admin frees it */ }
 }
 
 // Uloží / zruší skupinu v prohlížeči. Vrací true, pokud se něco změnilo (pak je potřeba stránku načíst znovu).

@@ -2,6 +2,7 @@
 // Přehled objednávek pro farmu: po dnech, co naložit, mapa s trasou rozvozu, stav plateb.
 // Přihlášení odkazem poslaným e-mailem na adresu @ovoce-holub.cz; telefon si ho pamatuje (rok, obnovuje se).
 require __DIR__ . '/_spolecne.php';
+require __DIR__ . '/_skupiny.php';
 header('Content-Type: text/html; charset=utf-8');
 header('X-Robots-Tag: noindex');
 header('Referrer-Policy: strict-origin-when-cross-origin');
@@ -168,6 +169,37 @@ Ovocnářství Holub
     ulozit_json("objednavky/$vs.json", $o);
   }
   header('Location: rozvoz.php?den=' . urlencode($_POST['den'] ?? '') . '#o' . $vs); exit;
+}
+
+// ---------- skupiny s kódem: kdo kód používá, uvolnění místa ----------
+if (isset($_GET['skupiny']) || ($_POST['akce'] ?? '') === 'odebrat-clena') {
+  if (($_POST['akce'] ?? '') === 'odebrat-clena') {
+    $id = (string)($_POST['skupina'] ?? ''); $uid = (string)($_POST['uid'] ?? '');
+    clenove_zmena(function (array &$vse) use ($id, $uid) {
+      $vse[$id] = array_values(array_filter($vse[$id] ?? [], fn($c) => $c['uid'] !== $uid));
+      $vse["$id#blok"] = array_values(array_unique(array_merge($vse["$id#blok"] ?? [], [$uid])));
+    });
+    header('Location: rozvoz.php?skupiny=1'); exit;
+  }
+  $clenove = clenove_vse();
+  $obsah = '<header><h1 style="font-size:19px">Skupiny</h1><span><a href="rozvoz.php">Objednávky</a> · <a href="?odhlasit=1">Odhlásit</a></span></header><main>'
+    . '<p class="muted">Zákazníci se zvýhodněnými cenami podle kódu skupiny. Místo se uvolní, když zákazník kód zruší nebo ho tady odeberete.</p>';
+  foreach (skupiny() as $sk) {
+    $seznam = $clenove[$sk['id']] ?? [];
+    $max = (int)($sk['max'] ?? 0);
+    $obsah .= '<h2>' . h($sk['nazev']) . ' <span class="muted">' . count($seznam) . ($max ? " z $max účtů" : ' účtů') . '</span></h2>'
+      . '<p class="muted">' . h($sk['adresa'] ?? '') . '</p>';
+    if (!$seznam) { $obsah .= '<p class="box">Kód zatím nikdo nepoužil.</p>'; continue; }
+    $obsah .= '<div class="box"><table>';
+    foreach ($seznam as $c) {
+      $obsah .= '<tr><td>' . h($c['email']) . '<br><span class="muted">od ' . h(date('j. n. Y', strtotime($c['cas']))) . '</span></td><td class="r">'
+        . '<form method="post" onsubmit="return confirm(' . h(json_encode("Odebrat {$c['email']} ze skupiny {$sk['nazev']}?", JSON_UNESCAPED_UNICODE)) . ')">'
+        . '<input type="hidden" name="akce" value="odebrat-clena"><input type="hidden" name="skupina" value="' . h($sk['id']) . '">'
+        . '<input type="hidden" name="uid" value="' . h($c['uid']) . '"><button class="btn">Odebrat</button></form></td></tr>';
+    }
+    $obsah .= '</table></div>';
+  }
+  stranka('Skupiny', $obsah . '</main>');
 }
 
 // ---------- přehled účtenek (a export pro účetní) ----------
@@ -398,7 +430,7 @@ $karta = function (array $o, ?int $cislo) use ($platba, $tlacitko, $zaplaceno, $
   return $s;
 };
 
-$obsah = '<header><h1 style="font-size:19px">Objednávky a rozvoz</h1><span><a href="?uctenky=1">Účtenky</a> · <a href="?odhlasit=1">Odhlásit</a></span></header><main>';
+$obsah = '<header><h1 style="font-size:19px">Objednávky a rozvoz</h1><span><a href="?uctenky=1">Účtenky</a> · <a href="?skupiny=1">Skupiny</a> · <a href="?odhlasit=1">Odhlásit</a></span></header><main>';
 if (!$dny) {
   $obsah .= '<p class="box">Zatím žádné objednávky z e-shopu.</p>';
 } else {

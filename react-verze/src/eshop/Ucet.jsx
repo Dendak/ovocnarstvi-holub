@@ -80,8 +80,9 @@ function Prihlaseni() {
     } else if (rezim === 'registrovat') {
       const kod = f.kod.trim().toLowerCase()
       if (kod) {
-        const { skupina, chyba } = await overitKod(kod)
+        const { skupina, chyba, plno } = await overitKod(kod)
         if (chyba) return setStav({ chyba: 'Kód se teď nepodařilo ověřit. Zkuste to prosím za chvíli, nebo ho zadejte později v účtu.' })
+        if (plno) return setStav({ chyba: 'Tato skupina už má plný počet účtů. Pole nechte prázdné, nebo se nám ozvěte.' })
         if (!skupina) return setStav({ chyba: 'Tento kód skupiny neznáme. Zkontrolujte ho, nebo pole nechte prázdné.' })
       }
       const { data, error } = await auth.registrovat(email, f.heslo, { jmeno: f.jmeno.trim(), prijmeni: f.prijmeni.trim(), ...(kod ? { kod } : {}) })
@@ -202,8 +203,9 @@ function KodSkupiny() {
     const k = kod.trim().toLowerCase()
     if (!k) return
     setStav({ nacita: true })
-    const { skupina, chyba } = await overitKod(k)
+    const { skupina, chyba, plno } = await overitKod(k, await auth.token())
     if (chyba) return setStav({ chyba: 'Kód se teď nepodařilo ověřit. Zkuste to prosím za chvíli.' })
+    if (plno) return setStav({ chyba: 'Tato skupina už má plný počet účtů. Ozvěte se nám prosím.' })
     if (!skupina) return setStav({ chyba: 'Tento kód skupiny neznáme.' })
     const { error } = await auth.ulozitProfil({ kod: k })
     setStav(error ? { chyba: prelozChybu(error) } : { nacita: true })
@@ -229,7 +231,9 @@ function KodSkupiny() {
         </>
       ) : (
         <form onSubmit={pouzit} noValidate className="space-y-4">
-          <p className="text-sm text-muted">Máte kód od svého zaměstnavatele nebo spolku? Zadejte ho a uvidíte zvýhodněné ceny.</p>
+          {auth.uzivatel?.user_metadata?.kod
+            ? <p className="text-sm text-berry">Kód u účtu máte uložený, ale teď neplatí – skupina má nejspíš plný počet účtů. Ozvěte se nám, nebo zadejte jiný kód.</p>
+            : <p className="text-sm text-muted">Máte kód od svého zaměstnavatele nebo spolku? Zadejte ho a uvidíte zvýhodněné ceny.</p>}
           <Pole id="p-kod" label="Kód" autoComplete="off" value={kod} onChange={e => setKod(e.target.value)} />
           <Zprava typ="chyba">{stav.chyba}</Zprava>
           <button type="submit" disabled={stav.nacita} className="bg-leaf hover:bg-leaf-dark text-white font-semibold px-6 py-2.5 rounded-md disabled:opacity-60 cursor-pointer">
