@@ -166,6 +166,9 @@ const produktyMosty = [{
 
 // Bedýnky jen pro zákaznickou skupinu: pevná váha za pevnou cenu, složená z odrůd, které jsou
 // právě k dispozici. Složení (nebo „mix“) je zakódované ve „variantě“ položky košíku.
+// Ilustrace bedýnek (img/bedynky); jiná bedýnka dostane fotku první odrůdy.
+const FOTO_BEDYNEK = { mix3: 'bedynky/bedynka-3kg.svg', hrusky5: 'bedynky/bedynka-hrusky-5kg.svg', jablka5: 'bedynky/bedynka-jablka-5kg.svg' }
+
 const produktyBedynka = (SKUPINA?.bedynky || []).flatMap(b => {
   const slozky = produktyOvoce.filter(p => b.druhy.includes(p.druh) && p.dostupne)
   if (!slozky.length) return []
@@ -178,7 +181,7 @@ const produktyBedynka = (SKUPINA?.bedynky || []).flatMap(b => {
     popis: b.popis || '',
     hodiSe: [],
     sklizen: 'podle aktuální nabídky',
-    foto: slozky[0].foto,
+    foto: b.foto || FOTO_BEDYNEK[b.id] || slozky[0].foto,
     fotoIlustracni: false,
     fotoInfo: null,
     vSezone: true,
