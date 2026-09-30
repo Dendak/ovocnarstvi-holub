@@ -49,7 +49,7 @@ function Hlavicka({ onKosik }) {
           {auth.zapnuto && (
             <a href="#ucet" className="text-white/80 hover:text-white text-sm font-medium flex items-center gap-1.5" aria-label={auth.uzivatel ? 'Můj účet' : 'Přihlásit se'}>
               <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={1.8} viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" /></svg>
-              <span className={auth.uzivatel ? 'max-w-[9rem] truncate' : 'hidden sm:inline'}>{auth.uzivatel ? jmenoUzivatele(auth.uzivatel) : 'Přihlásit'}</span>
+              <span className={auth.uzivatel ? 'max-w-[8rem] sm:max-w-[16rem] truncate' : 'hidden sm:inline'}>{auth.uzivatel ? jmenoUzivatele(auth.uzivatel) : 'Přihlásit'}</span>
             </a>
           )}
           <button onClick={onKosik} className="relative btn-light !py-2 !px-4 !text-sm" aria-label={`Košík, ${pocetKusu} položek`}>
@@ -334,10 +334,11 @@ function StrankaPlatby({ cislo, castka }) {
   )
 }
 
-// Short label for the header so it is obvious who is signed in.
+// Full name in the header so it is obvious who is signed in.
 function jmenoUzivatele(u) {
   const m = u.user_metadata || {}
-  return m.jmeno || (m.full_name || m.name || '').split(' ')[0] || u.email.split('@')[0]
+  const cele = [m.jmeno, m.prijmeni].filter(Boolean).join(' ').trim()
+  return cele || (m.full_name || m.name || '').trim() || u.email.split('@')[0]
 }
 
 function Obchod() {
