@@ -51,11 +51,8 @@ const DRUHY_OVOCE = [
     id: 'svestky', nazev: 'Švestky', zdroj: ovoce('Švestky'), cenaKg: 50,
     sklizen: 'srpen – polovina října',
     odrudy: [
-      { id: 'haganta', nazev: 'Haganta', chut: 'sladká', popis: 'Velké tmavomodré švestky, které dobře jdou od pecky.', hodiSe: ['knedlíky a koláče', 'sušení', 'přímá konzumace'] },
-      { id: 'topking', nazev: 'Top King', chut: 'sladká', popis: 'Moderní pozdní odrůda s velkými plody.', hodiSe: ['přímá konzumace', 'koláče'] },
-      { id: 'topendplus', nazev: 'Topend Plus', chut: 'sladká', popis: 'Pozdní odrůda s velkými pevnými plody, sklízí se až do října.', hodiSe: ['přímá konzumace', 'zavařování'] },
-      { id: 'cacanska', nazev: 'Čačanská', chut: 'sladká, šťavnatá', popis: 'Šťavnaté švestky ze skupiny srbských odrůd Čačanská.', hodiSe: ['koláče', 'zavařování'] },
-      { id: 'stanley', nazev: 'Stanley', chut: 'sladkonavinulá', popis: 'Klasická odrůda, která dobře jde od pecky.', hodiSe: ['sušení', 'povidla', 'pálenka'] },
+      // Švestky se neprodávají po odrůdách – zákazník dostane tu, která se právě sklízí.
+      { id: 'svestky', nazev: 'Švestky', chut: 'sladká, šťavnatá', popis: 'Dovezeme aktuální čerstvě sklizenou odrůdu – podle termínu Čačanská, Stanley, Haganta, Top King nebo Topend Plus.', hodiSe: ['přímá konzumace', 'knedlíky a koláče', 'zavařování', 'sušení'] },
     ],
   },
   {
