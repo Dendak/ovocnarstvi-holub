@@ -16,16 +16,14 @@ $d = $o['doklad'];
 $p = PRODAVAJICI;
 $radky = '';
 foreach ($o['polozky'] ?? [] as $r) {
-  $cena = preg_match('/–\s*([\d\s]+)\s*Kč\s*$/u', $r, $m) ? (int)preg_replace('/\D/', '', $m[1]) : null;
+  $cena = cena_radku($r);
   $popis = preg_replace('/\s*–\s*[\d\s]+\s*Kč\s*$/u', '', $r);
-  $radky .= '<tr><td>' . h($popis) . '</td><td class="r">' . ($cena !== null ? h(kc($cena)) : '') . '</td></tr>';
+  $radky .= '<tr><td>' . h($popis) . ($p['platce_dph'] ? ' <span class="muted">· DPH ' . sazba_radku($r) . ' %</span>' : '') . '</td><td class="r">' . ($cena !== null ? h(kc($cena)) : '') . '</td></tr>';
 }
 if ($radky === '') $radky = '<tr><td colspan="2" style="white-space:pre-line">' . h($o['souhrn']) . '</td></tr>';
 $celkem = cil_platby($o);
 // Ceny v e-shopu jsou konečné (včetně DPH) – základ a daň se dopočítají.
-$sazba = (int)($p['sazba_dph'] ?? 0);
-$zaklad = $p['platce_dph'] ? round($celkem / (1 + $sazba / 100), 2) : 0;
-$dan = $p['platce_dph'] ? round($celkem - $zaklad, 2) : 0;
+$rozpis = rozpis_dph($o);
 $kc2 = fn(float $x) => number_format($x, 2, ',', ' ') . ' Kč';
 $datum = date('j. n. Y', strtotime($d['vystaveno']));
 ?><!doctype html>
@@ -61,7 +59,9 @@ table{width:100%;border-collapse:collapse;margin-top:12px}td{padding:8px 0;borde
   <?php if ($p['platce_dph']): ?>
   <table style="margin-top:4px;font-size:14px">
     <tr><td class="muted">Sazba DPH</td><td class="r muted">Základ daně</td><td class="r muted">DPH</td><td class="r muted">Celkem</td></tr>
-    <tr><td><?= $sazba ?> %</td><td class="r"><?= h($kc2($zaklad)) ?></td><td class="r"><?= h($kc2($dan)) ?></td><td class="r"><?= h($kc2($celkem)) ?></td></tr>
+    <?php foreach ($rozpis as $sazba => $x): ?>
+    <tr><td><?= (int)$sazba ?> %</td><td class="r"><?= h($kc2($x['zaklad'])) ?></td><td class="r"><?= h($kc2($x['dan'])) ?></td><td class="r"><?= h($kc2($x['celkem'])) ?></td></tr>
+    <?php endforeach ?>
   </table>
   <p class="muted">Ceny jsou uvedeny včetně DPH.</p>
   <?php else: ?>

@@ -177,22 +177,27 @@ if (isset($_GET['uctenky'])) {
   $mesice = array_values(array_unique(array_map(fn($o) => substr($o['doklad']['vystaveno'], 0, 7), $doklady)));
   $mesic = in_array($_GET['mesic'] ?? '', $mesice, true) ? $_GET['mesic'] : ($mesice[0] ?? date('Y-m'));
   $vMesici = array_values(array_filter($doklady, fn($o) => str_starts_with($o['doklad']['vystaveno'], $mesic)));
-  $sazba = (int)(PRODAVAJICI['sazba_dph'] ?? 0);
-  $rozpis = function (array $o) use ($sazba): array {
-    $c = cil_platby($o);
-    $z = PRODAVAJICI['platce_dph'] ? round($c / (1 + $sazba / 100), 2) : $c;
-    return [$c, $z, round($c - $z, 2)];
-  };
+  $sazby = array_values(array_unique([(int)PRODAVAJICI['sazba_dph'], (int)PRODAVAJICI['sazba_dph_napoje']]));
+  $f2 = fn($x) => number_format($x, 2, ',', ' ') . ' Kč';
   if (($_GET['uctenky'] ?? '') === 'csv') {
     header('Content-Type: text/csv; charset=utf-8');
     header('Content-Disposition: attachment; filename="uctenky-' . $mesic . '.csv"');
     $out = fopen('php://output', 'w');
     fwrite($out, "\xEF\xBB\xBF");
-    fputcsv($out, ['Číslo účtenky', 'Datum vystavení', 'DUZP', 'Objednávka', 'Zákazník', 'Úhrada', 'Sazba DPH %', 'Základ', 'DPH', 'Celkem'], ';', '"', '');
+    $hlavicka = ['Číslo účtenky', 'Datum vystavení', 'DUZP', 'Objednávka', 'Zákazník', 'Úhrada'];
+    foreach ($sazby as $sz) { $hlavicka[] = "Základ $sz %"; $hlavicka[] = "DPH $sz %"; }
+    $hlavicka[] = 'Celkem';
+    fputcsv($out, $hlavicka, ';', '"', '');
     foreach (array_reverse($vMesici) as $o) {
-      [$c, $z, $dan] = $rozpis($o);
-      fputcsv($out, [$o['doklad']['cislo'], date('j.n.Y', strtotime($o['doklad']['vystaveno'])), !empty($o['datum']) ? date('j.n.Y', strtotime($o['datum'])) : '',
-        $o['cislo'], $o['jmeno'], $o['doklad']['uhrada'], $sazba, number_format($z, 2, ',', ''), number_format($dan, 2, ',', ''), number_format($c, 2, ',', '')], ';', '"', '');
+      $r = rozpis_dph($o);
+      $radek = [$o['doklad']['cislo'], date('j.n.Y', strtotime($o['doklad']['vystaveno'])), !empty($o['datum']) ? date('j.n.Y', strtotime($o['datum'])) : '',
+        $o['cislo'], $o['jmeno'], $o['doklad']['uhrada']];
+      foreach ($sazby as $sz) {
+        $radek[] = number_format($r[$sz]['zaklad'] ?? 0, 2, ',', '');
+        $radek[] = number_format($r[$sz]['dan'] ?? 0, 2, ',', '');
+      }
+      $radek[] = number_format(cil_platby($o), 2, ',', '');
+      fputcsv($out, $radek, ';', '"', '');
     }
     exit;
   }
@@ -205,17 +210,24 @@ if (isset($_GET['uctenky'])) {
     $obsah .= '<nav class="dny">';
     foreach ($mesice as $m) $obsah .= '<a href="?uctenky=1&mesic=' . h($m) . '"' . ($m === $mesic ? ' class="akt"' : '') . '>' . h(date('n/Y', strtotime("$m-01"))) . '</a>';
     $obsah .= '</nav>';
-    $soucet = [0, 0, 0];
+    $celkem = 0; $poSazbach = [];
     $obsah .= '<div class="box"><table><tr><td class="muted">Účtenka</td><td class="muted">Zákazník</td><td class="r muted">Celkem</td></tr>';
     foreach ($vMesici as $o) {
-      [$c, $z, $dan] = $rozpis($o);
-      $soucet = [$soucet[0] + $c, $soucet[1] + $z, $soucet[2] + $dan];
+      $c = cil_platby($o);
+      $celkem += $c;
+      foreach (rozpis_dph($o) as $sz => $x) {
+        $poSazbach[$sz]['zaklad'] = ($poSazbach[$sz]['zaklad'] ?? 0) + $x['zaklad'];
+        $poSazbach[$sz]['dan'] = ($poSazbach[$sz]['dan'] ?? 0) + $x['dan'];
+      }
       $obsah .= '<tr><td><a href="' . h(odkaz_na_doklad($o)) . '">' . h($o['doklad']['cislo']) . '</a><br><span class="muted">' . h(date('j. n.', strtotime($o['doklad']['vystaveno']))) . ' · ' . h($o['doklad']['uhrada']) . '</span></td>'
         . '<td>' . h($o['jmeno']) . '<br><span class="muted">' . h($o['cislo']) . '</span></td><td class="r">' . h(kc($c)) . '</td></tr>';
     }
-    $f2 = fn($x) => number_format($x, 2, ',', ' ') . ' Kč';
-    $obsah .= '</table><p style="margin:12px 0 0"><b>Celkem za měsíc: ' . h($f2($soucet[0])) . '</b>'
-      . (PRODAVAJICI['platce_dph'] ? '<br><span class="muted">základ ' . h($f2($soucet[1])) . ' · DPH ' . $sazba . ' % ' . h($f2($soucet[2])) . '</span>' : '') . '</p></div>'
+    ksort($poSazbach);
+    $obsah .= '</table><p style="margin:12px 0 0"><b>Celkem za měsíc: ' . h($f2($celkem)) . '</b>';
+    if (PRODAVAJICI['platce_dph']) foreach ($poSazbach as $sz => $x) {
+      $obsah .= '<br><span class="muted">DPH ' . (int)$sz . ' %: základ ' . h($f2($x['zaklad'])) . ' · daň ' . h($f2($x['dan'])) . '</span>';
+    }
+    $obsah .= '</p></div>'
       . '<div class="akce"><a class="hl" href="?uctenky=csv&mesic=' . h($mesic) . '">Stáhnout pro účetní (CSV / Excel)</a></div>';
   }
   stranka('Účtenky', $obsah . '</main>');

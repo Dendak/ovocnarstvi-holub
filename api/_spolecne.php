@@ -21,7 +21,8 @@ const PRODAVAJICI = [
   'ico' => '12320030',
   'dic' => 'CZ6803300394',
   'platce_dph' => true,
-  'sazba_dph' => 12, // snížená sazba – ovoce a mošty; ověřit s účetní
+  'sazba_dph' => 12,        // snížená sazba – čerstvé ovoce (potraviny)
+  'sazba_dph_napoje' => 21, // základní sazba – mošty (ovocné šťávy jsou od 1. 1. 2024 v 21 %)
   'telefon' => '+420 607 575 271',
   'zapis' => '',
 ];
@@ -318,4 +319,40 @@ function vystavit_doklad(array $o): array {
     'uhrada' => !empty($o['zaplaceno_hotove']) ? 'hotově / na místě' : 'bankovním převodem',
   ];
   return $o;
+}
+
+// Sazba DPH pro řádek objednávky: mošty (nápoje) 21 %, ovoce 12 %.
+function sazba_radku(string $radek): int {
+  return preg_match('/\(Mošty\)|mošt/iu', $radek) ? (int)PRODAVAJICI['sazba_dph_napoje'] : (int)PRODAVAJICI['sazba_dph'];
+}
+
+function cena_radku(string $radek): ?int {
+  return preg_match('/–\s*([\d\s]+)\s*Kč\s*$/u', $radek, $m) ? (int)preg_replace('/\D/', '', $m[1]) : null;
+}
+
+// Rozpis DPH účtenky podle sazeb: [sazba => ['celkem' => …, 'zaklad' => …, 'dan' => …]].
+// Ceny v e-shopu jsou konečné (s DPH); co se nepodaří přiřadit k řádku, jde do sazby pro ovoce.
+function rozpis_dph(array $o): array {
+  $poSazbach = [];
+  $soucet = 0;
+  foreach ($o['polozky'] ?? [] as $r) {
+    $cena = cena_radku((string)$r);
+    if ($cena === null) continue;
+    $sazba = sazba_radku((string)$r);
+    $poSazbach[$sazba] = ($poSazbach[$sazba] ?? 0) + $cena;
+    $soucet += $cena;
+  }
+  $zbytek = cil_platby($o) - $soucet;
+  if ($zbytek !== 0 || !$poSazbach) {
+    $s0 = (int)PRODAVAJICI['sazba_dph'];
+    $poSazbach[$s0] = ($poSazbach[$s0] ?? 0) + $zbytek;
+  }
+  ksort($poSazbach);
+  $out = [];
+  foreach ($poSazbach as $sazba => $celkem) {
+    if ($celkem == 0) continue;
+    $zaklad = PRODAVAJICI['platce_dph'] ? round($celkem / (1 + $sazba / 100), 2) : (float)$celkem;
+    $out[$sazba] = ['celkem' => (float)$celkem, 'zaklad' => $zaklad, 'dan' => round($celkem - $zaklad, 2)];
+  }
+  return $out;
 }
