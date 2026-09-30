@@ -60,7 +60,13 @@ button{margin-top:12px;background:#2f5a33;color:#fff;border:0;border-radius:6px;
   }
 ?></pre></div>
 <?php endif ?>
-<?php $log = array_slice(@file(DATA . '/log.txt', FILE_IGNORE_NEW_LINES) ?: [], -15); if ($log): ?>
+<?php
+// Log jen pro přihlášené zařízení farmy (cookie z rozvoz.php) – obsahuje údaje o objednávkách.
+[$cExp, $cSig] = array_pad(explode('.', $_COOKIE['oh_rozvoz'] ?? '', 2), 2, '');
+$farma = !empty($n['klic']) && (int)$cExp > time() && hash_equals(hash_hmac('sha256', "rozvoz|" . (int)$cExp, $n['klic']), $cSig);
+$log = $farma ? array_slice(@file(DATA . '/log.txt', FILE_IGNORE_NEW_LINES) ?: [], -15) : [];
+if (!$farma): ?><div class="box"><p class="muted">Přehled odeslaných e-mailů je vidět jen po přihlášení na <a href="rozvoz.php">stránce objednávek</a>.</p></div>
+<?php endif; if ($log): ?>
 <div class="box"><p><b>Poslední odeslané e-maily</b></p>
 <pre class="muted" style="white-space:pre-wrap;margin:0"><?= h(implode("\n", array_reverse($log))) ?></pre></div>
 <?php endif ?>
