@@ -1,7 +1,7 @@
 import { SKUPINA, cekajiciKod } from './skupina'
 import { useEffect, useMemo, useState } from 'react'
 import { OBSAH } from '../data'
-import { PRODUKTY, KATEGORIE, DORUCENI, formatKc, nazevPolozky } from './katalog'
+import { PRODUKTY, KATEGORIE, DORUCENI, formatKc, nazevPolozky, jeProSkupinu } from './katalog'
 import { KosikProvider, useKosik } from './kosik'
 import ProduktKarta from './ProduktKarta'
 import BedynkaKarta from './BedynkaKarta'
@@ -136,13 +136,13 @@ function Katalog() {
   const produkty = useMemo(() => {
     const q = hledat.trim().toLowerCase()
     return PRODUKTY
-      .filter(p => kategorie === 'vse' || p.druh === kategorie)
+      .filter(p => kategorie === 'vse' || (kategorie === 'skupina' ? jeProSkupinu(p) : p.druh === kategorie))
       .filter(p => !jenDostupne || p.dostupne)
       .filter(p => !q || `${p.nazev} ${p.druhNazev} ${p.chut || ''} ${p.hodiSe.join(' ')} ${(p.prichute || []).map(x => x.nazev).join(' ')}`.toLowerCase().includes(q))
       .sort((a, b) => Number(b.dostupne) - Number(a.dostupne))
   }, [kategorie, jenDostupne, hledat])
 
-  const pocty = useMemo(() => Object.fromEntries(KATEGORIE.map(k => [k.id, PRODUKTY.filter(p => p.druh === k.id && p.dostupne).length])), [])
+  const pocty = useMemo(() => Object.fromEntries(KATEGORIE.map(k => [k.id, PRODUKTY.filter(p => (k.skupina ? jeProSkupinu(p) : p.druh === k.id) && p.dostupne).length])), [])
 
   return (
     <>
@@ -157,7 +157,10 @@ function Katalog() {
       {SKUPINA && (
         <div className="bg-leaf text-white text-sm">
           <p className="container-page py-2.5">
-            Skupina <strong>{SKUPINA.nazev}</strong>: vidíte zvýhodněné ceny{SKUPINA.adresa ? <>, dovážíme na <strong>{SKUPINA.adresa}</strong></> : null}.
+            Skupina <strong>{SKUPINA.nazev}</strong>: vidíte zvýhodněné ceny{SKUPINA.adresa ? <>, dovážíme na <strong>{SKUPINA.adresa}</strong></> : null}.{' '}
+            {KATEGORIE.some(k => k.skupina) && (
+              <button onClick={() => { setKategorie('skupina'); document.getElementById('nabidka')?.scrollIntoView({ behavior: 'smooth' }) }} className="underline font-semibold cursor-pointer">Zobrazit jen nabídku pro skupinu</button>
+            )}
           </p>
         </div>
       )}
@@ -181,13 +184,13 @@ function Katalog() {
         </div>
       </header>
 
-      <section className="container-page py-10 sm:py-12">
+      <section id="nabidka" className="container-page py-10 sm:py-12 scroll-mt-16">
         <div className="flex flex-col lg:flex-row lg:items-center gap-4 mb-8">
           <div className="flex flex-wrap gap-2 flex-1">
             {[{ id: 'vse', nazev: 'Vše' }, ...KATEGORIE].map(k => (
               <button key={k.id} onClick={() => setKategorie(k.id)}
                 className={`text-sm px-3.5 py-2 rounded-md border transition cursor-pointer ${
-                  kategorie === k.id ? 'bg-leaf border-leaf text-white' : 'bg-white border-line text-ink-soft hover:border-leaf'
+                  kategorie === k.id ? 'bg-leaf border-leaf text-white' : k.skupina ? 'bg-leaf/10 border-leaf text-leaf font-semibold hover:bg-leaf/20' : 'bg-white border-line text-ink-soft hover:border-leaf'
                 }`}>
                 {k.nazev}
                 {k.id !== 'vse' && <span className={`ml-1.5 text-xs ${kategorie === k.id ? 'text-white/70' : 'text-muted'}`}>{pocty[k.id]}</span>}

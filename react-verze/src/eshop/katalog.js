@@ -210,8 +210,11 @@ export function variantaBedynky(produkt, klic) {
 
 export const PRODUKTY = [...produktyBedynka, ...produktyOvoce, ...produktyMosty]
 
+// Nabídka jen pro zákaznickou skupinu: bedýnky a vše se zvýhodněnou cenou.
+export const jeProSkupinu = p => !!p.bedynka || p.cenaBezna != null
+
 export const KATEGORIE = [
-  ...(produktyBedynka.length ? [{ id: 'bedynky', nazev: 'Bedýnky' }] : []),
+  ...(SKUPINA && PRODUKTY.some(jeProSkupinu) ? [{ id: 'skupina', nazev: `Jen pro ${SKUPINA.nazev}`, skupina: true }] : []),
   ...DRUHY_OVOCE.map(d => ({ id: d.id, nazev: d.nazev })),
   { id: 'mosty', nazev: 'Mošty' },
 ]
