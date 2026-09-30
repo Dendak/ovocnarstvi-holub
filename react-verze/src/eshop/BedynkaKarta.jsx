@@ -58,9 +58,15 @@ export default function BedynkaKarta({ produkt }) {
         <div className="border-y border-line divide-y divide-line mb-3">
           {mix && (
             <label className={radek}>
-              <input type={poOdrudach ? 'radio' : 'checkbox'} name={`volba-${produkt.id}`} checked={jeMix}
-                onChange={e => { setJeMix(poOdrudach ? true : e.target.checked); setOdruda(null) }} className="accent-leaf" />
+              <input type="radio" name={`volba-${produkt.id}`} checked={jeMix}
+                onChange={() => { setJeMix(true); setOdruda(null) }} className="accent-leaf" />
               {mix}
+            </label>
+          )}
+          {mix && !poOdrudach && (
+            <label className={radek}>
+              <input type="radio" name={`volba-${produkt.id}`} checked={!jeMix} onChange={() => setJeMix(false)} className="accent-leaf" />
+              Vyberu si odrůdy sám
             </label>
           )}
           {poOdrudach && slozky.map(s => (
@@ -71,7 +77,7 @@ export default function BedynkaKarta({ produkt }) {
             </label>
           ))}
           {!poOdrudach && !jeMix && slozky.map(s => (
-            <div key={s.id} className="flex items-center justify-between gap-3 py-2">
+            <div key={s.id} className={`flex items-center justify-between gap-3 py-2 ${mix ? 'pl-6' : ''}`}>
               <span className="text-sm text-ink">{s.nazev} <span className="text-muted">· {s.druhNazev}</span></span>
               <span className="flex items-center border border-line rounded-lg shrink-0">
                 <button type="button" onClick={() => zmenit(s.id, -1)} disabled={!slozeni[s.id]} aria-label={`Méně – ${s.nazev}`}

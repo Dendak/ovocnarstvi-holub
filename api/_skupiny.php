@@ -31,7 +31,8 @@ function skupiny(): array {
       'max' => 10,
       'bedynky' => [
         ['id' => 'mix3', 'nazev' => 'Bedýnka 3 kg', 'kg' => 3, 'cena' => 100, 'druhy' => ['jablka', 'hrusky'], 'volba' => 'slozeni',
-          'popis' => 'Poskládejte si 3 kg po kilech z jablek a hrušek, které právě máme – klidně i všechna kila jedné odrůdy.'],
+          'mix' => 'Mix jablek a hrušek – výběr nechám na vás',
+          'popis' => '3 kg jablek a hrušek – poskládejte si je po kilech z odrůd, které právě máme, nebo výběr nechte na nás.'],
         ['id' => 'hrusky5', 'nazev' => 'Bedýnka hrušek 5 kg', 'kg' => 5, 'cena' => 150, 'druhy' => ['hrusky'], 'volba' => 'odruda',
           'mix' => 'Mix odrůd půl na půl',
           'popis' => '5 kg hrušek – buď mix odrůd půl na půl, nebo celá bedýnka jedné odrůdy.'],
