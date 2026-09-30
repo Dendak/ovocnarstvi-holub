@@ -157,20 +157,19 @@ export default function Pokladna({ onZpet, onHotovo }) {
   const auth = useAuth()
   const uzivatel = auth.uzivatel
 
-  // Signed-in customers get their saved details filled in (empty fields only).
+  // Signed-in customers: the account wins over details remembered on this device (those may belong
+  // to someone else who ordered here before). The e-mail is always the account's – it ties the order to it.
   useEffect(() => {
     if (!uzivatel) return
     const m = uzivatel.user_metadata || {}
+    const [jmeno, prijmeni] = m.prijmeni != null ? [m.jmeno || '', m.prijmeni] : rozdelitJmeno(m.jmeno || m.full_name || m.name)
     setF(prev => ({
       ...prev,
-      email: prev.email || uzivatel.email || '',
-      ...(prev.jmeno || prev.prijmeni ? {} : m.prijmeni != null
-        ? { jmeno: m.jmeno || '', prijmeni: m.prijmeni }
-        : (([j, p]) => ({ jmeno: j, prijmeni: p }))(rozdelitJmeno(m.jmeno || m.full_name || m.name))),
-      telefon: prev.telefon || m.telefon || '',
-      adresa: PEVNA_ADRESA || prev.adresa || m.adresa || '',
-      psc: prev.psc || m.psc || '',
-      mesto: prev.adresa ? prev.mesto : (m.mesto || prev.mesto),
+      email: uzivatel.email || prev.email,
+      ...(jmeno || prijmeni ? { jmeno, prijmeni } : {}),
+      telefon: m.telefon || prev.telefon,
+      ...(PEVNA_ADRESA ? { adresa: PEVNA_ADRESA }
+        : m.adresa ? { adresa: m.adresa, psc: m.psc || '', mesto: m.mesto || VYCHOZI_MESTO } : {}),
     }))
   }, [uzivatel])
 
@@ -384,8 +383,10 @@ export default function Pokladna({ onZpet, onHotovo }) {
             </label>
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
-                <label htmlFor="email" className="text-xs font-medium text-ink-soft mb-1 block">E-mail * (přijde na něj potvrzení)</label>
-                <input id="email" type="email" autoComplete="email" value={f.email} onChange={e => set('email', e.target.value)} className={field} />
+                <label htmlFor="email" className="text-xs font-medium text-ink-soft mb-1 block">{uzivatel ? 'E-mail vašeho účtu (přijde na něj potvrzení)' : 'E-mail * (přijde na něj potvrzení)'}</label>
+                <input id="email" type="email" autoComplete="email" value={f.email} onChange={e => set('email', e.target.value)}
+                  readOnly={!!uzivatel?.email} className={uzivatel?.email ? field.replace('bg-white', 'bg-paper text-ink-soft cursor-default') : field} />
+                {uzivatel?.email && <p className="text-xs text-muted mt-1">Objednávka se uloží k vašemu účtu. Pro jiný e-mail se odhlaste.</p>}
                 <Chyba text={chyby.email} />
               </div>
               <div>
