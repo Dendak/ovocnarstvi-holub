@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { imgSrc, imgPos } from '../data'
-import { formatKc } from './katalog'
+import { imgSrc, imgSrcSet, imgPos } from '../data'
+import { formatKc, formatJednotkovaCena } from './katalog'
 import { useKosik } from './kosik'
 
 export default function ProduktKarta({ produkt }) {
@@ -34,7 +34,8 @@ export default function ProduktKarta({ produkt }) {
       <div className="relative aspect-[16/9] sm:aspect-[4/3] overflow-hidden bg-paper-2"
         style={info?.bg ? { backgroundColor: info.bg } : undefined}>
         {produkt.foto && (
-          <img src={imgSrc(produkt.foto)} alt={produkt.nazev} loading="lazy" decoding="async"
+          <img src={imgSrc(produkt.foto)} srcSet={imgSrcSet(produkt.foto)} sizes="(min-width: 1024px) 380px, (min-width: 640px) 50vw, 100vw"
+            alt={produkt.nazev} loading="lazy" decoding="async"
             className={`w-full h-full transition-transform duration-700 group-hover:scale-105 ${info?.fit === 'contain' ? 'object-contain' : 'object-cover'}`}
             style={{ objectPosition: imgPos(produkt.foto) }} />
         )}
@@ -62,7 +63,8 @@ export default function ProduktKarta({ produkt }) {
           {produkt.cenaOd != null && (
             <p className="text-right shrink-0">
               <span className="font-semibold text-lg text-ink tabular-nums">od {formatKc(produkt.cenaOd)}</span>
-              <span className="text-muted text-xs block -mt-0.5">za balení</span>
+              <span className="text-ink-soft text-xs block -mt-0.5">za balení</span>
+              {produkt.cenaOdLitr != null && <span className="text-ink-soft text-xs block tabular-nums">od {formatJednotkovaCena(produkt.cenaOdLitr, 1, 'l')}</span>}
             </p>
           )}
           {produkt.cenaZaJednotku != null && (
@@ -91,7 +93,7 @@ export default function ProduktKarta({ produkt }) {
                 <div>
                   <label htmlFor={`prichut-${produkt.id}`} className="text-xs font-medium text-ink-soft mb-1 block">Příchuť</label>
                   <select id={`prichut-${produkt.id}`} value={prichutId} onChange={e => setPrichutId(e.target.value)}
-                    className="border border-line rounded-lg px-3 py-2 text-sm w-full bg-white focus:outline-none focus:ring-2 focus:ring-leaf/20">
+                    className="border border-line rounded-lg px-3 py-2 text-base sm:text-sm w-full bg-white focus:outline-none focus:ring-2 focus:ring-leaf/20">
                     {prichute.map(p => (
                       <option key={p.id} value={p.id} disabled={!p.dostupne}>
                         {p.nazev}{p.dostupne ? ` – ${produkt.velikosti.map(v => `${v.label} ${formatKc(p.ceny[v.id])}`).join(' · ')}` : ' – vyprodáno'}
@@ -99,24 +101,25 @@ export default function ProduktKarta({ produkt }) {
                     ))}
                   </select>
                 </div>
-                <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Balení">
+                <div className="flex flex-wrap gap-2" role="group" aria-label="Balení">
                   {produkt.velikosti.map(v => (
-                    <button key={v.id} type="button" role="radio" aria-checked={v.id === velikost}
+                    <button key={v.id} type="button" aria-pressed={v.id === velikost}
                       onClick={() => setVelikost(v.id)}
-                      className={`text-sm px-3 py-1.5 rounded-lg border transition cursor-pointer ${
+                      className={`text-sm px-3 py-1.5 rounded-lg border transition cursor-pointer text-left ${
                         v.id === velikost ? 'border-leaf bg-leaf text-white' : 'border-line text-ink-soft hover:border-leaf'
                       }`}>
                       {v.label}
-                      <span className={`ml-1.5 ${v.id === velikost ? 'text-white/70' : 'text-muted'}`}>{formatKc(prichut.ceny[v.id])}</span>
+                      <span className={`ml-1.5 ${v.id === velikost ? 'text-white/80' : 'text-ink-soft'}`}>{formatKc(prichut.ceny[v.id])}</span>
+                      <span className={`block text-xs tabular-nums ${v.id === velikost ? 'text-white/80' : 'text-ink-soft'}`}>{formatJednotkovaCena(prichut.ceny[v.id], v.litry, 'l')}</span>
                     </button>
                   ))}
                 </div>
               </div>
             )}
             {!naKg && !prichute && (
-              <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Balení">
+              <div className="flex flex-wrap gap-2" role="group" aria-label="Balení">
                 {produkt.varianty.map(v => (
-                  <button key={v.id} type="button" role="radio" aria-checked={v.id === variantaId}
+                  <button key={v.id} type="button" aria-pressed={v.id === variantaId}
                     onClick={() => setVariantaId(v.id)}
                     className={`text-sm px-3 py-1.5 rounded-lg border transition cursor-pointer ${
                       v.id === variantaId ? 'border-leaf bg-leaf text-white' : 'border-line text-ink-soft hover:border-leaf'
@@ -129,16 +132,16 @@ export default function ProduktKarta({ produkt }) {
             )}
             <div className="flex flex-wrap items-center gap-3">
               <div className="flex items-center border border-line rounded-lg">
-                <button type="button" onClick={() => zmenit(-1)} aria-label="Méně"
-                  className="w-9 h-10 text-ink-soft hover:text-leaf cursor-pointer">−</button>
+                <button type="button" onClick={() => zmenit(-1)} aria-label={`Méně – ${produkt.nazev}`}
+                  className="w-10 h-10 text-lg text-ink-soft hover:text-leaf cursor-pointer">−</button>
                 <input type="number" inputMode="numeric" min="1" max={max} value={pocetText}
                   onChange={e => setPocetText(e.target.value.replace(/\D/g, '').slice(0, 3))}
                   onBlur={() => setPocetText(String(pocet))}
-                  aria-label={naKg ? 'Množství v kg' : 'Počet kusů'}
+                  aria-label={`${naKg ? 'Množství v kg' : 'Počet kusů'} – ${produkt.nazev}`}
                   className="w-10 h-10 text-center tabular-nums font-medium focus:outline-none [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none" />
                 {naKg && <span className="text-sm text-muted pr-1">kg</span>}
-                <button type="button" onClick={() => zmenit(1)} aria-label="Více"
-                  className="w-9 h-10 text-ink-soft hover:text-leaf cursor-pointer">+</button>
+                <button type="button" onClick={() => zmenit(1)} aria-label={`Více – ${produkt.nazev}`}
+                  className="w-10 h-10 text-lg text-ink-soft hover:text-leaf cursor-pointer">+</button>
               </div>
               <button type="button" onClick={doKosiku}
                 className={`flex-1 min-w-[9.5rem] h-10 rounded-lg font-semibold text-sm transition-colors cursor-pointer ${

@@ -1,4 +1,6 @@
 User-agent: *
 Allow: /
+# Skripty e-shopu a stránka pro farmu (rozvoz) nejsou pro vyhledávače.
+Disallow: /api/
 
 Sitemap: https://ovoce-holub.cz/sitemap.xml

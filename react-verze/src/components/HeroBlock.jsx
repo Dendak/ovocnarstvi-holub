@@ -1,4 +1,7 @@
-const HERO_FOTO = 'img/sad/504681257_4078182002327026_6055659733487249673_n.jpg'
+import { imgSrc, imgSrcSet } from '../data'
+
+// Stejná fotka a srcset jsou přednačtené v <head> index.html a index-de.html – při změně upravit i tam.
+const HERO_FOTO = 'sad/504681257_4078182002327026_6055659733487249673_n.jpg'
 
 /**
  * Full-bleed photo intro shared by the Czech and German pages.
@@ -6,8 +9,9 @@ const HERO_FOTO = 'img/sad/504681257_4078182002327026_6055659733487249673_n.jpg'
  */
 export default function HeroBlock({ kicker, title, text, actions, facts }) {
   return (
-    <header className="relative min-h-[calc(92svh-4rem)] flex flex-col text-white bg-forest overflow-hidden">
-      <img src={`${import.meta.env.BASE_URL}${HERO_FOTO}`} alt="" fetchPriority="high" decoding="async"
+    <section className="relative min-h-[calc(92svh-4rem)] flex flex-col text-white bg-forest overflow-hidden">
+      <img src={imgSrc(HERO_FOTO)} srcSet={`${imgSrcSet(HERO_FOTO)}, ${imgSrc(HERO_FOTO)} 1200w`} sizes="100vw"
+        alt="" fetchPriority="high"
         className="absolute inset-0 w-full h-full object-cover" style={{ objectPosition: 'center 40%' }} />
       <div className="absolute inset-0 bg-gradient-to-r from-forest/85 via-forest/55 to-forest/10" />
       <div className="absolute inset-0 bg-gradient-to-b from-forest/75 via-forest/15 to-transparent" />
@@ -37,6 +41,6 @@ export default function HeroBlock({ kicker, title, text, actions, facts }) {
           </ul>
         </div>
       )}
-    </header>
+    </section>
   )
 }

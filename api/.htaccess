@@ -2,3 +2,12 @@
 <IfModule mod_setenvif.c>
   SetEnvIf Authorization "(.+)" HTTP_AUTHORIZATION=$1
 </IfModule>
+
+# Bezpečnostní hlavičky pro /api (kořenový .htaccess přepisuje nasazení, proto tady).
+# Referrer-Policy a frame-ancestors posílá PHP (_spolecne.php) – stránky si je mohou upravit.
+# HSTS: prohlížeč pak na ovoce-holub.cz chodí jen přes HTTPS (bez subdomén, půl roku).
+<IfModule mod_headers.c>
+  Header set X-Content-Type-Options "nosniff"
+  Header set X-Frame-Options "DENY"
+  Header set Strict-Transport-Security "max-age=15552000"
+</IfModule>

@@ -1,4 +1,6 @@
-import { OBSAH } from '../data'
+import { OBSAH, imgSrc, imgSrcSet } from '../data'
+
+const FOTO = 'mosty/most-sklenice.jpg'
 
 const bezEmoji = s => s.replace(/\p{Extended_Pictographic}️?\s*/gu, '').trim()
 
@@ -16,8 +18,8 @@ export default function Mosty() {
             ani konzervanty. Balíme do bag-in-boxů po 3 a 5 litrech, které po otevření vydrží několik týdnů.
           </p>
           <div className="overflow-hidden rounded-lg aspect-[4/3] bg-paper-2 mb-6">
-            <img src={`${import.meta.env.BASE_URL}img/mosty/most-sklenice.jpg`} alt="Jablečný mošt ve sklenici"
-              loading="lazy" decoding="async" className="w-full h-full object-cover" />
+            <img src={imgSrc(FOTO)} srcSet={imgSrcSet(FOTO)} sizes="(min-width: 1152px) 460px, (min-width: 1024px) 40vw, 100vw"
+              alt="Jablečný mošt ve sklenici" loading="lazy" decoding="async" className="w-full h-full object-cover" />
           </div>
           <p className="text-xs text-muted">
             Foto: <a href="https://commons.wikimedia.org/wiki/File:Apple_juice_with_3apples.jpg" target="_blank" rel="noopener noreferrer" className="underline">Flunse (Patrick Geltinger)</a>, CC BY-SA 3.0
@@ -53,7 +55,7 @@ export default function Mosty() {
           </ul>
 
           <div className="mt-6 pt-6 border-t border-line flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <p className="text-sm text-muted">Ceny za balení bag-in-box včetně obalu.</p>
+            <p className="text-sm text-muted">Ceny za balení bag-in-box včetně obalu a DPH.</p>
             <a href={`${import.meta.env.BASE_URL}eshop.html`} className="btn">Objednat mošt</a>
           </div>
         </div>

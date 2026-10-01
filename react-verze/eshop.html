@@ -2,20 +2,31 @@
 <html lang="cs">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <script>
+      // Web má jednu adresu: www.ovoce-holub.cz → ovoce-holub.cz (jinak by se košík a přihlášení rozdělily).
+      if (location.hostname === 'www.ovoce-holub.cz') location.replace('https://ovoce-holub.cz' + location.pathname + location.search + location.hash)
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#17241a" />
     <title>E-shop – Ovocnářství Holub | jablka, hrušky, švestky a mošty ze sadu</title>
     <meta name="description" content="Objednejte si ovoce a domácí mošty přímo ze sadu v Krtelích. Jablka, hrušky, švestky, třešně, višně a další odrůdy. Osobní odběr nebo rozvoz do Českých Budějovic." />
     <link rel="canonical" href="https://ovoce-holub.cz/eshop.html" />
+    <link rel="icon" type="image/svg+xml" href="%BASE_URL%favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="%BASE_URL%favicon-32.png" />
+    <link rel="apple-touch-icon" href="%BASE_URL%apple-touch-icon.png" />
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Ovocnářství Holub" />
     <meta property="og:title" content="E-shop – Ovocnářství Holub" />
     <meta property="og:description" content="Ovoce a domácí mošty přímo ze sadu. Osobní odběr v Krtelích nebo rozvoz do Českých Budějovic." />
-    <meta property="og:image" content="https://ovoce-holub.cz/img/jablka/IMG_2863.JPEG" />
+    <meta property="og:image" content="https://ovoce-holub.cz/img/og-ovoce-holub.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta property="og:url" content="https://ovoce-holub.cz/eshop.html" />
+    <meta property="og:locale" content="cs_CZ" />
+    <meta name="twitter:card" content="summary_large_image" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:wght@400;500;600&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet" />
   </head>
   <body>
     <div id="root"></div>

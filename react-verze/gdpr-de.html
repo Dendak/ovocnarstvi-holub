@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <script>
+    // Eine Adresse für die ganze Website: www.ovoce-holub.cz → ovoce-holub.cz
+    if (location.hostname === 'www.ovoce-holub.cz') location.replace('https://ovoce-holub.cz' + location.pathname + location.search + location.hash)
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#17241a" />
+  <title>Datenschutzhinweise – Obstbauernhof Holub</title>
+  <meta name="description" content="Datenschutzhinweise des Obstbauernhofs Holub (Tschechien) für die deutschsprachige Seite für Brennereien: Anfrageformular, Kontakt per E-Mail, Telefon und WhatsApp, Hosting, Schriftarten, Cookies und Ihre Rechte." />
+  <link rel="canonical" href="https://ovoce-holub.cz/gdpr-de.html" />
+  <link rel="icon" type="image/svg+xml" href="%BASE_URL%favicon.svg" />
+  <link rel="icon" type="image/png" sizes="32x32" href="%BASE_URL%favicon-32.png" />
+  <link rel="apple-touch-icon" href="%BASE_URL%apple-touch-icon.png" />
+  <!-- Bewusst ohne Schriften und Skripte von fremden Servern: eigenes CSS im Stil der Website. Relative Links. -->
+  <style>
+    :root{--paper:#f8f5ef;--paper-2:#efe9de;--line:#dfd7c9;--ink:#1d231c;--ink-soft:#4b5448;--muted:#636b5f;--leaf:#2f5a33;--leaf-dark:#213f24;--forest:#17241a;--serif:"Newsreader",Georgia,"Times New Roman",serif;--sans:"Source Sans 3",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+    *,*::before,*::after{box-sizing:border-box}
+    html{font-size:106.25%;-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+    @media (max-width:640px){html{font-size:100%}}
+    @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+    body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-wrap:break-word;hyphens:auto}
+    a{color:var(--leaf);text-underline-offset:.15em}
+    a:hover{color:var(--leaf-dark)}
+    :focus-visible{outline:2px solid var(--leaf);outline-offset:2px}
+    .obal{width:100%;max-width:48rem;margin:0 auto;padding:0 1rem}
+    @media (min-width:640px){.obal{padding:0 2rem}}
+    .preskocit{position:absolute;left:1rem;top:-10rem;z-index:10;background:#fff;color:var(--ink);padding:.6rem 1rem;border-radius:6px}
+    .preskocit:focus{top:.5rem}
+    .hlavicka,.paticka{background:var(--forest);color:rgba(255,255,255,.8)}
+    .hlavicka :focus-visible,.paticka :focus-visible{outline-color:#fff}
+    .hlavicka .obal{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:0 1.5rem;padding-top:.4rem;padding-bottom:.4rem}
+    .znacka{font-family:var(--serif);font-size:1.3rem;color:#fff;text-decoration:none;padding:.45rem 0}
+    .hlavicka ul,.paticka ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:0 1.25rem}
+    .hlavicka li,.paticka li{margin:0}
+    .hlavicka a:not(.znacka),.paticka a{display:inline-block;padding:.55rem 0;color:rgba(255,255,255,.9)}
+    .hlavicka a:hover,.paticka a:hover{color:#fff}
+    main{display:block;padding:2.5rem 0 3.5rem}
+    main:focus{outline:none}
+    h1,h2,h3{font-family:var(--serif);font-weight:500;line-height:1.2;letter-spacing:-.01em;color:var(--ink);text-wrap:balance;hyphens:manual}
+    h1{font-size:clamp(1.9rem,6vw,2.5rem);margin:0 0 .4rem}
+    h2{font-size:1.5rem;margin:2.75rem 0 .8rem;padding-top:1.75rem;border-top:1px solid var(--line);scroll-margin-top:1rem}
+    h3{font-size:1.18rem;margin:1.6rem 0 .4rem}
+    p{margin:0 0 .9rem;text-wrap:pretty}
+    ul,ol{margin:0 0 1rem;padding-left:1.35rem}
+    li{margin:.35rem 0}
+    strong{font-weight:600}
+    .platnost{color:var(--muted);margin:0 0 1.5rem}
+    .kostce{background:#fff;border:1px solid var(--line);border-radius:8px;padding:1.1rem 1.25rem .35rem;margin:1.5rem 0 1.25rem}
+    .kostce h2,.rejstrik h2{font-family:var(--sans);font-weight:600;font-size:1.1rem;margin:0 0 .5rem;padding:0;border:0;letter-spacing:0}
+    .rejstrik{background:var(--paper-2);border-radius:8px;padding:1rem 1.25rem .35rem;margin:0 0 1rem}
+    .rejstrik ol{columns:2 15rem;column-gap:2rem;margin:0 0 .6rem}
+    .rejstrik li{break-inside:avoid;margin:0}
+    .rejstrik a{display:inline-block;padding:.25rem 0}
+    .karta{background:#fff;border:1px solid var(--line);border-radius:8px;padding:1rem 1.25rem .2rem;margin:.9rem 0}
+    .pozn{color:var(--ink-soft);font-size:.95rem}
+    .adresa{font-style:normal;margin:0 0 1rem}
+    .paticka{padding:1.75rem 0 2.25rem;font-size:.95rem}
+    .paticka p{margin:0 0 .5rem}
+    @media print{
+      .preskocit,.hlavicka nav,.paticka ul,.rejstrik{display:none!important}
+      body{background:#fff}
+      .hlavicka,.paticka{background:none;color:#000}
+      .znacka{color:#000}
+      .kostce,.karta{border-color:#999}
+      a{color:inherit}
+      h2,h3{break-after:avoid}
+    }
+  </style>
+</head>
+<body>
+  <a class="preskocit" href="#obsah">Zum Inhalt springen</a>
+
+  <header class="hlavicka">
+    <div class="obal">
+      <a class="znacka" href="index-de.html">Obstbauernhof Holub</a>
+      <nav aria-label="Links der Website">
+        <ul>
+          <li><a href="index-de.html">Startseite</a></li>
+          <li><a href="index-de.html#anfrage">Anfrage stellen</a></li>
+          <li lang="cs"><a href="./" hreflang="cs">Česky a e-shop</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="obsah" tabindex="-1">
+    <div class="obal">
+      <h1>Datenschutzhinweise</h1>
+      <p class="platnost">Stand: 30.&nbsp;9.&nbsp;2026</p>
+      <p>Diese Hinweise gelten für unsere deutschsprachige Seite für Brennereien und für Anfragen, die Sie uns über das Anfrageformular, per E-Mail, Telefon oder WhatsApp senden. Für den tschechischen Onlineshop gilt unsere ausführliche <a href="gdpr.html" hreflang="cs">Datenschutzerklärung auf Tschechisch</a>.</p>
+
+      <section class="kostce" aria-labelledby="kurz">
+        <h2 id="kurz">Kurz gesagt</h2>
+        <ul>
+          <li>Ihre Angaben verwenden wir nur, um Ihre Anfrage zu beantworten und eine Lieferung abzuwickeln.</li>
+          <li>Wir verkaufen keine Daten, schicken keine Werbung und verwenden keine Analyse- oder Werbe-Cookies.</li>
+          <li>Auskunft, Berichtigung oder Löschung jederzeit unter <a href="mailto:info@ovoce-holub.cz">info@ovoce-holub.cz</a>.</li>
+        </ul>
+      </section>
+
+      <nav class="rejstrik" aria-labelledby="inhalt">
+        <h2 id="inhalt">Inhalt</h2>
+        <ol>
+          <li><a href="#verantwortlicher">Verantwortlicher</a></li>
+          <li><a href="#anfrage">Anfrageformular</a></li>
+          <li><a href="#kontakt">E-Mail, Telefon und WhatsApp</a></li>
+          <li><a href="#hosting">Hosting und Server-Protokolle</a></li>
+          <li><a href="#schriften">Schriftarten (Google Fonts)</a></li>
+          <li><a href="#cookies">Cookies und lokaler Speicher</a></li>
+          <li><a href="#empfaenger">Empfänger</a></li>
+          <li><a href="#dauer">Speicherdauer</a></li>
+          <li><a href="#rechte">Ihre Rechte und Beschwerde</a></li>
+        </ol>
+      </nav>
+
+      <h2 id="verantwortlicher">1. Verantwortlicher</h2>
+      <address class="adresa">
+        <strong>Pavel Holub – Obstbauernhof Holub</strong> (Ovocnářství Holub)<br />
+        Krtely 70, 384 11 Malovice, Tschechien<br />
+        Id.-Nr. (IČO) 12320030 · UID CZ6803300394<br />
+        E-Mail: <a href="mailto:info@ovoce-holub.cz">info@ovoce-holub.cz</a><br />
+        Telefon: <a href="tel:+436787916433">+43&nbsp;678&nbsp;791&nbsp;64&nbsp;33</a> (Österreich), <a href="tel:+420775047010">+420&nbsp;775&nbsp;047&nbsp;010</a> (Tschechien)
+      </address>
+      <p>Als kleiner Familienbetrieb müssen wir keinen Datenschutzbeauftragten benennen. Wenden Sie sich bitte direkt an uns.</p>
+
+      <h2 id="anfrage">2. Anfrageformular</h2>
+      <p><strong>Welche Daten:</strong> Name bzw. Betrieb, Telefon und/oder E-Mail, Lieferadresse, gewünschtes Obst und Menge sowie Ihre Anmerkung. Telefon oder E-Mail brauchen wir, sonst können wir nicht antworten. Alle anderen Angaben sind freiwillig.</p>
+      <p><strong>Zweck und Rechtsgrundlage:</strong> Beantwortung Ihrer Anfrage, Angebot, Lieferung und Abrechnung (Art.&nbsp;6 Abs.&nbsp;1 lit.&nbsp;b DSGVO, vorvertragliche Maßnahmen und Vertrag). Rechnungen bewahren wir auf, weil uns das Steuerrecht dazu verpflichtet (lit.&nbsp;c).</p>
+      <p><strong>Ablauf:</strong> Das Formular geht an unseren eigenen Server (Webhosting bei WEDOS in Tschechien), der Ihre Anfrage per E-Mail an uns weiterleitet. Zum Schutz vor Missbrauch zählen wir, wie viele Nachrichten von einer IP-Adresse kommen. Die IP-Adresse speichern wir dabei nicht selbst, sondern nur ihren Hashwert, und löschen ihn nach etwa zwei Tagen. Außerdem hat das Formular ein unsichtbares Feld gegen Spam-Roboter (Art.&nbsp;6 Abs.&nbsp;1 lit.&nbsp;f DSGVO, berechtigtes Interesse am Schutz der Website).</p>
+      <p><strong>Ersatzweg:</strong> Nur wenn unser Server nicht erreichbar ist oder die Anfrage nicht versenden kann, sendet Ihr Browser sie ersatzweise über den Dienst FormSubmit (formsubmit.co) an unsere E-Mail-Adresse. FormSubmit arbeitet außerhalb der EU. Wir nutzen diesen Weg nur ausnahmsweise, damit Ihre Anfrage nicht verloren geht (Art.&nbsp;49 Abs.&nbsp;1 lit.&nbsp;b DSGVO).</p>
+
+      <h2 id="kontakt">3. E-Mail, Telefon und WhatsApp</h2>
+      <p>Wenn Sie uns schreiben oder anrufen, verwenden wir Ihre Kontaktdaten und Ihre Nachricht nur zur Bearbeitung (Art.&nbsp;6 Abs.&nbsp;1 lit.&nbsp;b DSGVO bei Anfragen zu Angebot oder Lieferung, sonst lit.&nbsp;f, unser berechtigtes Interesse, Ihnen zu antworten).</p>
+      <p><strong>WhatsApp:</strong> Das WhatsApp-Symbol auf unserer Seite ist nur ein Link. Solange Sie nicht darauf tippen, wird nichts an WhatsApp übertragen. Wenn Sie uns über WhatsApp schreiben, verarbeitet auch die Meta Platforms Ireland Ltd. das Gespräch nach ihren eigenen Bedingungen. Dabei können Daten in die USA übermittelt werden; Meta ist nach dem EU-US Data Privacy Framework zertifiziert. Wir sehen Ihre Telefonnummer, Ihren Profilnamen und Ihre Nachricht.</p>
+
+      <h2 id="hosting">4. Hosting und Server-Protokolle</h2>
+      <p>Unsere Website und unsere E-Mail-Postfächer liegen bei der WEDOS Internet, a.s. in Tschechien, die für uns als Auftragsverarbeiter tätig ist. Beim Aufruf der Seiten entstehen technische Server-Protokolle (IP-Adresse, Zeitpunkt, aufgerufene Seite, Browser). Der Hosting-Anbieter bewahrt sie nur kurz für Betrieb und Sicherheit auf (Art.&nbsp;6 Abs.&nbsp;1 lit.&nbsp;f DSGVO). Über versendete E-Mails führt unser Server außerdem ein kurzes technisches Protokoll ohne Namen (siehe Speicherdauer).</p>
+
+      <h2 id="schriften">5. Schriftarten (Google Fonts)</h2>
+      <p>Unsere Seiten, auch die deutschsprachige Seite für Brennereien, laden beim Öffnen die Schriften Newsreader und Source Sans 3 von den Servern von Google Fonts (Google Ireland Limited, Irland, und Google LLC, USA). Ihr Browser übermittelt dabei Ihre IP-Adresse und die Adresse unserer Website an Google. Cookies werden dabei nicht gesetzt. Rechtsgrundlage ist unser berechtigtes Interesse an einer einheitlichen, gut lesbaren Darstellung (Art.&nbsp;6 Abs.&nbsp;1 lit.&nbsp;f DSGVO). Google LLC ist nach dem EU-US Data Privacy Framework zertifiziert. Diese Datenschutzhinweise selbst laden keine Schriften von Google.</p>
+
+      <h2 id="cookies">6. Cookies und lokaler Speicher</h2>
+      <p>Die deutschsprachige Seite setzt keine Cookies und verwendet keine Analyse- oder Werbewerkzeuge. Eingebettete Karten oder Social-Media-Inhalte gibt es dort nicht.</p>
+      <p>Nur wenn Sie den Hinweis auf die tschechische Seite schließen, merkt sich Ihr Browser das im lokalen Speicher (localStorage), damit der Hinweis nicht wieder erscheint. Dabei wird nichts an uns übertragen. Das ist für die von Ihnen gewünschte Funktion unbedingt erforderlich und braucht daher keine Einwilligung.</p>
+      <p>Die Links zu Google Maps („Auf der Karte anzeigen“) und WhatsApp sind gewöhnliche Links. Diese Dienste erfahren erst etwas von Ihnen, wenn Sie darauf tippen.</p>
+
+      <h2 id="empfaenger">7. Empfänger</h2>
+      <p>Wir verkaufen keine Daten und geben sie nicht für Werbezwecke weiter. Empfänger sind nur:</p>
+      <ul>
+        <li><strong>WEDOS Internet, a.s.</strong> (Tschechien): Webhosting und E-Mail (Auftragsverarbeiter),</li>
+        <li><strong>FormSubmit</strong> (formsubmit.co): nur als Ersatzweg, wenn unser Server nicht erreichbar ist oder nicht versenden kann,</li>
+        <li><strong>Google</strong>: Schriftarten, siehe Punkt&nbsp;5,</li>
+        <li><strong>Meta</strong> (WhatsApp): nur wenn Sie uns über WhatsApp kontaktieren,</li>
+        <li><strong>Behörden und Steuerberater</strong>: nur soweit gesetzlich vorgeschrieben oder für die Buchhaltung notwendig.</li>
+      </ul>
+
+      <h2 id="dauer">8. Speicherdauer</h2>
+      <ul>
+        <li><strong>Anfragen und Korrespondenz:</strong> bis zur Erledigung und danach höchstens 1 Jahr, wenn kein Vertrag zustande kommt.</li>
+        <li><strong>Vertrags- und Rechnungsunterlagen:</strong> so lange, wie es das tschechische Steuerrecht verlangt, höchstens 10 Jahre ab Ende des Besteuerungszeitraums (§&nbsp;35 des tschechischen Umsatzsteuergesetzes Nr.&nbsp;235/2004 Slg.).</li>
+        <li><strong>Missbrauchsschutz</strong> (Hashwert der IP-Adresse): etwa 2 Tage.</li>
+        <li><strong>Protokoll versendeter E-Mails:</strong> höchstens 90 Tage und höchstens die letzten 200 Einträge. Es enthält nur die Art der E-Mail und eine gekürzte Empfängeradresse, keine Namen.</li>
+      </ul>
+
+      <h2 id="rechte">9. Ihre Rechte und Beschwerde</h2>
+      <p>Sie haben das Recht auf Auskunft (Art.&nbsp;15 DSGVO), Berichtigung (Art.&nbsp;16), Löschung (Art.&nbsp;17), Einschränkung der Verarbeitung (Art.&nbsp;18) und Datenübertragbarkeit (Art.&nbsp;20). Einer Verarbeitung, die auf unserem berechtigten Interesse beruht, können Sie jederzeit widersprechen (Art.&nbsp;21). Schreiben Sie uns einfach an <a href="mailto:info@ovoce-holub.cz">info@ovoce-holub.cz</a>. Wir antworten innerhalb eines Monats.</p>
+      <p>Sie können sich außerdem bei einer Datenschutz-Aufsichtsbehörde beschweren (Art.&nbsp;77 DSGVO), insbesondere in dem Land, in dem Sie leben oder arbeiten:</p>
+      <div class="karta">
+        <p><strong>In Österreich:</strong> Österreichische Datenschutzbehörde (DSB), Barichgasse 40–42, 1030 Wien, <a href="https://www.dsb.gv.at" rel="noopener">www.dsb.gv.at</a></p>
+      </div>
+      <div class="karta">
+        <p><strong>Für uns zuständig:</strong> Úřad pro ochranu osobních údajů (ÚOOÚ), Pplk. Sochora 27, 170 00 Praha 7, Tschechien, <a href="https://uoou.gov.cz" rel="noopener">uoou.gov.cz</a></p>
+      </div>
+      <p>Eine automatisierte Entscheidungsfindung oder Profilbildung findet nicht statt.</p>
+      <p class="pozn">Ändern sich diese Hinweise, veröffentlichen wir die neue Fassung auf dieser Seite mit neuem Datum.</p>
+    </div>
+  </main>
+
+  <footer class="paticka">
+    <div class="obal">
+      <p>© 2026 Obstbauernhof Holub · Pavel Holub · Krtely 70, 384 11 Malovice, Tschechien · Id.-Nr. (IČO) 12320030 · UID CZ6803300394</p>
+      <ul>
+        <li><a href="index-de.html">Startseite</a></li>
+        <li><a href="index-de.html#anfrage">Anfrage</a></li>
+        <li><a href="index-de.html#kontakt">Kontakt</a></li>
+        <li lang="cs"><a href="gdpr.html" hreflang="cs">Ochrana osobních údajů (česky)</a></li>
+      </ul>
+    </div>
+  </footer>
+</body>
+</html>

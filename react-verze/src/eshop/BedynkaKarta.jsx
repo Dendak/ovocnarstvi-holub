@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { imgSrc, imgPos } from '../data'
-import { formatKc, klicBedynky } from './katalog'
+import { imgSrc, imgSrcSet, imgPos } from '../data'
+import { formatKc, formatJednotkovaCena, klicBedynky } from './katalog'
 import { useKosik } from './kosik'
 
 // Box for a customer group: a fixed weight at a fixed price, made up of the varieties available now.
@@ -27,9 +27,9 @@ export default function BedynkaKarta({ produkt }) {
     return next
   })
 
+  // Složení zůstane vybrané (tlačítko se nevypne pod prstem a stejná bedýnka jde přidat znovu).
   const doKosiku = () => {
     pridat(produkt.id, klic, 1)
-    setSlozeni({})
     setPridano(true)
     setTimeout(() => setPridano(false), 1600)
   }
@@ -39,7 +39,8 @@ export default function BedynkaKarta({ produkt }) {
     <article className="group bg-white rounded-lg border border-leaf/40 overflow-hidden flex flex-col">
       <div className="relative aspect-[16/9] sm:aspect-[4/3] overflow-hidden bg-paper-2">
         {produkt.foto && (
-          <img src={imgSrc(produkt.foto)} alt={produkt.nazev} loading="lazy" decoding="async"
+          <img src={imgSrc(produkt.foto)} srcSet={imgSrcSet(produkt.foto)} sizes="(min-width: 1024px) 380px, (min-width: 640px) 50vw, 100vw"
+            alt={produkt.nazev} loading="lazy" decoding="async"
             className="w-full h-full object-cover" style={{ objectPosition: imgPos(produkt.foto) }} />
         )}
         <span className="absolute top-3 left-3 bg-leaf text-white text-xs font-semibold px-2.5 py-1 rounded-md">Jen pro skupinu</span>
@@ -50,7 +51,8 @@ export default function BedynkaKarta({ produkt }) {
           <h3 className="font-serif text-xl font-semibold text-ink leading-tight">{produkt.nazev}</h3>
           <p className="text-right shrink-0">
             <span className="font-semibold text-lg text-ink tabular-nums">{formatKc(cena)}</span>
-            <span className="text-muted text-xs block -mt-0.5">za {kg} kg vč. dovozu</span>
+            <span className="text-ink-soft text-xs block -mt-0.5">za {kg} kg vč. dovozu</span>
+            <span className="text-ink-soft text-xs block tabular-nums">{formatJednotkovaCena(cena, kg, 'kg')}</span>
           </p>
         </div>
         <p className="text-ink-soft text-sm leading-relaxed mb-4">{produkt.popis}</p>
@@ -81,10 +83,10 @@ export default function BedynkaKarta({ produkt }) {
               <span className="text-sm text-ink">{s.nazev} <span className="text-muted">· {s.druhNazev}</span></span>
               <span className="flex items-center border border-line rounded-lg shrink-0">
                 <button type="button" onClick={() => zmenit(s.id, -1)} disabled={!slozeni[s.id]} aria-label={`Méně – ${s.nazev}`}
-                  className="w-8 h-8 text-ink-soft hover:text-leaf cursor-pointer disabled:opacity-30 disabled:cursor-default">−</button>
+                  className="w-10 h-10 text-lg text-ink-soft hover:text-leaf cursor-pointer disabled:opacity-30 disabled:cursor-default">−</button>
                 <span className="min-w-10 text-center text-sm tabular-nums">{slozeni[s.id] || 0} kg</span>
                 <button type="button" onClick={() => zmenit(s.id, 1)} disabled={zbyva <= 0} aria-label={`Více – ${s.nazev}`}
-                  className="w-8 h-8 text-ink-soft hover:text-leaf cursor-pointer disabled:opacity-30 disabled:cursor-default">+</button>
+                  className="w-10 h-10 text-lg text-ink-soft hover:text-leaf cursor-pointer disabled:opacity-30 disabled:cursor-default">+</button>
               </span>
             </div>
           ))}
@@ -92,7 +94,7 @@ export default function BedynkaKarta({ produkt }) {
 
         <div className="mt-auto space-y-3">
           {!poOdrudach && !jeMix && (
-            <p className={`text-sm ${zbyva ? 'text-muted' : 'text-leaf font-medium'}`}>
+            <p aria-live="polite" className={`text-sm ${zbyva ? 'text-ink-soft' : 'text-leaf font-medium'}`}>
               {zbyva ? `Vybráno ${vybrano} z ${kg} kg – přidejte ještě ${zbyva} kg.` : `✓ Bedýnka je plná (${kg} kg).`}
             </p>
           )}

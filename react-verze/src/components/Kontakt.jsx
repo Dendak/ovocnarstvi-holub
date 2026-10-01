@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import { OBSAH } from '../data'
+import { odeslatZpravu } from './odeslatZpravu'
 
-const MAP_URL = 'https://www.google.com/maps/place/Ovocn%C3%A1%C5%99stv%C3%AD+Holub/@49.0826258,14.1677963,17z/data=!4m6!3m5!1s0x4774ad0019e39f15:0xf1e2281c3b44a6c7!8m2!3d49.0826258!4d14.1703712!16s%2Fg%2F11xfhkf620'
 const MAP_EMBED = `https://maps.google.com/maps?q=${encodeURIComponent('Ovocnářství Holub')}&hl=cs&z=13&output=embed`
 
 function NapisteNam() {
   const k = OBSAH.kontakt
-  const [f, setF] = useState({ jmeno: '', kontakt: '', zprava: '' })
+  const [f, setF] = useState({ jmeno: '', kontakt: '', zprava: '', web: '' })
   const [chyby, setChyby] = useState({})
   const [stav, setStav] = useState(null)
   const set = (key, v) => setF(p => ({ ...p, [key]: v }))
@@ -21,27 +21,28 @@ function NapisteNam() {
     setChyby(c)
     if (Object.keys(c).length) return
     setStav('odesilam')
-    try {
-      const res = await fetch(`https://formsubmit.co/ajax/${k.email}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-        body: JSON.stringify({
-          _subject: `Dotaz z webu – ${f.jmeno.trim() || kontakt}`,
+    const jmeno = f.jmeno.trim()
+    const zprava = f.zprava.trim()
+    const vysledek = await odeslatZpravu(
+      { typ: 'kontakt', jazyk: 'cs', jmeno, ...(jeEmail ? { email: kontakt } : { telefon: kontakt }), zprava, web: f.web },
+      {
+        adresa: k.email,
+        data: {
+          _subject: `Dotaz z webu – ${jmeno || kontakt}`,
           ...(jeEmail ? { _replyto: kontakt } : {}),
-          jmeno: f.jmeno.trim() || '—',
+          _honey: f.web,
+          jmeno: jmeno || '—',
           kontakt,
-          zprava: f.zprava.trim(),
-        }),
-      })
-      setStav(res.ok ? 'ok' : 'chyba')
-    } catch {
-      setStav('chyba')
-    }
+          zprava,
+        },
+      },
+    )
+    setStav(vysledek.ok ? 'ok' : vysledek.chyba === 'limit' ? 'limit' : 'chyba')
   }
 
   if (stav === 'ok') {
     return (
-      <div className="panel p-8">
+      <div className="panel p-8" role="status">
         <h3 className="font-serif text-2xl text-ink mb-2">Děkujeme, zpráva je odeslaná.</h3>
         <p className="text-ink-soft">Odpovíme vám obvykle do druhého dne.</p>
       </div>
@@ -61,16 +62,29 @@ function NapisteNam() {
         </div>
         <div>
           <label htmlFor="k-kontakt" className="label">E-mail nebo telefon *</label>
-          <input id="k-kontakt" autoComplete="email" value={f.kontakt} onChange={e => set('kontakt', e.target.value)} className="field" />
-          {chyby.kontakt && <p className="text-berry text-sm mt-1">{chyby.kontakt}</p>}
+          <input id="k-kontakt" autoComplete="email" value={f.kontakt} onChange={e => set('kontakt', e.target.value)} className="field"
+            aria-invalid={!!chyby.kontakt} aria-describedby={chyby.kontakt ? 'k-kontakt-chyba' : undefined} />
+          {chyby.kontakt && <p id="k-kontakt-chyba" className="text-berry text-sm mt-1">{chyby.kontakt}</p>}
         </div>
       </div>
       <div>
         <label htmlFor="k-zprava" className="label">Zpráva *</label>
-        <textarea id="k-zprava" rows={5} value={f.zprava} onChange={e => set('zprava', e.target.value)} className="field resize-y" />
-        {chyby.zprava && <p className="text-berry text-sm mt-1">{chyby.zprava}</p>}
+        <textarea id="k-zprava" rows={5} value={f.zprava} onChange={e => set('zprava', e.target.value)} className="field resize-y"
+          aria-invalid={!!chyby.zprava} aria-describedby={chyby.zprava ? 'k-zprava-chyba' : undefined} />
+        {chyby.zprava && <p id="k-zprava-chyba" className="text-berry text-sm mt-1">{chyby.zprava}</p>}
       </div>
-      {stav === 'chyba' && <p className="text-berry text-sm">Zprávu se nepodařilo odeslat. Zkuste to prosím znovu nebo zavolejte {k.tel1}.</p>}
+      {/* Past na roboty: pole je lidem skryté, vyplní ho jen spamovací skript. */}
+      <div className="absolute -left-[9999px] w-px h-px overflow-hidden" aria-hidden="true">
+        <label htmlFor="k-web">Web (nevyplňujte)</label>
+        <input id="k-web" name="web" tabIndex={-1} autoComplete="off" value={f.web} onChange={e => set('web', e.target.value)} />
+      </div>
+      {(stav === 'chyba' || stav === 'limit') && (
+        <p className="text-berry text-sm" role="alert">
+          {stav === 'limit' ? 'Odeslali jste v krátké době hodně zpráv. Zkuste to prosím později' : 'Zprávu se nepodařilo odeslat. Zkuste to prosím znovu'}
+          {', '}zavolejte na <a href={`tel:${k.tel1.replace(/\s/g, '')}`} className="underline whitespace-nowrap">{k.tel1}</a>
+          {' '}nebo napište na <a href={`mailto:${k.email}`} className="underline">{k.email}</a>.
+        </p>
+      )}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <p className="text-xs text-muted max-w-xs">
           Údaje použijeme jen k odpovědi.{' '}
@@ -82,7 +96,7 @@ function NapisteNam() {
   )
 }
 
-export default function Kontakt({ cookiesAccepted }) {
+export default function Kontakt({ cookiesAccepted, onAcceptCookies }) {
   const k = OBSAH.kontakt
   const tel = t => t.replace(/\s/g, '')
 
@@ -95,7 +109,7 @@ export default function Kontakt({ cookiesAccepted }) {
             <h2 className="section-title mb-8">Jsme tu pro vás</h2>
             <dl className="border-t border-ink/80">
               {[
-                ['Adresa', <>{k.adresa}<br />{k.mesto}<br /><a href={MAP_URL} target="_blank" rel="noopener noreferrer" className="link text-sm">Otevřít v mapách</a></>],
+                ['Adresa', <>{k.adresa}<br />{k.mesto}<br /><span className="text-sm text-ink-soft">(Krtely u Netolic)</span><br /><a href={k.mapa} target="_blank" rel="noopener noreferrer" className="link text-sm">Otevřít v mapách</a></>],
                 ['Telefon', <><a href={`tel:${tel(k.tel1)}`} className="hover:text-leaf">{k.tel1}</a><br /><a href={`tel:${tel(k.tel2)}`} className="hover:text-leaf">{k.tel2}</a></>],
                 ['E-mail', <a href={`mailto:${k.email}`} className="hover:text-leaf">{k.email}</a>],
                 ['Sociální sítě', <><a href={k.facebook} target="_blank" rel="noopener noreferrer" className="hover:text-leaf">Facebook</a>, <a href={k.instagram} target="_blank" rel="noopener noreferrer" className="hover:text-leaf">Instagram</a></>],
@@ -110,10 +124,20 @@ export default function Kontakt({ cookiesAccepted }) {
           <NapisteNam />
         </div>
 
-        {cookiesAccepted && (
+        {cookiesAccepted ? (
           <div className="mt-14 overflow-hidden rounded-lg border border-line">
             <iframe src={MAP_EMBED} className="w-full h-80 border-0 block" allowFullScreen loading="lazy"
               referrerPolicy="no-referrer-when-downgrade" title="Mapa – Ovocnářství Holub" />
+          </div>
+        ) : (
+          <div className="mt-14 rounded-lg border border-line bg-white/60 p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <p className="text-ink-soft max-w-xl">
+              Mapa od Googlu se zobrazí, až povolíte cookies třetích stran. Cestu k nám najdete i přímo v Google Mapách.
+            </p>
+            <div className="flex flex-wrap gap-3 shrink-0">
+              {onAcceptCookies && <button type="button" onClick={onAcceptCookies} className="btn-outline">Zobrazit mapu</button>}
+              <a href={k.mapa} target="_blank" rel="noopener noreferrer" className="btn-outline">Otevřít Google Mapy</a>
+            </div>
           </div>
         )}
       </div>

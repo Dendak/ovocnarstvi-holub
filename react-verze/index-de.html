@@ -2,43 +2,73 @@
 <html lang="de">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <script>
+      // Web má jednu adresu: www.ovoce-holub.cz → ovoce-holub.cz.
+      if (location.hostname === 'www.ovoce-holub.cz') location.replace('https://ovoce-holub.cz' + location.pathname + location.search + location.hash)
+      document.documentElement.classList.add('js')
+    </script>
+    <script nomodule>document.documentElement.classList.remove('js')</script>
+    <style>.js .bez-js { display: none }</style>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#17241a" />
-    <title>Obstbauernhof Holub – Verarbeitungsobst für Edelbrände</title>
-    <meta name="description" content="Frisches Verarbeitungsobst aus eigenem 30-ha-Obstgarten in Südböhmen. Weichsel, Zwetschken, Birnen, Äpfel. Lieferung nach Oberösterreich und Salzburg." />
+    <title>Verarbeitungsobst für Brennereien | Obstbauernhof Holub</title>
+    <meta name="description" content="Frisches Verarbeitungsobst aus eigenem 30-ha-Obstgarten in Südböhmen: Weichsel, Zwetschken, Birnen, Äpfel. Ab 200 kg, Lieferung nach Oberösterreich und Salzburg." />
     <link rel="canonical" href="https://ovoce-holub.cz/index-de.html" />
     <link rel="alternate" hreflang="cs" href="https://ovoce-holub.cz/" />
     <link rel="alternate" hreflang="de" href="https://ovoce-holub.cz/index-de.html" />
     <link rel="alternate" hreflang="x-default" href="https://ovoce-holub.cz/" />
+    <link rel="icon" type="image/svg+xml" href="%BASE_URL%favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="%BASE_URL%favicon-32.png" />
+    <link rel="apple-touch-icon" href="%BASE_URL%apple-touch-icon.png" />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Obstbauernhof Holub – Verarbeitungsobst für Edelbrände" />
+    <meta property="og:site_name" content="Obstbauernhof Holub" />
+    <meta property="og:title" content="Verarbeitungsobst für Brennereien | Obstbauernhof Holub" />
     <meta property="og:description" content="Frisches Verarbeitungsobst aus eigenem 30-ha-Obstgarten in Südböhmen. Lieferung nach Oberösterreich und Salzburg." />
-    <meta property="og:image" content="https://ovoce-holub.cz/img/sad/504681257_4078182002327026_6055659733487249673_n.jpg" />
+    <meta property="og:image" content="https://ovoce-holub.cz/img/og-ovoce-holub.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Traktor im blühenden Kirschgarten des Obstbauernhofs Holub" />
     <meta property="og:url" content="https://ovoce-holub.cz/index-de.html" />
     <meta property="og:locale" content="de_AT" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <!-- Titelfoto sofort laden (größtes Element). Gleiche Adressen wie in HeroBlock.jsx. -->
+    <link rel="preload" as="image" fetchpriority="high" href="%BASE_URL%img/sad/504681257_4078182002327026_6055659733487249673_n.jpg"
+      imagesrcset="%BASE_URL%img/sad/_w480/504681257_4078182002327026_6055659733487249673_n.webp 480w, %BASE_URL%img/sad/_w960/504681257_4078182002327026_6055659733487249673_n.webp 960w, %BASE_URL%img/sad/504681257_4078182002327026_6055659733487249673_n.jpg 1200w"
+      imagesizes="100vw" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:wght@400;500;600&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "LocalBusiness",
-      "name": "Obstbauernhof Holub",
-      "description": "Verarbeitungsobst für Brennereien – Weichsel, Zwetschken, Birnen und Äpfel aus Südböhmen.",
-      "url": "https://ovoce-holub.cz/index-de.html",
-      "telephone": "+436787916433",
+      "@id": "https://ovoce-holub.cz/#firma",
+      "name": "Ovocnářství Holub",
+      "alternateName": "Obstbauernhof Holub",
+      "legalName": "Pavel Holub",
+      "description": "Familien-Obstbauernhof in Südböhmen – Verarbeitungsobst für Brennereien: Weichsel, Zwetschken, Birnen und Äpfel.",
+      "url": "https://ovoce-holub.cz/",
+      "logo": "https://ovoce-holub.cz/img/logo.png",
+      "image": "https://ovoce-holub.cz/img/og-ovoce-holub.jpg",
+      "telephone": "+420607575271",
       "email": "info@ovoce-holub.cz",
+      "vatID": "CZ6803300394",
+      "identifier": { "@type": "PropertyValue", "propertyID": "IČO", "value": "12320030" },
       "address": {
         "@type": "PostalAddress",
         "streetAddress": "Krtely 70",
-        "addressLocality": "Netolice",
+        "addressLocality": "Malovice",
         "postalCode": "384 11",
+        "addressRegion": "Jihočeský kraj",
         "addressCountry": "CZ"
       },
       "geo": { "@type": "GeoCoordinates", "latitude": 49.0826258, "longitude": 14.1703712 },
-      "image": "https://ovoce-holub.cz/img/sad/504681257_4078182002327026_6055659733487249673_n.jpg",
-      "areaServed": ["Oberösterreich", "Salzburg"],
+      "hasMap": "https://www.google.com/maps/place/Ovocn%C3%A1%C5%99stv%C3%AD+Holub/@49.0826258,14.1677963,17z/data=!4m6!3m5!1s0x4774ad0019e39f15:0xf1e2281c3b44a6c7!8m2!3d49.0826258!4d14.1703712!16s%2Fg%2F11xfhkf620",
+      "areaServed": ["České Budějovice", "Netolice", "Oberösterreich", "Salzburg"],
+      "contactPoint": [
+        { "@type": "ContactPoint", "contactType": "customer service", "telephone": "+420607575271", "email": "info@ovoce-holub.cz", "availableLanguage": ["cs"] },
+        { "@type": "ContactPoint", "contactType": "sales", "telephone": "+436787916433", "areaServed": "AT", "availableLanguage": ["de"] }
+      ],
       "sameAs": [
         "https://www.facebook.com/OvoceHolub",
         "https://www.instagram.com/ovocnarstviholub"
@@ -47,18 +77,56 @@
     </script>
   </head>
   <body>
-    <script>
-      if (!sessionStorage.getItem('lang_chosen')) {
-        var lang = (navigator.language || navigator.userLanguage || '').toLowerCase();
-        if (lang.startsWith('cs') || lang.startsWith('sk')) {
-          sessionStorage.setItem('lang_chosen', 'cs');
-          window.location.replace('index.html');
-        } else {
-          sessionStorage.setItem('lang_chosen', 'de');
-        }
-      }
-    </script>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Inhalt für Browser und Suchmaschinen ohne JavaScript; die Anwendung ersetzt ihn beim Laden. -->
+      <div class="bez-js">
+        <header>
+          <p><a href="%BASE_URL%index-de.html">Obstbauernhof Holub</a> – Familien-Obstbauernhof in Krtely bei Netolice, Südböhmen</p>
+          <nav aria-label="Menü">
+            <a href="#anfrage">Anfrage</a> ·
+            <a href="#kontakt">Kontakt</a> ·
+            <a href="%BASE_URL%" hreflang="cs" lang="cs">Česky – ovoce a mošty pro domácnost</a>
+          </nav>
+        </header>
+        <main>
+          <h1>Verarbeitungsobst für Ihre Edelbrände</h1>
+          <p>
+            Weichsel, Zwetschken, Birnen und Äpfel aus unserem 30 Hektar großen Obstgarten. Wir liefern
+            ab 200 kg direkt zu Brennereien in Oberösterreich und Salzburg.
+          </p>
+          <h2>Unser Sortiment</h2>
+          <ul>
+            <li>Weichsel / Sauerkirschen – Juli bis August</li>
+            <li>Zwetschken – August bis Oktober</li>
+            <li>Birnen – August bis Januar</li>
+            <li>Äpfel, über 15 Sorten – August bis März</li>
+          </ul>
+          <h2>Lieferung &amp; Konditionen</h2>
+          <p>
+            Mindestabnahme 200 kg pro Bestellung, gerne gemischt. Kontrollierter Anbau nach den Regeln der
+            integrierten Produktion (SISPO). Sie senden uns eine Anfrage, wir melden uns mit Verfügbarkeit,
+            Preis und Liefertermin.
+          </p>
+          <h2 id="anfrage">Anfrage</h2>
+          <p>
+            Per E-Mail an <a href="mailto:objednavky@ovoce-holub.cz">objednavky@ovoce-holub.cz</a>
+            oder telefonisch.
+          </p>
+          <h2 id="kontakt">Kontakt</h2>
+          <address>
+            Ovocnářství Holub – Pavel Holub<br />
+            Krtely 70, 384 11 Malovice, Tschechien<br />
+            Telefon: <a href="tel:+436787916433">+43 678 791 64 33</a> (Österreich),
+            <a href="tel:+420775047010">+420 775 047 010</a> (Tschechien)<br />
+            E-Mail: <a href="mailto:info@ovoce-holub.cz">info@ovoce-holub.cz</a>
+          </address>
+        </main>
+        <footer>
+          <p>Id.-Nr. (IČO) 12320030 · UID CZ6803300394</p>
+          <p><a href="%BASE_URL%gdpr-de.html">Datenschutzerklärung</a></p>
+        </footer>
+      </div>
+    </div>
     <script type="module" src="/src/main-de.jsx"></script>
   </body>
 </html>

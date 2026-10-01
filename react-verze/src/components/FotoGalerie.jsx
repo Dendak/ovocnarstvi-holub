@@ -1,13 +1,18 @@
 import { useState } from 'react'
 import Lightbox from './Lightbox'
-import { imgSrc, imgPos } from '../data'
+import { imgSrc, imgSrcSet, imgPos } from '../data'
+
+// Dlaždice: 2 sloupce na mobilu, 3 od md (max. šířka stránky ~1150 px); vysoká dlaždice potřebuje víc.
+const SIZES = '(min-width: 1152px) 370px, (min-width: 768px) 33vw, 50vw'
+const SIZES_VYSOKA = '(min-width: 1152px) 370px, (min-width: 768px) 33vw, 70vw'
 
 /**
  * Photo grid + lightbox. fotky: [{ path, alt, tall? }], path relative to img/.
  * The grid is 2 columns on mobile and 3 on desktop; with one tall tile, 11 photos
  * fill both layouts completely (12 cells), so keep that count when editing.
+ * lightboxLabels: { zavrit, predchozi, dalsi } for the lightbox buttons (default Czech).
  */
-export default function FotoGalerie({ fotky, eyebrow, title, zoomLabel }) {
+export default function FotoGalerie({ fotky, eyebrow, title, zoomLabel, lightboxLabels }) {
   const [lightbox, setLightbox] = useState(null)
   const fotos = fotky.map(f => ({ ...f, src: imgSrc(f.path) }))
 
@@ -31,6 +36,8 @@ export default function FotoGalerie({ fotky, eyebrow, title, zoomLabel }) {
               >
                 <img
                   src={f.src}
+                  srcSet={imgSrcSet(f.path)}
+                  sizes={f.tall ? SIZES_VYSOKA : SIZES}
                   alt={f.alt}
                   loading="lazy"
                   decoding="async"
@@ -44,7 +51,7 @@ export default function FotoGalerie({ fotky, eyebrow, title, zoomLabel }) {
       </section>
 
       {lightbox !== null && (
-        <Lightbox fotos={fotos} index={lightbox} onClose={() => setLightbox(null)} onNavigate={setLightbox} />
+        <Lightbox fotos={fotos} index={lightbox} labels={lightboxLabels} onClose={() => setLightbox(null)} onNavigate={setLightbox} />
       )}
     </>
   )

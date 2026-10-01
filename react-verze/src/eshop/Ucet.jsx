@@ -1,11 +1,14 @@
 import AdresaInput from './AdresaInput'
 import { SKUPINA, overitKod, cekajiciKod } from './skupina'
 import { rozdelitJmeno } from './mujUcet'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { OBSAH } from '../data'
 import { useAuth, prelozChybu } from './auth'
+import { useKosik } from './kosik'
+import { SUPABASE_URL, SUPABASE_ANON_KEY, SSO_POSKYTOVATELE, VLASTNI_POSKYTOVATELE } from './supabaseConfig'
 
-const field = 'border border-line rounded-md px-4 py-3 text-sm w-full focus:outline-none focus:ring-2 focus:ring-leaf/20 focus:border-transparent bg-white'
+// text-base na mobilu: menší písmo v poli iPhone při psaní přiblíží
+const field = 'border border-line rounded-md px-4 py-3 text-base sm:text-sm w-full focus:outline-none focus:ring-2 focus:ring-leaf/20 focus:border-transparent aria-[invalid=true]:border-berry bg-white'
 const primary = 'w-full bg-leaf hover:bg-leaf-dark text-white font-semibold py-3 rounded-md transition-colors disabled:opacity-60 cursor-pointer'
 const MIN_HESLO = 8
 
@@ -43,27 +46,68 @@ const SSO = {
   },
 }
 
+const NAZVY_SLUZEB = { google: 'Google', 'custom:seznam': 'Seznam', azure: 'Microsoft', apple: 'Apple' }
+
+// Přihlašovací služby zapnuté v Supabase (Authentication → Providers) – zapnutí Googlu tam
+// nepotřebuje nové nasazení webu. Zjišťuje se jen tady, na stránce přihlášení.
+let zapnuteSluzby = null
+function usePoskytovatele() {
+  const [p, setP] = useState(() => zapnuteSluzby || [...SSO_POSKYTOVATELE, ...VLASTNI_POSKYTOVATELE])
+  useEffect(() => {
+    if (zapnuteSluzby || !SUPABASE_URL) return
+    let zruseno = false
+    fetch(`${SUPABASE_URL}/auth/v1/settings`, { headers: { apikey: SUPABASE_ANON_KEY } })
+      .then(r => (r.ok ? r.json() : null))
+      .then(d => {
+        if (!d?.external) return
+        zapnuteSluzby = [...['google', 'azure', 'apple'].filter(x => d.external[x]), ...VLASTNI_POSKYTOVATELE]
+        if (!zruseno) setP(zapnuteSluzby)
+      })
+      .catch(() => {})
+    return () => { zruseno = true }
+  }, [])
+  return p
+}
+
 function Pole({ id, label, chyba, ...props }) {
   return (
     <div>
-      <label htmlFor={id} className="text-xs font-medium text-ink-soft mb-1 block">{label}</label>
-      <input id={id} className={field} {...props} />
-      {chyba && <p className="text-berry text-xs mt-1">{chyba}</p>}
+      <label htmlFor={id} className="text-sm font-medium text-ink-soft mb-1 block">{label}</label>
+      <input id={id} className={field} aria-invalid={chyba ? true : undefined} aria-describedby={chyba ? `${id}-chyba` : undefined} {...props} />
+      {chyba && <p id={`${id}-chyba`} className="text-berry text-sm mt-1">{chyba}</p>}
     </div>
   )
 }
 
+// Oblast hlášení je na stránce pořád, aby ji čtečka obrazovky ohlásila, jakmile se v ní objeví text.
 function Zprava({ typ, children }) {
-  if (!children) return null
   const cls = typ === 'ok' ? 'bg-paper-2 text-leaf' : 'bg-berry/10 text-berry'
-  return <p role="status" className={`text-sm rounded-md px-4 py-3 ${cls}`}>{children}</p>
+  return (
+    <div role={typ === 'ok' ? 'status' : 'alert'} className="!m-0">
+      {children && <p className={`text-sm rounded-md px-4 py-3 mb-4 ${cls}`}>{children}</p>}
+    </div>
+  )
+}
+
+// Po přepnutí (přihlášení / registrace / zapomenuté heslo) dostane fokus nový nadpis.
+function useFokusPriZmene(hodnota) {
+  const nadpis = useRef(null)
+  const pred = useRef(hodnota)
+  useEffect(() => {
+    if (pred.current === hodnota) return
+    pred.current = hodnota
+    nadpis.current?.focus()
+  }, [hodnota])
+  return nadpis
 }
 
 function Prihlaseni() {
   const auth = useAuth()
   const [pozvanka] = useState(cekajiciKod)
   const [rezim, setRezim] = useState(pozvanka ? 'registrovat' : 'prihlasit') // prihlasit | registrovat | zapomenute
-  const [f, setF] = useState({ jmeno: '', prijmeni: '', email: '', heslo: '', kod: pozvanka, souhlas: false })
+  const [f, setF] = useState({ jmeno: '', prijmeni: '', email: '', heslo: '', kod: pozvanka })
+  const poskytovatele = usePoskytovatele()
+  const nadpisRef = useFokusPriZmene(rezim)
   const [stav, setStav] = useState({ nacita: false, chyba: null, ok: null })
   const set = (k, v) => setF(p => ({ ...p, [k]: v }))
   const prepnout = r => { setRezim(r); setStav({ nacita: false, chyba: null, ok: null }) }
@@ -73,7 +117,6 @@ function Prihlaseni() {
     const email = f.email.trim()
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return setStav({ chyba: 'Vyplňte platný e-mail.' })
     if (rezim !== 'zapomenute' && f.heslo.length < MIN_HESLO) return setStav({ chyba: `Heslo musí mít aspoň ${MIN_HESLO} znaků.` })
-    if (rezim === 'registrovat' && !f.souhlas) return setStav({ chyba: 'Pro založení účtu potřebujeme váš souhlas se zpracováním údajů.' })
     setStav({ nacita: true })
     if (rezim === 'prihlasit') {
       const { error } = await auth.prihlasit(email, f.heslo)
@@ -88,6 +131,10 @@ function Prihlaseni() {
       }
       const { data, error } = await auth.registrovat(email, f.heslo, { jmeno: f.jmeno.trim(), prijmeni: f.prijmeni.trim(), ...(kod ? { kod } : {}) })
       if (error) return setStav({ chyba: prelozChybu(error) })
+      // Při zapnutém potvrzování e-mailem Supabase u existující adresy nehlásí chybu, jen vrátí účet bez identit.
+      if (data?.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+        return setStav({ chyba: 'Účet s tímto e-mailem už existuje – přihlaste se, nebo si obnovte heslo přes „Zapomněli jste heslo?“.' })
+      }
       setStav({ ok: data.session ? null : `Hotovo! Na ${email} jsme poslali odkaz pro potvrzení účtu. Po kliknutí na něj budete přihlášeni.` })
     } else {
       const { error } = await auth.zapomenuteHeslo(email)
@@ -104,22 +151,29 @@ function Prihlaseni() {
   const nadpis = { prihlasit: 'Přihlášení', registrovat: 'Založit účet', zapomenute: 'Zapomenuté heslo' }[rezim]
   return (
     <div className="max-w-md mx-auto px-6 py-12">
-      <h1 className="font-serif text-3xl font-semibold text-ink mb-2">{nadpis}</h1>
-      <p className="text-muted text-sm mb-8">
+      <h1 ref={nadpisRef} tabIndex={-1} className="font-serif text-3xl font-semibold text-ink mb-2 focus:outline-none">{nadpis}</h1>
+      <p className="text-ink-soft text-sm mb-8">
         {rezim === 'zapomenute'
           ? 'Pošleme vám e-mail s odkazem pro nastavení nového hesla.'
           : 'S účtem uvidíte všechny své objednávky a jejich stav na jakémkoli zařízení a nemusíte pokaždé vyplňovat adresu.'}
       </p>
 
+      {auth.odkazNeplatny && (
+        <p role="alert" className="text-sm bg-paper-2 text-ink rounded-md px-4 py-3 mb-6">
+          Odkaz z e-mailu už neplatí, nebo byl otevřený v jiném prohlížeči, než ve kterém jste o něj požádali.
+          Pokud jste zakládali účet, je nejspíš už potvrzený – zkuste se přihlásit. Nové heslo si můžete nechat
+          poslat znovu přes „Zapomněli jste heslo?“ a odkaz pak otevřete ve stejném prohlížeči.
+        </p>
+      )}
       <div className="bg-white rounded-lg p-6 space-y-4">
-        {rezim !== 'zapomenute' && auth.poskytovatele.filter(p => SSO[p]).map(p => (
+        {rezim !== 'zapomenute' && poskytovatele.filter(p => SSO[p]).map(p => (
           <button key={p} type="button" onClick={() => sso(p)} disabled={stav.nacita}
             className={`w-full flex items-center justify-center gap-3 border border-line hover:border-ink/40 rounded-md py-3 text-sm cursor-pointer disabled:opacity-60 ${SSO[p].className || 'font-medium text-ink-soft'}`}>
             {SSO[p].icon}{SSO[p].label}
           </button>
         ))}
-        {rezim !== 'zapomenute' && auth.poskytovatele.length > 0 && (
-          <div className="flex items-center gap-3 text-xs text-muted"><span className="flex-1 h-px bg-line" />nebo e-mailem<span className="flex-1 h-px bg-line" /></div>
+        {rezim !== 'zapomenute' && poskytovatele.some(p => SSO[p]) && (
+          <div className="flex items-center gap-3 text-sm text-ink-soft"><span className="flex-1 h-px bg-line" />nebo e-mailem<span className="flex-1 h-px bg-line" /></div>
         )}
 
         <form onSubmit={odeslat} noValidate className="space-y-4">
@@ -139,12 +193,10 @@ function Prihlaseni() {
             <Pole id="u-kod" label={pozvanka ? 'Kód skupiny (vyplněno z pozvánky)' : 'Kód skupiny (nepovinné)'} autoComplete="off" value={f.kod} onChange={e => set('kod', e.target.value)} />
           )}
           {rezim === 'registrovat' && (
-            <label className="flex items-start gap-2 text-xs text-ink-soft cursor-pointer">
-              <input type="checkbox" checked={f.souhlas} onChange={e => set('souhlas', e.target.checked)} className="mt-0.5 accent-leaf" />
-              <span>Souhlasím se zpracováním osobních údajů pro vedení účtu podle{' '}
-                <a href={`${import.meta.env.BASE_URL}gdpr.html`} target="_blank" rel="noreferrer" className="text-leaf underline">zásad ochrany osobních údajů</a>.
-              </span>
-            </label>
+            <p className="text-sm text-ink-soft">
+              Údaje k účtu zpracujeme podle{' '}
+              <a href={`${import.meta.env.BASE_URL}gdpr.html`} target="_blank" rel="noreferrer" className="text-leaf underline">zásad ochrany osobních údajů</a>.
+            </p>
           )}
           <Zprava typ="chyba">{stav.chyba}</Zprava>
           <Zprava typ="ok">{stav.ok}</Zprava>
@@ -163,7 +215,7 @@ function Prihlaseni() {
           )}
         </div>
       </div>
-      <p className="text-xs text-muted text-center mt-6">Nakoupit můžete i bez účtu.</p>
+      <p className="text-sm text-ink-soft text-center mt-6">Nakoupit můžete i bez účtu.</p>
     </div>
   )
 }
@@ -182,7 +234,7 @@ function NoveHeslo() {
   }
   return (
     <div className="max-w-md mx-auto px-6 py-12">
-      <h1 className="font-serif text-3xl font-semibold text-ink mb-6">Nové heslo</h1>
+      <h1 tabIndex={-1} className="font-serif text-3xl font-semibold text-ink mb-6 focus:outline-none">Nové heslo</h1>
       <form onSubmit={odeslat} noValidate className="bg-white rounded-lg p-6 space-y-4">
         <Pole id="nove-heslo" label={`Nové heslo (aspoň ${MIN_HESLO} znaků)`} type="password" autoComplete="new-password" value={heslo} onChange={e => setHeslo(e.target.value)} />
         <Zprava typ="chyba">{stav.chyba}</Zprava>
@@ -234,7 +286,7 @@ function KodSkupiny() {
         <form onSubmit={pouzit} noValidate className="space-y-4">
           {auth.uzivatel?.user_metadata?.kod
             ? <p className="text-sm text-berry">Kód u účtu máte uložený, ale teď neplatí – skupina má nejspíš plný počet účtů. Ozvěte se nám, nebo zadejte jiný kód.</p>
-            : <p className="text-sm text-muted">Máte kód od svého zaměstnavatele nebo spolku? Zadejte ho a uvidíte zvýhodněné ceny.</p>}
+            : <p className="text-sm text-ink-soft">Máte kód od svého zaměstnavatele nebo spolku? Zadejte ho a uvidíte zvýhodněné ceny.</p>}
           <Pole id="p-kod" label="Kód" autoComplete="off" value={kod} onChange={e => setKod(e.target.value)} />
           <Zprava typ="chyba">{stav.chyba}</Zprava>
           <button type="submit" disabled={stav.nacita} className="bg-leaf hover:bg-leaf-dark text-white font-semibold px-6 py-2.5 rounded-md disabled:opacity-60 cursor-pointer">
@@ -260,7 +312,10 @@ function Profil() {
   const [stav, setStav] = useState({})
   const [stavHeslo, setStavHeslo] = useState({})
   const set = (k, v) => setF(p => ({ ...p, [k]: v }))
-  const pouzeGoogle = u.app_metadata?.provider && u.app_metadata.provider !== 'email'
+  // Účet založený přes Google / Seznam / Microsoft (bez hesla)
+  const provider = u.app_metadata?.provider
+  const sluzba = provider && provider !== 'email' ? (NAZVY_SLUZEB[provider] || 'jinou službu') : null
+  const { polozky } = useKosik()
 
   const ulozit = async e => {
     e.preventDefault()
@@ -285,11 +340,17 @@ function Profil() {
     <div className="max-w-2xl mx-auto px-6 py-10 space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="font-serif text-3xl sm:text-4xl font-semibold text-ink">Můj účet</h1>
-          <p className="text-muted text-sm mt-1">Přihlášeni jako <strong>{u.email}</strong></p>
+          <h1 tabIndex={-1} className="font-serif text-3xl sm:text-4xl font-semibold text-ink focus:outline-none">Můj účet</h1>
+          <p className="text-ink-soft text-sm mt-1">Přihlášeni jako <strong>{u.email}</strong></p>
         </div>
-        <a href="#objednavky" className="btn">Moje objednávky</a>
+        <a href="#objednavky" className={polozky.length ? 'btn-outline' : 'btn'}>Moje objednávky</a>
       </div>
+      {polozky.length > 0 && (
+        <div className="bg-white rounded-lg p-5 flex flex-wrap items-center justify-between gap-3">
+          <p className="text-ink">V košíku máte rozpracovanou objednávku.</p>
+          <a href="#pokladna" className="btn">Pokračovat k objednávce →</a>
+        </div>
+      )}
 
       <form onSubmit={ulozit} noValidate className="bg-white rounded-lg p-6 space-y-4">
         <h2 className="font-semibold text-lg text-ink">Doručovací údaje</h2>
@@ -298,15 +359,17 @@ function Profil() {
           <Pole id="p-prijmeni" label="Příjmení" autoComplete="family-name" value={f.prijmeni} onChange={e => set('prijmeni', e.target.value)} />
         </div>
         <Pole id="p-telefon" label="Telefon" type="tel" autoComplete="tel" value={f.telefon} onChange={e => set('telefon', e.target.value)} />
+        {/* Obec napřed: podle ní se hledají návrhy ulic. */}
+        <div className="grid grid-cols-[1fr_8rem] gap-4">
+          <Pole id="p-mesto" label="Město / obec" autoComplete="address-level2" value={f.mesto} onChange={e => set('mesto', e.target.value)} />
+          <Pole id="p-psc" label="PSČ" inputMode="numeric" autoComplete="postal-code" value={f.psc} onChange={e => set('psc', e.target.value)} />
+        </div>
         <div>
-          <label htmlFor="p-adresa" className="text-xs font-medium text-ink-soft mb-1 block">Ulice a číslo domu</label>
+          <label htmlFor="p-adresa" className="text-sm font-medium text-ink-soft mb-1 block">Ulice a číslo domu</label>
           <AdresaInput id="p-adresa" value={f.adresa} mesto={f.mesto} onChange={v => set('adresa', v)}
             onVyber={k => setF(p => ({ ...p, adresa: k.ulice, psc: k.psc || p.psc, mesto: k.mesto || p.mesto }))}
-            placeholder="Začněte psát, např. Lannova 12" className={field} />
-        </div>
-        <div className="grid grid-cols-[8rem_1fr] gap-4">
-          <Pole id="p-psc" label="PSČ" inputMode="numeric" autoComplete="postal-code" value={f.psc} onChange={e => set('psc', e.target.value)} />
-          <Pole id="p-mesto" label="Město / obec" autoComplete="address-level2" value={f.mesto} onChange={e => set('mesto', e.target.value)} />
+            placeholder="Začněte psát, např. Lannova 12" className={field} aria-describedby="p-adresa-obec" />
+          <p id="p-adresa-obec" className="text-sm text-ink-soft mt-1">Adresy hledáme v obci {f.mesto.trim() || '…'}.</p>
         </div>
         <Zprava typ="chyba">{stav.chyba}</Zprava>
         <Zprava typ="ok">{stav.ok}</Zprava>
@@ -318,8 +381,8 @@ function Profil() {
       <KodSkupiny />
 
       <form onSubmit={zmenitHeslo} noValidate className="bg-white rounded-lg p-6 space-y-4">
-        <h2 className="font-semibold text-lg text-ink">{pouzeGoogle ? 'Nastavit heslo' : 'Změna hesla'}</h2>
-        {pouzeGoogle && <p className="text-sm text-muted">Přihlašujete se přes Google. Heslo si nastavit můžete, pokud se chcete přihlašovat i e-mailem.</p>}
+        <h2 className="font-semibold text-lg text-ink">{sluzba ? 'Nastavit heslo' : 'Změna hesla'}</h2>
+        {sluzba && <p className="text-sm text-ink-soft">Přihlašujete se přes {sluzba}. Heslo si nastavit můžete, pokud se chcete přihlašovat i e-mailem.</p>}
         <Pole id="p-heslo" label={`Nové heslo (aspoň ${MIN_HESLO} znaků)`} type="password" autoComplete="new-password" value={heslo} onChange={e => setHeslo(e.target.value)} />
         <Zprava typ="chyba">{stavHeslo.chyba}</Zprava>
         <Zprava typ="ok">{stavHeslo.ok}</Zprava>
@@ -339,9 +402,9 @@ function Profil() {
 export default function Ucet() {
   const auth = useAuth()
   if (!auth.zapnuto) {
-    return <div className="max-w-md mx-auto px-6 py-16 text-center text-muted">Zákaznické účty zatím nejsou zapnuté. Nakoupit můžete i bez účtu.</div>
+    return <div className="max-w-md mx-auto px-6 py-16 text-center text-ink-soft">Zákaznické účty zatím nejsou zapnuté. Nakoupit můžete i bez účtu.</div>
   }
-  if (auth.nacita) return <div className="py-24 text-center text-muted">Načítám…</div>
+  if (auth.nacita) return <div className="py-24 text-center text-ink-soft">Načítám…</div>
   if (auth.obnovaHesla || location.hash === '#nove-heslo') return auth.uzivatel ? <NoveHeslo /> : <Prihlaseni />
   return auth.uzivatel ? <Profil /> : <Prihlaseni />
 }

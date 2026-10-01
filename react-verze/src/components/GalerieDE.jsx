@@ -16,5 +16,6 @@ const FOTOS = [
 ]
 
 export default function GalerieDE() {
-  return <FotoGalerie fotky={FOTOS} eyebrow="Fotos" title="Aus unserem Obstgarten" zoomLabel="Foto vergrößern" />
+  return <FotoGalerie fotky={FOTOS} eyebrow="Fotos" title="Aus unserem Obstgarten" zoomLabel="Foto vergrößern"
+    lightboxLabels={{ zavrit: 'Schließen', predchozi: 'Zurück', dalsi: 'Weiter' }} />
 }

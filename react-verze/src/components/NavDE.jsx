@@ -9,7 +9,7 @@ const LINKS = [
 
 export default function NavDE() {
   return (
-    <SiteNav links={LINKS} lang="de" logoAlt="Obstbauernhof Holub"
+    <SiteNav links={LINKS} lang="de" logoAlt="Obstbauernhof Holub" skipLabel="Zum Inhalt springen" menuLabel="Menü"
       cta={{ label: 'Anfrage stellen', href: '#anfrage' }} />
   )
 }

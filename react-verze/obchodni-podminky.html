@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <script>
+    // Web má jednu adresu: www.ovoce-holub.cz → ovoce-holub.cz
+    if (location.hostname === 'www.ovoce-holub.cz') location.replace('https://ovoce-holub.cz' + location.pathname + location.search + location.hash)
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#17241a" />
+  <title>Obchodní podmínky – Ovocnářství Holub</title>
+  <meta name="description" content="Obchodní podmínky e-shopu Ovocnářství Holub: objednávka, ceny, platba, dovoz a osobní odběr, odstoupení od smlouvy, reklamace a mimosoudní řešení sporů." />
+  <link rel="canonical" href="https://ovoce-holub.cz/obchodni-podminky.html" />
+  <link rel="icon" type="image/svg+xml" href="%BASE_URL%favicon.svg" />
+  <link rel="icon" type="image/png" sizes="32x32" href="%BASE_URL%favicon-32.png" />
+  <link rel="apple-touch-icon" href="%BASE_URL%apple-touch-icon.png" />
+  <!-- Stránka je záměrně bez písem a skriptů z cizích serverů: vzhled webu napodobuje vlastním CSS. Odkazy jsou relativní. -->
+  <style>
+    :root{--paper:#f8f5ef;--paper-2:#efe9de;--line:#dfd7c9;--ink:#1d231c;--ink-soft:#4b5448;--muted:#636b5f;--leaf:#2f5a33;--leaf-dark:#213f24;--forest:#17241a;--serif:"Newsreader",Georgia,"Times New Roman",serif;--sans:"Source Sans 3",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+    *,*::before,*::after{box-sizing:border-box}
+    html{font-size:106.25%;-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+    @media (max-width:640px){html{font-size:100%}}
+    @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+    body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-wrap:break-word}
+    a{color:var(--leaf);text-underline-offset:.15em}
+    a:hover{color:var(--leaf-dark)}
+    :focus-visible{outline:2px solid var(--leaf);outline-offset:2px}
+    .obal{width:100%;max-width:48rem;margin:0 auto;padding:0 1rem}
+    @media (min-width:640px){.obal{padding:0 2rem}}
+    .preskocit{position:absolute;left:1rem;top:-10rem;z-index:10;background:#fff;color:var(--ink);padding:.6rem 1rem;border-radius:6px}
+    .preskocit:focus{top:.5rem}
+    .hlavicka,.paticka{background:var(--forest);color:rgba(255,255,255,.8)}
+    .hlavicka :focus-visible,.paticka :focus-visible{outline-color:#fff}
+    .hlavicka .obal{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:0 1.5rem;padding-top:.4rem;padding-bottom:.4rem}
+    .znacka{font-family:var(--serif);font-size:1.3rem;color:#fff;text-decoration:none;padding:.45rem 0}
+    .hlavicka ul,.paticka ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:0 1.25rem}
+    .hlavicka li,.paticka li{margin:0}
+    .hlavicka a:not(.znacka),.paticka a{display:inline-block;padding:.55rem 0;color:rgba(255,255,255,.9)}
+    .hlavicka a:hover,.paticka a:hover{color:#fff}
+    main{display:block;padding:2.5rem 0 3.5rem}
+    main:focus{outline:none}
+    h1,h2,h3{font-family:var(--serif);font-weight:500;line-height:1.2;letter-spacing:-.01em;color:var(--ink);text-wrap:balance}
+    h1{font-size:clamp(1.9rem,6vw,2.5rem);margin:0 0 .4rem}
+    h2{font-size:1.5rem;margin:2.75rem 0 .8rem;padding-top:1.75rem;border-top:1px solid var(--line);scroll-margin-top:1rem}
+    h3{font-size:1.18rem;margin:1.6rem 0 .4rem}
+    p{margin:0 0 .9rem;text-wrap:pretty}
+    ul,ol{margin:0 0 1rem;padding-left:1.35rem}
+    li{margin:.35rem 0}
+    strong{font-weight:600}
+    .platnost{color:var(--muted);margin:0 0 1.5rem}
+    .kostce{background:#fff;border:1px solid var(--line);border-radius:8px;padding:1.1rem 1.25rem .35rem;margin:1.5rem 0 1.25rem}
+    .kostce h2,.rejstrik h2{font-family:var(--sans);font-weight:600;font-size:1.1rem;margin:0 0 .5rem;padding:0;border:0;letter-spacing:0}
+    .rejstrik{background:var(--paper-2);border-radius:8px;padding:1rem 1.25rem .35rem;margin:0 0 1rem}
+    .rejstrik ol{columns:2 15rem;column-gap:2rem;margin:0 0 .6rem}
+    .rejstrik li{break-inside:avoid;margin:0}
+    .rejstrik a{display:inline-block;padding:.25rem 0}
+    .karta{background:#fff;border:1px solid var(--line);border-radius:8px;padding:1rem 1.25rem .2rem;margin:.9rem 0}
+    .karta h3{margin-top:0}
+    .pozn{color:var(--ink-soft);font-size:.95rem}
+    .adresa{font-style:normal;margin:0 0 1rem}
+    .formular{background:#fff;border:1px dashed var(--muted);border-radius:8px;padding:1.1rem 1.25rem .3rem;margin:1rem 0}
+    .formular h3{margin-top:0}
+    .linka{display:block;border-bottom:1px solid var(--muted);min-height:1.8rem;margin:.1rem 0 .8rem}
+    .tlacitka{display:flex;flex-wrap:wrap;gap:.6rem;margin:.25rem 0 1rem}
+    .tl{font:inherit;font-weight:600;min-height:44px;padding:.55rem 1.1rem;border-radius:6px;border:1px solid var(--leaf);background:#fff;color:var(--leaf);cursor:pointer}
+    .tl:hover{background:var(--leaf-dark);border-color:var(--leaf-dark);color:#fff}
+    .paticka{padding:1.75rem 0 2.25rem;font-size:.95rem}
+    .paticka p{margin:0 0 .5rem}
+    @media print{
+      .preskocit,.hlavicka nav,.paticka ul,.rejstrik,.tlacitka{display:none!important}
+      body{background:#fff}
+      .hlavicka,.paticka{background:none;color:#000}
+      .znacka{color:#000}
+      .kostce,.karta,.formular{border-color:#999}
+      a{color:inherit}
+      h2,h3{break-after:avoid}
+    }
+  </style>
+</head>
+<body>
+  <a class="preskocit" href="#obsah">Přeskočit na obsah</a>
+
+  <header class="hlavicka">
+    <div class="obal">
+      <a class="znacka" href="./">Ovocnářství Holub</a>
+      <nav aria-label="Odkazy webu">
+        <ul>
+          <li><a href="./">Úvodní stránka</a></li>
+          <li><a href="eshop.html">E-shop</a></li>
+          <li><a href="gdpr.html">Ochrana osobních údajů</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main id="obsah" tabindex="-1">
+    <div class="obal">
+      <h1>Obchodní podmínky e-shopu</h1>
+      <p class="platnost">Platné od 30.&nbsp;9.&nbsp;2026</p>
+
+      <section class="kostce" aria-labelledby="kostce">
+        <h2 id="kostce">V kostce</h2>
+        <ul>
+          <li>Objednávku odešlete tlačítkem „Objednat s povinností platby“. Potvrzení vám hned přijde e-mailem.</li>
+          <li>Ceny jsou konečné, včetně DPH. Dovoz v Českých Budějovicích a okolí je v ceně (pondělí, středa a pátek dopoledne). Osobní odběr je v Krtelích, pondělí až sobota.</li>
+          <li>Platíte při převzetí, nebo převodem předem.</li>
+          <li>Objednávku můžete změnit nebo zrušit do 18:00 den před termínem.</li>
+          <li>Čerstvé ovoce po převzetí vrátit bez udání důvodu nelze, protože se rychle kazí. Neotevřený mošt vrátit můžete, do 14 dnů.</li>
+          <li>Něco není v pořádku? Zavolejte na <a href="tel:+420607575271">+420&nbsp;607&nbsp;575&nbsp;271</a> nebo napište na <a href="mailto:info@ovoce-holub.cz">info@ovoce-holub.cz</a>. Domluvíme se.</li>
+        </ul>
+      </section>
+
+      <nav class="rejstrik" aria-labelledby="rejstrik">
+        <h2 id="rejstrik">Obsah</h2>
+        <ol>
+          <li><a href="#prodavajici">Prodávající</a></li>
+          <li><a href="#pro-koho">Pro koho podmínky platí</a></li>
+          <li><a href="#objednavka">Objednávka a uzavření smlouvy</a></li>
+          <li><a href="#ceny">Ceny</a></li>
+          <li><a href="#platba">Platba</a></li>
+          <li><a href="#dodani">Dovoz a osobní odběr</a></li>
+          <li><a href="#zmena">Změna a zrušení objednávky</a></li>
+          <li><a href="#odstoupeni">Odstoupení od smlouvy</a></li>
+          <li><a href="#reklamace">Reklamace</a></li>
+          <li><a href="#zbozi">Informace o zboží</a></li>
+          <li><a href="#spory">Stížnosti a řešení sporů</a></li>
+          <li><a href="#zaver">Osobní údaje a závěrečná ustanovení</a></li>
+          <li><a href="#formular">Formulář pro odstoupení</a></li>
+        </ol>
+      </nav>
+
+      <h2 id="prodavajici">1. Prodávající</h2>
+      <address class="adresa">
+        <strong>Pavel Holub – Ovocnářství Holub</strong><br />
+        Krtely 70, 384 11 Malovice (Krtely u Netolic)<br />
+        IČO 12320030, DIČ CZ6803300394, plátce DPH<br />
+        Telefon: <a href="tel:+420607575271">+420&nbsp;607&nbsp;575&nbsp;271</a> nebo <a href="tel:+420722949299">+420&nbsp;722&nbsp;949&nbsp;299</a><br />
+        E-mail: <a href="mailto:info@ovoce-holub.cz">info@ovoce-holub.cz</a> (dotazy a reklamace), <a href="mailto:objednavky@ovoce-holub.cz">objednavky@ovoce-holub.cz</a> (objednávky)<br />
+        Web: <a href="./">ovoce-holub.cz</a>
+      </address>
+      <p>Na farmě v Krtelích (Krtely 70) je i místo osobního odběru. V těchto podmínkách o sobě píšeme „my“, vás jako kupujícího oslovujeme „vy“.</p>
+
+      <h2 id="pro-koho">2. Pro koho podmínky platí</h2>
+      <p>Tyto podmínky platí pro nákup v našem e-shopu na adrese <a href="eshop.html">ovoce-holub.cz/eshop.html</a>.</p>
+      <ul>
+        <li>Nakupujete-li jako <strong>spotřebitel</strong> (pro sebe, ne v rámci podnikání), máte navíc všechna práva, která vám dává zákon. Tyto podmínky je nijak neomezují.</li>
+        <li>Nakupujete-li jako <strong>podnikatel</strong> (například na firmu s IČO), neplatí pro vás část o odstoupení od smlouvy (čl.&nbsp;8) ani další pravidla, která zákon dává jen spotřebitelům.</li>
+        <li>U větších odběrů pro firmy, například ovoce pro pálenice, platí to, na čem se domluvíme v nabídce. Tyto podmínky platí jen tam, kde jsme se nedomluvili jinak.</li>
+      </ul>
+      <p>Smlouvu uzavíráme v češtině a řídí se českým právem, hlavně občanským zákoníkem (zákon č.&nbsp;89/2012&nbsp;Sb.) a zákonem o ochraně spotřebitele (zákon č.&nbsp;634/1992&nbsp;Sb.).</p>
+
+      <h2 id="objednavka">3. Objednávka a uzavření smlouvy</h2>
+      <h3>Jak objednávka probíhá</h3>
+      <ol>
+        <li>Vyberete zboží a vložíte ho do košíku. U ovoce volíte počet kilogramů, u moštu příchuť a velikost balení.</li>
+        <li>V pokladně vyplníte kontaktní údaje, způsob převzetí (dovoz nebo osobní odběr), den a způsob platby.</li>
+        <li>Před odesláním vidíte souhrn objednávky s celkovou cenou. Údaje i obsah košíku můžete až do odeslání opravit. Na chybějící nebo chybně vyplněné údaje vás formulář upozorní.</li>
+        <li>Objednávku odešlete tlačítkem <strong>„Objednat s povinností platby“</strong>.</li>
+        <li>Přijetí objednávky vám hned potvrdíme e-mailem se souhrnem objednávky, a u platby převodem i s platebními údaji.</li>
+      </ol>
+      <p><strong>Kupní smlouva je uzavřena odesláním objednávky</strong> (krok 4). Nic dalšího potvrzovat nemusíte.</p>
+      <p>Objednávky přijímáme <strong>nejpozději den před zvoleným dnem do 18:00</strong>.</p>
+      <h3>Když něco není k dispozici</h3>
+      <p>Ovoce je přírodní produkt. Může se vyprodat nebo ho může poškodit počasí. Kdyby něco z vaší objednávky nebylo k dispozici, ozveme se vám co nejdříve a domluvíme se na náhradě, nebo tu položku z objednávky vyřadíme. Zaplatíte jen to, co dostanete. Co jste zaplatili navíc, vám vrátíme do 14 dnů.</p>
+      <h3>Uložení smlouvy</h3>
+      <p>Objednávku (uzavřenou smlouvu) ukládáme v elektronické podobě na našem webhostingu. Vy ji máte v potvrzovacím e-mailu a se zákaznickým účtem také v přehledu „Moje objednávky“. Tyto obchodní podmínky si můžete vytisknout nebo uložit tlačítkem na konci stránky.</p>
+      <p>Nejsme vázáni žádným kodexem chování. Za internetové nebo telefonní připojení při objednávce platíte jen svému operátorovi podle svého tarifu, my nic dalšího neúčtujeme.</p>
+
+      <h2 id="ceny">4. Ceny</h2>
+      <ul>
+        <li>Všechny ceny v e-shopu jsou <strong>konečné, včetně DPH a obalu</strong>.</li>
+        <li>Ovoce prodáváme na kilogramy (cena za 1&nbsp;kg), mošty v baleních bag-in-box po 3&nbsp;l a 5&nbsp;l (u balení uvádíme i cenu za litr). Bedýnky pro zákaznické skupiny mají pevnou cenu za bedýnku.</li>
+        <li><strong>Dovoz v Českých Budějovicích a okolí je v ceně.</strong> Dovoz dál domlouváme zvlášť. Kdyby za něj byl příplatek, řekneme vám ho předem a bez vašeho souhlasu ho neúčtujeme. Osobní odběr je zdarma.</li>
+        <li>Zákazníci se skupinovým kódem vidí zvýhodněné ceny své skupiny.</li>
+        <li>Platí cena uvedená v okamžiku odeslání objednávky. Kdyby byla u zboží zjevně chybná cena (například překlep), ozveme se vám. Objednávku pak můžete za správnou cenu potvrdit, nebo zrušit.</li>
+        <li>Kdyby bylo u zboží uvedeno „cena na dotaz“, cenu vám sdělíme před dodáním. Zboží vám dodáme, jen když s cenou budete souhlasit.</li>
+      </ul>
+
+      <h2 id="platba">5. Platba</h2>
+      <h3>Při převzetí</h3>
+      <p>Zaplatíte hotově řidiči nebo u nás při osobním odběru. Řidič vám může ukázat i QR kód, kterým zaplatíte převodem z mobilu.</p>
+      <h3>Převodem předem</h3>
+      <ul>
+        <li>Po odeslání objednávky uvidíte QR kód k platbě. Platební údaje vám přijdou i v potvrzovacím e-mailu.</li>
+        <li>Číslo účtu: <strong>662075319/0800</strong> (Česká spořitelna). Variabilní symbol najdete v potvrzení objednávky.</li>
+        <li>Zaplaťte prosím <strong>nejpozději den před termínem</strong>. Jakmile platba dorazí, pošleme vám potvrzení e-mailem.</li>
+        <li>Když platba do termínu nedorazí, zboží vám i tak předáme a zaplatíte ho při převzetí. Pokud byste zaplatili dvakrát nebo víc, přeplatek vám do 14 dnů vrátíme na účet, ze kterého přišel.</li>
+      </ul>
+      <h3>Účtenka</h3>
+      <p>Na požádání vám vystavíme účtenku (daňový doklad) a pošleme ji e-mailem. Stačí říct řidiči nebo nám napsat. Nad 10&nbsp;000&nbsp;Kč vystavujeme plný daňový doklad. Když nakupujete na firmu, uveďte v objednávce název firmy a IČO.</p>
+
+      <h2 id="dodani">6. Dovoz a osobní odběr</h2>
+      <h3>Dovoz až domů</h3>
+      <ul>
+        <li>Vozíme do <strong>Českých Budějovic a okolí</strong> v <strong>pondělí, středu a pátek dopoledne</strong>. Den si vyberete v objednávce.</li>
+        <li>Mimo České Budějovice dovážíme po domluvě. Po objednávce se vám ozveme a termín s vámi domluvíme.</li>
+        <li>Zboží předáváme osobně na adrese z objednávky. Když vás nezastihneme, zavoláme vám a domluvíme se.</li>
+        <li>Zákazníkům se skupinovým kódem vozíme zboží na společnou adresu skupiny spolu s ostatními objednávkami skupiny.</li>
+      </ul>
+      <h3>Osobní odběr</h3>
+      <p>Na farmě: <strong>Krtely 70, 384 11 Malovice</strong> (Krtely u Netolic), <strong>pondělí až sobota</strong> ve zvolený den. Než vyrazíte, můžete nám zavolat na <a href="tel:+420607575271">+420&nbsp;607&nbsp;575&nbsp;271</a>.</p>
+      <p>Ve státní a ostatní svátky a o Velikonocích (Velký pátek, Velikonoční pondělí) nevozíme a nevydáváme. E-shop tyto dny k výběru nenabízí.</p>
+      <h3>Převzetí</h3>
+      <p>Při převzetí si prosím zboží prohlédněte. Převzetím na vás přechází vlastnické právo ke zboží a nebezpečí škody na něm.</p>
+
+      <h2 id="zmena">7. Změna a zrušení objednávky</h2>
+      <ul>
+        <li>Objednávku můžete <strong>zdarma změnit nebo zrušit nejpozději den před termínem do 18:00</strong>. Stačí odpovědět na potvrzovací e-mail, napsat na <a href="mailto:info@ovoce-holub.cz">info@ovoce-holub.cz</a> nebo zavolat.</li>
+        <li>Pokud jste už zaplatili převodem, peníze za zrušenou objednávku vám vrátíme do 14 dnů.</li>
+        <li>Později už je ovoce většinou sklizené a připravené, zrušení je pak možné jen po domluvě. Vaše práva podle čl.&nbsp;8 a 9 tím nejsou dotčena.</li>
+      </ul>
+
+      <h2 id="odstoupeni">8. Odstoupení od smlouvy (pro spotřebitele)</h2>
+      <h3>Čerstvé ovoce a bedýnky</h3>
+      <p>Čerstvé ovoce je zboží, které podléhá rychlé zkáze. Od smlouvy na čerstvé ovoce, včetně bedýnek, proto po převzetí <strong>nelze odstoupit bez udání důvodu</strong> (§&nbsp;1837 písm.&nbsp;d) občanského zákoníku). Objednávku můžete i tak zrušit podle čl.&nbsp;7 a vadné ovoce reklamovat podle čl.&nbsp;9.</p>
+      <h3>Mošty</h3>
+      <p>Od smlouvy na mošt můžete jako spotřebitel <strong>odstoupit bez udání důvodu do 14 dnů od převzetí</strong>. To neplatí pro balení, které jste po převzetí otevřeli (načali). Otevřený mošt z hygienických důvodů vrátit nejde (§&nbsp;1837 občanského zákoníku). Obsahuje-li objednávka ovoce i mošt, týká se odstoupení jen moštu.</p>
+      <h3>Jak odstoupit</h3>
+      <ul>
+        <li>Ve lhůtě nám pošlete jasné prohlášení, že od smlouvy odstupujete: e-mailem na <a href="mailto:info@ovoce-holub.cz">info@ovoce-holub.cz</a> nebo dopisem na Krtely 70, 384 11 Malovice. Můžete použít <a href="#formular">vzorový formulář</a>, ale nemusíte. Lhůta je dodržená, když prohlášení odešlete před jejím koncem. Přijetí vám potvrdíme.</li>
+        <li>Mošt nám vraťte nejpozději do 14 dnů od odstoupení. Můžete ho po domluvě předat řidiči při některém z našich rozvozů v Českých Budějovicích, přivézt k nám do Krtel, nebo ho poslat poštou. Náklady na vrácení (například poštovné) nesete vy.</li>
+        <li>Peníze vám vrátíme do 14 dnů od odstoupení, stejným způsobem, jakým jste platili. Pokud jste platili hotově, vrátíme je hotově, nebo po domluvě převodem na váš účet. Peníze můžeme vrátit až poté, co mošt dostaneme zpět nebo nám doložíte, že jste ho odeslali.</li>
+        <li>Odpovídáte za snížení hodnoty zboží, které vzniklo tím, že jste s ním zacházeli jinak, než je nutné k seznámení s ním.</li>
+      </ul>
+
+      <h2 id="reklamace">9. Reklamace (vadné zboží)</h2>
+      <h3>Za co odpovídáme</h3>
+      <p>Odpovídáme za to, že zboží při převzetí nemá vady. Musí odpovídat objednávce (druh, odrůda, množství) a být čerstvé, zdravé a nezkažené. U moštu musí být balení neporušené a mošt dobrý nejméně do data minimální trvanlivosti uvedeného na obalu. Ovoce je přírodní produkt, takže drobné rozdíly ve velikosti, tvaru a barvě plodů vadou nejsou, pokud neovlivňují chuť a kvalitu.</p>
+      <h3>Kdy a jak reklamovat</h3>
+      <ul>
+        <li>Čerstvé ovoce rychle zraje a kazí se. Vadu nám proto oznamte <strong>bez zbytečného odkladu</strong>, nejlépe hned při převzetí řidiči, jinak co nejdříve poté, co ji zjistíte.</li>
+        <li>Vadu moštu můžete reklamovat nejméně do data minimální trvanlivosti uvedeného na obalu.</li>
+        <li>Reklamaci uplatníte telefonicky na <a href="tel:+420607575271">+420&nbsp;607&nbsp;575&nbsp;271</a>, e-mailem na <a href="mailto:info@ovoce-holub.cz">info@ovoce-holub.cz</a>, u řidiče při dovozu nebo osobně u nás v Krtelích. Uveďte prosím číslo objednávky a co je špatně. Pomůže fotka.</li>
+      </ul>
+      <h3>Co můžete požadovat</h3>
+      <p>Podle vaší volby vám dodáme náhradní zboží bez vady (obvykle při nejbližším rozvozu), nebo vám vrátíme peníze za vadné zboží. Menší vadu můžeme po domluvě vyřešit přiměřenou slevou. Vadné ovoce nám vracet nemusíte, pokud se nedomluvíme jinak.</p>
+      <h3>Vyřízení</h3>
+      <p>Reklamaci vyřídíme bez zbytečného odkladu, <strong>nejpozději do 30 dnů</strong> od jejího uplatnění. E-mailem nebo písemně vám potvrdíme, kdy jste reklamovali, co reklamujete a jaké vyřízení požadujete, a potom také jak jsme reklamaci vyřídili. Peníze vrátíme převodem na váš účet nebo hotově, do 14 dnů od vyřízení.</p>
+      <p class="pozn">Nakupujete-li jako podnikatel, prohlédněte zboží při převzetí a vady nám oznamte bez zbytečného odkladu.</p>
+
+      <h2 id="zbozi">10. Informace o zboží</h2>
+      <ul>
+        <li><strong>Ovoce</strong> je z našeho sadu v Krtelích, kde pěstujeme podle pravidel integrované produkce (SISPO). Prodáváme ho čerstvé nebo ze skladu, dál ho nijak neupravujeme. Druh a odrůdu uvádíme u každého zboží. Kde je v e-shopu jen ilustrační fotka, je to u ní napsané.</li>
+        <li><strong>Mošt</strong> lisujeme z jablek z vlastního sadu, bez přidaných cukrů a konzervantů. Ochucené mošty jsou jablečný mošt s přídavkem ovoce, zeleniny nebo koření podle názvu příchuti. Přesné složení, datum minimální trvanlivosti a podmínky skladování jsou na etiketě balení. Rádi vám je řekneme i předem, stačí zavolat nebo napsat.</li>
+      </ul>
+
+      <h2 id="spory">11. Stížnosti a mimosoudní řešení sporů</h2>
+      <p>Stížnosti a podněty nám pište na <a href="mailto:info@ovoce-holub.cz">info@ovoce-holub.cz</a> nebo volejte na <a href="tel:+420607575271">+420&nbsp;607&nbsp;575&nbsp;271</a>. Odpovíme co nejdříve.</p>
+      <p>Pokud se nedohodneme, můžete jako spotřebitel podat návrh na <strong>mimosoudní řešení sporu</strong> u České obchodní inspekce:</p>
+      <div class="karta">
+        <p>Česká obchodní inspekce, Ústřední inspektorát – oddělení ADR<br />
+          Gorazdova 1969/24, 120 00 Praha 2<br />
+          E-mail: <a href="mailto:adr@coi.cz">adr@coi.cz</a><br />
+          Web: <a href="https://www.coi.cz/informace-o-adr/" rel="noopener">www.coi.cz/informace-o-adr</a></p>
+      </div>
+      <p>Spotřebitelé z jiných zemí EU se mohou obrátit také na Evropské spotřebitelské centrum ČR (<a href="https://www.evropskyspotrebitel.cz" rel="noopener">www.evropskyspotrebitel.cz</a>).</p>
+      <p>Dozor nad dodržováním předpisů vykonává Česká obchodní inspekce (<a href="https://www.coi.cz" rel="noopener">www.coi.cz</a>), u potravin Státní zemědělská a potravinářská inspekce (<a href="https://www.szpi.gov.cz" rel="noopener">www.szpi.gov.cz</a>) a u osobních údajů Úřad pro ochranu osobních údajů (<a href="https://uoou.gov.cz" rel="noopener">uoou.gov.cz</a>).</p>
+
+      <h2 id="zaver">12. Osobní údaje a závěrečná ustanovení</h2>
+      <p>Jak zacházíme s vašimi osobními údaji, popisují <a href="gdpr.html">Zásady ochrany osobních údajů</a>.</p>
+      <p>Tyto obchodní podmínky platí od 30.&nbsp;9.&nbsp;2026. Pro vaši objednávku platí znění účinné v den, kdy jste ji odeslali. Podmínky můžeme změnit. Změna se ale netýká objednávek, které už byly odeslané.</p>
+      <div class="tlacitka" id="tisk" hidden>
+        <button type="button" class="tl" id="tisk-tlacitko">Vytisknout nebo uložit jako PDF</button>
+      </div>
+
+      <h2 id="formular">Vzorový formulář pro odstoupení od smlouvy</h2>
+      <p class="pozn">Formulář vyplňte a pošlete nám ho jen tehdy, když chcete odstoupit od smlouvy (týká se neotevřeného moštu, viz čl.&nbsp;8). Stačí i e-mail se stejnými údaji.</p>
+      <div class="formular">
+        <h3>Oznámení o odstoupení od smlouvy</h3>
+        <p><strong>Adresát:</strong> Pavel Holub – Ovocnářství Holub, Krtely 70, 384 11 Malovice, e-mail info@ovoce-holub.cz</p>
+        <p>Oznamuji, že tímto odstupuji od smlouvy o nákupu tohoto zboží:</p>
+        <span class="linka" aria-hidden="true"></span>
+        <p>Číslo objednávky:</p>
+        <span class="linka" aria-hidden="true"></span>
+        <p>Datum objednání / datum převzetí:</p>
+        <span class="linka" aria-hidden="true"></span>
+        <p>Jméno a příjmení:</p>
+        <span class="linka" aria-hidden="true"></span>
+        <p>Adresa:</p>
+        <span class="linka" aria-hidden="true"></span>
+        <p>Číslo účtu pro vrácení peněz (nepovinné):</p>
+        <span class="linka" aria-hidden="true"></span>
+        <p>Datum a podpis (podpis jen u formuláře zaslaného v papírové podobě):</p>
+        <span class="linka" aria-hidden="true"></span>
+      </div>
+    </div>
+  </main>
+
+  <footer class="paticka">
+    <div class="obal">
+      <p>© 2026 Ovocnářství Holub · Pavel Holub · Krtely 70, 384 11 Malovice · IČO 12320030 · DIČ CZ6803300394 (plátce DPH)</p>
+      <ul>
+        <li><a href="./">Úvodní stránka</a></li>
+        <li><a href="eshop.html">E-shop</a></li>
+        <li><a href="gdpr.html">Ochrana osobních údajů</a></li>
+        <li><a href="gdpr.html#nastaveni-cookies">Nastavení cookies</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <script>
+    // Tlačítko pro tisk (bez JavaScriptu se neukáže, tisk jde i z nabídky prohlížeče).
+    (function () {
+      var obal = document.getElementById('tisk')
+      var tl = document.getElementById('tisk-tlacitko')
+      if (!obal || !tl || typeof window.print !== 'function') return
+      obal.hidden = false
+      tl.addEventListener('click', function () { window.print() })
+    })()
+  </script>
+</body>
+</html>

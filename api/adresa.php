@@ -30,8 +30,10 @@ function rozlozit(string $adresa, ?array $gps): array {
   ];
 }
 
-function ruian(string $dotaz): array {
+// null = registr neodpověděl (výpadek) – to není totéž jako „adresa nenalezena“ a nesmí se zapamatovat.
+function ruian(string $dotaz): ?array {
   $r = http_json(RUIAN . 'findAddressCandidates?' . http_build_query(['SingleLine' => $dotaz, 'maxLocations' => 8, 'outSR' => 4326, 'f' => 'json']));
+  if (!is_array($r) || !isset($r['candidates'])) return null;
   $out = [];
   foreach ($r['candidates'] ?? [] as $c) {
     if (($c['attributes']['Type'] ?? '') !== 'AdresniMisto' || ($c['score'] ?? 0) < 90) continue;
@@ -51,20 +53,23 @@ function v_obci(array $k, string $mesto): bool {
   return $mesto === '' || str_contains(bez_diakritiky($k['adresa']), bez_diakritiky($mesto));
 }
 
-$q = trim(mb_substr((string)($_GET['q'] ?? ''), 0, 120));
-$mesto = trim(mb_substr((string)($_GET['mesto'] ?? ''), 0, 60));
+$q = trim(mb_substr(retezec($_GET['q'] ?? ''), 0, 120));
+$mesto = trim(mb_substr(retezec($_GET['mesto'] ?? ''), 0, 60));
 if (mb_strlen($q) < 3) konec(['kandidati' => []]);
 
 // ---------- našeptávač ----------
+// Pamatují se jen úspěšné neprázdné výsledky; prázdný výsledek nebo výpadek registru se příště zkusí znovu.
 if (isset($_GET['naseptat'])) {
   $klic = 'n:' . mb_strtolower("$q|$mesto");
   $cache = nacist_json('adresy-naseptavac.json', []);
-  if (isset($cache[$klic])) konec($cache[$klic]);
+  if (!empty($cache[$klic]['kandidati'])) konec(['kandidati' => $cache[$klic]['kandidati']]);
   if (!limit('naseptavac', 400, 3600)) konec(['kandidati' => [], 'limit' => true]);
 
   $out = [];
+  $selhalo = false;
   // 1) suggest zvládá i psaní bez diakritiky, ale potřebuje přesné číslo domu
   $s = http_json(RUIAN . 'suggest?' . http_build_query(['text' => trim("$q $mesto"), 'maxSuggestions' => 12, 'f' => 'json']));
+  if (!is_array($s) || !isset($s['suggestions'])) $selhalo = true;
   foreach ($s['suggestions'] ?? [] as $x) {
     if (($x['type'] ?? '') !== 'AdresniMisto') continue;
     $k = rozlozit($x['text'], null);
@@ -72,41 +77,56 @@ if (isset($_GET['naseptat'])) {
   }
   // 2) hledání podle názvu ulice vrátí první adresy v ulici (i se souřadnicemi)
   if (count($out) < 5) {
-    foreach (ruian($mesto !== '' ? "$q, $mesto" : $q) as $k) {
+    $r = ruian($mesto !== '' ? "$q, $mesto" : $q);
+    if ($r === null) $selhalo = true;
+    foreach ($r ?? [] as $k) {
       if (v_obci($k, $mesto)) $out[$k['adresa']] = $k;
     }
   }
   $vysledek = ['kandidati' => array_slice(array_values($out), 0, 7)];
-  $cache = array_slice($cache, -1500, null, true);
-  $cache[$klic] = $vysledek;
-  ulozit_json('adresy-naseptavac.json', $cache);
-  konec($vysledek);
+  if (!$selhalo && $vysledek['kandidati']) {
+    $cache = array_slice($cache, -300, null, true);
+    $cache[$klic] = $vysledek;
+    ulozit_json('adresy-naseptavac.json', $cache, false);
+  }
+  konec($selhalo && !$vysledek['kandidati'] ? $vysledek + ['nedostupne' => true] : $vysledek);
 }
 
 // ---------- ověření ----------
 if (!preg_match('/\d/', $q)) konec(['kandidati' => [], 'chybiCislo' => true]);
 
+// Nalezené adresy se pamatují natrvalo, „nenalezeno“ jen na den, výpadek registru vůbec.
 $klic = mb_strtolower("$q|$mesto");
 $cache = nacist_json('adresy.json', []);
-if (isset($cache[$klic])) konec($cache[$klic]);
+$ulozeno = $cache[$klic] ?? null;
+if (is_array($ulozeno) && (!empty($ulozeno['kandidati']) || ($ulozeno['cas'] ?? 0) > time() - 86400)) konec(['kandidati' => $ulozeno['kandidati'] ?? []]);
 if (!limit('adresa', 60, 3600)) konec(['kandidati' => [], 'limit' => true]);
 
 // Celá adresa z našeptávače už obec obsahuje; jinak se doplní z pole Město.
 $dotaz = ($mesto === '' || str_contains(bez_diakritiky($q), bez_diakritiky($mesto))) ? $q : "$q, $mesto";
 $kandidati = ruian($dotaz);
+$selhalo = $kandidati === null;
+$kandidati ??= [];
 
 if (!$kandidati) {
   // Bez diakritiky / překlep: OpenStreetMap vrátí správný název ulice.
   $osm = http_json('https://nominatim.openstreetmap.org/search?' . http_build_query(['q' => $dotaz, 'format' => 'json', 'addressdetails' => 1, 'limit' => 1, 'countrycodes' => 'cz']));
+  if ($osm === null) $selhalo = true;
   $a = $osm[0]['address'] ?? [];
   $obec = $a['city'] ?? $a['town'] ?? $a['village'] ?? $mesto;
-  if (!empty($a['house_number'])) $kandidati = ruian(trim(($a['road'] ?? $obec) . " {$a['house_number']}, $obec"));
+  if (!empty($a['house_number'])) {
+    $r = ruian(trim(($a['road'] ?? $obec) . " {$a['house_number']}, $obec"));
+    if ($r === null) $selhalo = true;
+    $kandidati = $r ?? [];
+  }
 }
 
 $kandidati = array_values(array_filter($kandidati, fn($k) => v_obci($k, $mesto)));
 $vysledek = ['kandidati' => array_slice($kandidati, 0, 5)];
 
-$cache = array_slice($cache, -500, null, true);
-$cache[$klic] = $vysledek;
-ulozit_json('adresy.json', $cache);
-konec($vysledek);
+if ($vysledek['kandidati'] || !$selhalo) {
+  $cache = array_slice($cache, -500, null, true);
+  $cache[$klic] = $vysledek + ['cas' => time()];
+  ulozit_json('adresy.json', $cache, false);
+}
+konec($selhalo && !$vysledek['kandidati'] ? $vysledek + ['nedostupne' => true] : $vysledek);

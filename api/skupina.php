@@ -9,7 +9,7 @@ header('Content-Type: application/json; charset=utf-8');
 
 function konec(array $d, int $kod = 200): void { http_response_code($kod); echo json_encode($d, JSON_UNESCAPED_UNICODE); exit; }
 
-$kod = mb_strtolower(trim(mb_substr((string)($_GET['kod'] ?? ''), 0, 40)));
+$kod = mb_strtolower(trim(mb_substr(retezec($_GET['kod'] ?? ''), 0, 40)));
 if ($kod === '') konec(['ok' => false]);
 if (!limit('skupina', 30, 3600)) konec(['ok' => false, 'limit' => true], 429);
 

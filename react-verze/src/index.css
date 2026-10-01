@@ -11,7 +11,7 @@
   --color-line: #dfd7c9;
   --color-ink: #1d231c;
   --color-ink-soft: #4b5448;
-  --color-muted: #7c8478;
+  --color-muted: #636b5f; /* ≥ 4,5 : 1 i na paper-2 (drobné písmo) */
   --color-leaf: #2f5a33;
   --color-leaf-dark: #213f24;
   --color-forest: #17241a;
@@ -28,7 +28,8 @@
 
 @layer base {
   html {
-    font-size: 17px;
+    /* Relativně, ať platí i větší písmo nastavené v prohlížeči (17 px při výchozích 16 px). */
+    font-size: 106.25%;
     scroll-behavior: smooth;
     /* Anchor targets stop below the fixed nav */
     scroll-padding-top: 5rem;
@@ -43,7 +44,7 @@
     font-feature-settings: "kern", "liga";
   }
   @media (max-width: 640px) {
-    html { font-size: 16px; }
+    html { font-size: 100%; }
   }
   h1, h2, h3 {
     font-family: var(--font-serif);
@@ -59,6 +60,12 @@
   :focus-visible {
     outline: 2px solid var(--color-leaf);
     outline-offset: 2px;
+  }
+  /* Na tmavém pozadí (lišta, úvodní fotka, patička, lightbox) by zelený rámeček nebyl vidět. */
+  .bg-forest :focus-visible,
+  .bg-leaf :focus-visible,
+  .bg-black\/95 :focus-visible {
+    outline-color: #fff;
   }
 }
 
@@ -83,13 +90,21 @@
   }
   .link { @apply font-semibold text-leaf underline decoration-leaf/30 underline-offset-4 hover:decoration-leaf; }
 
+  /* Na mobilu 16 px, jinak iPhone při psaní stránku přiblíží. */
   .field {
-    @apply w-full rounded-md border border-line bg-white px-3.5 py-2.5 text-[0.95rem] text-ink
+    @apply w-full rounded-md border border-line bg-white px-3.5 py-2.5 text-base sm:text-[0.95rem] text-ink
       placeholder:text-muted/70 focus:border-leaf focus:ring-2 focus:ring-leaf/15 focus:outline-none;
   }
   .label { @apply mb-1.5 block text-sm font-medium text-ink-soft; }
   .panel { @apply rounded-lg border border-line bg-white; }
   .tag { @apply inline-block rounded bg-paper-2 px-2 py-0.5 text-xs font-medium text-ink-soft; }
+}
+
+/* Pole, která si vlastní třídou vypínají obrys (focus:outline-none) a náhradu mají skoro
+   neviditelnou: zřetelný zelený rámeček při fokusu. Mimo vrstvy, takže přebije utility. */
+:is(input, select, textarea).focus\:outline-none:focus-visible {
+  outline: 2px solid var(--color-leaf);
+  outline-offset: -1px;
 }
 
 @media (prefers-reduced-motion: reduce) {

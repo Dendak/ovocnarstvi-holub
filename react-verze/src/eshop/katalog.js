@@ -114,6 +114,9 @@ const produktyOvoce = DRUHY_OVOCE.flatMap(d => {
     fotoInfo: vlastni || null,
     vSezone,
     dostupne: vSezone && o.dostupne !== false && vNabidce(d.nazev, o.nazev),
+    // Pro kontrolu na serveru (cenikProServer): sezóna se tam počítá ke dni objednávky, ne ke dni sestavení webu.
+    sezonaOdDo: d.zdroj && !d.zdroj.vzdy && d.zdroj.sezonaOd && d.zdroj.sezonaDo ? [d.zdroj.sezonaOd, d.zdroj.sezonaDo] : null,
+    nabizeno: o.dostupne !== false && vNabidce(d.nazev, o.nazev),
     jednotka: 'kg',
     varianty: [{ id: 'kg', label: '1 kg', cena: cenaKg }],
     cenaZaJednotku: cenaKg,
@@ -128,7 +131,7 @@ const MOSTY_FOTO = {
   zdroj: 'https://commons.wikimedia.org/wiki/File:Apple_juice_with_3apples.jpg',
 }
 // Jedna položka „Domácí mošt“: zákazník volí příchuť a velikost balení (místo karty pro každou příchuť).
-const VELIKOSTI = [{ id: '3l', label: '3 l', klic: 'cena3l' }, { id: '5l', label: '5 l', klic: 'cena5l' }]
+const VELIKOSTI = [{ id: '3l', label: '3 l', litry: 3, klic: 'cena3l' }, { id: '5l', label: '5 l', litry: 5, klic: 'cena5l' }]
 const prichute = OBSAH.mosty.skupiny.flatMap(sk => sk.polozky.map(p => {
   const nazev = p.nazev.replace(/^\p{Extended_Pictographic}\s*/u, '')
   return {
@@ -156,12 +159,14 @@ const produktyMosty = [{
   dostupne: prichute.some(p => p.dostupne),
   jednotka: 'ks',
   prichute,
-  velikosti: VELIKOSTI.map(({ id, label }) => ({ id, label })),
+  velikosti: VELIKOSTI.map(({ id, label, litry }) => ({ id, label, litry })),
   varianty: prichute.filter(p => p.dostupne).flatMap(p => VELIKOSTI.map(v => ({
-    id: `${p.id}-${v.id}`, label: v.label, nazev: p.nazevPolozky, cena: p.ceny[v.id],
+    id: `${p.id}-${v.id}`, label: v.label, nazev: p.nazevPolozky, cena: p.ceny[v.id], litry: v.litry,
   }))),
   cenaZaJednotku: null,
   cenaOd: Math.min(...prichute.filter(p => p.dostupne).flatMap(p => Object.values(p.ceny))),
+  // nejnižší cena za litr (jednotková cena u balení)
+  cenaOdLitr: Math.min(...prichute.filter(p => p.dostupne).flatMap(p => VELIKOSTI.map(v => p.ceny[v.id] / v.litry))),
 }]
 
 // Bedýnky jen pro zákaznickou skupinu: pevná váha za pevnou cenu, složená z odrůd, které jsou
@@ -213,6 +218,20 @@ export function variantaBedynky(produkt, klic) {
 
 export const PRODUKTY = [...produktyBedynka, ...produktyOvoce, ...produktyMosty]
 
+// Ceník pro server (api/_cenik.php – vytváří ho vite.config.js při sestavení webu): api/potvrzeni.php podle něj
+// přepočítá každou objednávku, ceny v prohlížeči jsou jen pro zobrazení. Klíče jsou stejné jako v košíku
+// („produkt|varianta“), ceny základní – ceny a bedýnky skupin server počítá sám podle api/_skupiny.php.
+// sezona ([[měsíc, den], [měsíc, den]] nebo null = celoročně) a nabizeno (false = mimo aktuální nabídku)
+// server nepoužívá k odmítnutí – objednávku mimo nabídku jen označí farmě k ověření.
+export function cenikProServer() {
+  if (SKUPINA) throw new Error('Ceník pro server se počítá bez zákaznické skupiny.')
+  return Object.fromEntries(PRODUKTY.filter(p => !p.bedynka).map(p => [p.id, {
+    druh: p.druh, druhNazev: p.druhNazev, nazev: p.nazev, jednotka: p.jednotka,
+    sezona: p.sezonaOdDo ?? null, nabizeno: p.nabizeno ?? true,
+    varianty: Object.fromEntries(p.varianty.map(v => [v.id, { label: v.label, nazev: nazevPolozky(p, v), cena: v.cena ?? null }])),
+  }]))
+}
+
 // Nabídka jen pro zákaznickou skupinu: bedýnky a vše se zvýhodněnou cenou.
 export const jeProSkupinu = p => !!p.bedynka || p.cenaBezna != null
 
@@ -223,7 +242,7 @@ export const KATEGORIE = [
 ]
 
 export const DORUCENI = {
-  odber: { label: 'Osobní odběr', detail: 'Krtely 70, Netolice – ve zvolený den' },
+  odber: { label: 'Osobní odběr', detail: `${OBSAH.kontakt.adresa}, ${OBSAH.kontakt.mesto} – ve zvolený den` },
   rozvoz: { label: 'Dovoz až domů', detail: 'České Budějovice a okolí · doprava v ceně · pondělí, středa, pátek dopoledne' },
 }
 
@@ -249,3 +268,19 @@ export function radekPolozky(p) {
 export function formatKc(n) {
   return n == null ? null : `${n.toLocaleString('cs-CZ')} Kč`
 }
+
+// Jednotková cena u balení (zákon o cenách): „36,67 Kč/l“, „30 Kč/kg“.
+export function formatJednotkovaCena(cena, mnozstvi, jednotka) {
+  if (cena == null || !mnozstvi) return null
+  const n = cena / mnozstvi
+  const text = n.toLocaleString('cs-CZ', Number.isInteger(n) ? {} : { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+  return `${text} Kč/${jednotka}`
+}
+
+// České tvary: 1 položka, 2–4 položky, 5 a víc položek.
+export function sklonovat(n, jedna, dveAzCtyri, pet) {
+  return `${n} ${n === 1 ? jedna : n >= 2 && n <= 4 ? dveAzCtyri : pet}`
+}
+
+// Hledání bez ohledu na diakritiku a velikost písmen.
+export const bezDiakritiky = s => String(s).normalize('NFD').replace(/\p{M}/gu, '').toLowerCase()

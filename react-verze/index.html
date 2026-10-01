@@ -2,42 +2,73 @@
 <html lang="cs">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <script>
+      // Web má jednu adresu: www.ovoce-holub.cz → ovoce-holub.cz (jinak by se košík a přihlášení rozdělily).
+      if (location.hostname === 'www.ovoce-holub.cz') location.replace('https://ovoce-holub.cz' + location.pathname + location.search + location.hash)
+      document.documentElement.classList.add('js')
+    </script>
+    <script nomodule>document.documentElement.classList.remove('js')</script>
+    <style>.js .bez-js { display: none }</style>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#17241a" />
-    <title>Ovocnářství Holub – čerstvé ovoce a mošty z Krtel</title>
-    <meta name="description" content="Rodinné ovocnářství v Krtelích u Netolic. Třešně, višně, meruňky, hrušky, švestky, jablka a domácí mošty. Přímý prodej a rozvoz do Českých Budějovic." />
+    <title>Ovoce a mošty ze sadu u Netolic | Ovocnářství Holub</title>
+    <meta name="description" content="Rodinné ovocnářství v Krtelích u Netolic. Jablka, hrušky, švestky, třešně, višně a domácí mošty. Objednávka online, dovoz do Českých Budějovic v po, st a pá." />
     <link rel="canonical" href="https://ovoce-holub.cz/" />
     <link rel="alternate" hreflang="cs" href="https://ovoce-holub.cz/" />
     <link rel="alternate" hreflang="de" href="https://ovoce-holub.cz/index-de.html" />
     <link rel="alternate" hreflang="x-default" href="https://ovoce-holub.cz/" />
+    <link rel="icon" type="image/svg+xml" href="%BASE_URL%favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="%BASE_URL%favicon-32.png" />
+    <link rel="apple-touch-icon" href="%BASE_URL%apple-touch-icon.png" />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Ovocnářství Holub – čerstvé ovoce a mošty z Krtel" />
-    <meta property="og:description" content="Rodinné ovocnářství v Krtelích u Netolic. Čerstvé ovoce z vlastního 30ha sadu a domácí mošty. Rozvoz do Českých Budějovic." />
-    <meta property="og:image" content="https://ovoce-holub.cz/img/sad/504681257_4078182002327026_6055659733487249673_n.jpg" />
+    <meta property="og:site_name" content="Ovocnářství Holub" />
+    <meta property="og:title" content="Ovoce a mošty ze sadu u Netolic | Ovocnářství Holub" />
+    <meta property="og:description" content="Rodinné ovocnářství v Krtelích u Netolic. Čerstvé ovoce z vlastního 30ha sadu a domácí mošty. Dovoz do Českých Budějovic." />
+    <meta property="og:image" content="https://ovoce-holub.cz/img/og-ovoce-holub.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Traktor v kvetoucím třešňovém sadu Ovocnářství Holub" />
     <meta property="og:url" content="https://ovoce-holub.cz/" />
     <meta property="og:locale" content="cs_CZ" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <!-- Úvodní fotka (největší prvek stránky) se stahuje hned, ne až po JavaScriptu. Stejné adresy jako v HeroBlock.jsx. -->
+    <link rel="preload" as="image" fetchpriority="high" href="%BASE_URL%img/sad/504681257_4078182002327026_6055659733487249673_n.jpg"
+      imagesrcset="%BASE_URL%img/sad/_w480/504681257_4078182002327026_6055659733487249673_n.webp 480w, %BASE_URL%img/sad/_w960/504681257_4078182002327026_6055659733487249673_n.webp 960w, %BASE_URL%img/sad/504681257_4078182002327026_6055659733487249673_n.jpg 1200w"
+      imagesizes="100vw" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Newsreader:wght@400;500;600&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "LocalBusiness",
+      "@id": "https://ovoce-holub.cz/#firma",
       "name": "Ovocnářství Holub",
-      "description": "Rodinné ovocnářství – čerstvé ovoce a domácí mošty přímo ze sadu.",
+      "alternateName": "Obstbauernhof Holub",
+      "legalName": "Pavel Holub",
+      "description": "Rodinné ovocnářství v Krtelích u Netolic – čerstvé ovoce a domácí mošty přímo ze sadu, dovoz do Českých Budějovic.",
       "url": "https://ovoce-holub.cz/",
+      "logo": "https://ovoce-holub.cz/img/logo.png",
+      "image": "https://ovoce-holub.cz/img/og-ovoce-holub.jpg",
       "telephone": "+420607575271",
       "email": "info@ovoce-holub.cz",
+      "vatID": "CZ6803300394",
+      "identifier": { "@type": "PropertyValue", "propertyID": "IČO", "value": "12320030" },
       "address": {
         "@type": "PostalAddress",
         "streetAddress": "Krtely 70",
-        "addressLocality": "Netolice",
+        "addressLocality": "Malovice",
         "postalCode": "384 11",
+        "addressRegion": "Jihočeský kraj",
         "addressCountry": "CZ"
       },
       "geo": { "@type": "GeoCoordinates", "latitude": 49.0826258, "longitude": 14.1703712 },
-      "image": "https://ovoce-holub.cz/img/sad/504681257_4078182002327026_6055659733487249673_n.jpg",
+      "hasMap": "https://www.google.com/maps/place/Ovocn%C3%A1%C5%99stv%C3%AD+Holub/@49.0826258,14.1677963,17z/data=!4m6!3m5!1s0x4774ad0019e39f15:0xf1e2281c3b44a6c7!8m2!3d49.0826258!4d14.1703712!16s%2Fg%2F11xfhkf620",
+      "areaServed": ["České Budějovice", "Netolice", "Oberösterreich", "Salzburg"],
+      "contactPoint": [
+        { "@type": "ContactPoint", "contactType": "customer service", "telephone": "+420607575271", "email": "info@ovoce-holub.cz", "availableLanguage": ["cs"] },
+        { "@type": "ContactPoint", "contactType": "sales", "telephone": "+436787916433", "areaServed": "AT", "availableLanguage": ["de"] }
+      ],
       "sameAs": [
         "https://www.facebook.com/OvoceHolub",
         "https://www.instagram.com/ovocnarstviholub"
@@ -46,21 +77,52 @@
     </script>
   </head>
   <body>
-    <script>
-      // Auto-redirect German/Austrian visitors to German page (once)
-      if (!sessionStorage.getItem('lang_chosen')) {
-        var lang = (navigator.language || navigator.userLanguage || '').toLowerCase();
-        if (lang.startsWith('de')) {
-          sessionStorage.setItem('lang_chosen', 'de');
-          var base = document.querySelector('base');
-          var basePath = base ? base.getAttribute('href') : '/';
-          window.location.replace(basePath + 'index-de.html');
-        } else {
-          sessionStorage.setItem('lang_chosen', 'cs');
-        }
-      }
-    </script>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Obsah pro prohlížeče a roboty bez JavaScriptu; aplikace ho po načtení nahradí. -->
+      <div class="bez-js">
+        <header>
+          <p><a href="%BASE_URL%">Ovocnářství Holub</a> – rodinné ovocnářství v Krtelích u Netolic</p>
+          <nav aria-label="Menu">
+            <a href="%BASE_URL%eshop.html">E-shop</a> ·
+            <a href="#kontakt">Kontakt</a> ·
+            <a href="%BASE_URL%index-de.html" hreflang="de" lang="de">Deutsch – für Brennereien</a>
+          </nav>
+        </header>
+        <main>
+          <h1>Ovoce a mošty přímo z našeho sadu</h1>
+          <p>
+            Jablka, hrušky, švestky, třešně, višně a další ovoce z vlastních třiceti hektarů v Krtelích
+            u Netolic. Objednáte online v e-shopu a v pondělí, středu nebo pátek vám ho přivezeme až domů
+            do Českých Budějovic. Doprava je v ceně. Osobní odběr je možný přímo v sadu.
+          </p>
+          <h2>Naše ovoce</h2>
+          <ul>
+            <li>Třešně a višně – červenec a začátek srpna</li>
+            <li>Meruňky a broskve – červenec až září</li>
+            <li>Švestky – srpen až polovina října</li>
+            <li>Hrušky – sklizeň srpen až říjen, ze skladu do ledna</li>
+            <li>Jablka, přes 15 odrůd – sklizeň září až říjen, ze skladu do jara</li>
+          </ul>
+          <h2>Domácí mošty</h2>
+          <p>Z jablek z vlastního sadu, bez přidaného cukru a konzervantů, v bag-in-boxech po 3 a 5 litrech.</p>
+          <p><a href="%BASE_URL%eshop.html">Objednat ovoce a mošty v e-shopu</a></p>
+          <h2 id="kontakt">Kontakt</h2>
+          <address>
+            Ovocnářství Holub – Pavel Holub<br />
+            Krtely 70, 384 11 Malovice (Krtely u Netolic)<br />
+            Telefon: <a href="tel:+420607575271">+420 607 575 271</a>, <a href="tel:+420722949299">+420 722 949 299</a><br />
+            E-mail: <a href="mailto:info@ovoce-holub.cz">info@ovoce-holub.cz</a>
+          </address>
+        </main>
+        <footer>
+          <p>IČO 12320030 · DIČ CZ6803300394 (plátce DPH)</p>
+          <p>
+            <a href="%BASE_URL%obchodni-podminky.html">Obchodní podmínky</a> ·
+            <a href="%BASE_URL%gdpr.html">Ochrana osobních údajů</a>
+          </p>
+        </footer>
+      </div>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

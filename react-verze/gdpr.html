@@ -1,150 +1,345 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="cs">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Zásady ochrany osobních údajů – Ovocnářství Holub</title>
-  <script src="https://cdn.tailwindcss.com"></script>
   <script>
-    tailwind.config = { theme: { extend: { colors: { brand: { 50:'#f8f5ef',100:'#efe9de',600:'#2f5a33',700:'#2f5a33',800:'#1d231c' } }, fontFamily: { serif: ['"Newsreader"','Georgia','serif'] } } } }
+    // Web má jednu adresu: www.ovoce-holub.cz → ovoce-holub.cz
+    if (location.hostname === 'www.ovoce-holub.cz') location.replace('https://ovoce-holub.cz' + location.pathname + location.search + location.hash)
   </script>
-  <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet" />
-  <style>body{font-family:'Source Sans 3',system-ui,sans-serif;background:#f8f5ef;color:#1d231c}h1,h2,h3{font-weight:500!important}</style>
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#17241a" />
+  <title>Ochrana osobních údajů – Ovocnářství Holub</title>
+  <meta name="description" content="Jak Ovocnářství Holub zachází s osobními údaji: objednávky v e-shopu, zákaznický účet, platby, dotazy, cookies a vaše práva." />
+  <link rel="canonical" href="https://ovoce-holub.cz/gdpr.html" />
+  <link rel="icon" type="image/svg+xml" href="%BASE_URL%favicon.svg" />
+  <link rel="icon" type="image/png" sizes="32x32" href="%BASE_URL%favicon-32.png" />
+  <link rel="apple-touch-icon" href="%BASE_URL%apple-touch-icon.png" />
+  <!-- Stránka je záměrně bez písem a skriptů z cizích serverů: vzhled webu napodobuje vlastním CSS. -->
+  <style>
+    :root{--paper:#f8f5ef;--paper-2:#efe9de;--line:#dfd7c9;--ink:#1d231c;--ink-soft:#4b5448;--muted:#636b5f;--leaf:#2f5a33;--leaf-dark:#213f24;--forest:#17241a;--serif:"Newsreader",Georgia,"Times New Roman",serif;--sans:"Source Sans 3",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+    *,*::before,*::after{box-sizing:border-box}
+    html{font-size:106.25%;-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+    @media (max-width:640px){html{font-size:100%}}
+    @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+    body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-wrap:break-word}
+    a{color:var(--leaf);text-underline-offset:.15em}
+    a:hover{color:var(--leaf-dark)}
+    :focus-visible{outline:2px solid var(--leaf);outline-offset:2px}
+    .obal{width:100%;max-width:48rem;margin:0 auto;padding:0 1rem}
+    @media (min-width:640px){.obal{padding:0 2rem}}
+    .preskocit{position:absolute;left:1rem;top:-10rem;z-index:10;background:#fff;color:var(--ink);padding:.6rem 1rem;border-radius:6px}
+    .preskocit:focus{top:.5rem}
+    .hlavicka,.paticka{background:var(--forest);color:rgba(255,255,255,.8)}
+    .hlavicka :focus-visible,.paticka :focus-visible{outline-color:#fff}
+    .hlavicka .obal{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:0 1.5rem;padding-top:.4rem;padding-bottom:.4rem}
+    .znacka{font-family:var(--serif);font-size:1.3rem;color:#fff;text-decoration:none;padding:.45rem 0}
+    .hlavicka ul,.paticka ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:0 1.25rem}
+    .hlavicka li,.paticka li{margin:0}
+    .hlavicka a:not(.znacka),.paticka a{display:inline-block;padding:.55rem 0;color:rgba(255,255,255,.9)}
+    .hlavicka a:hover,.paticka a:hover{color:#fff}
+    main{display:block;padding:2.5rem 0 3.5rem}
+    main:focus{outline:none}
+    h1,h2,h3{font-family:var(--serif);font-weight:500;line-height:1.2;letter-spacing:-.01em;color:var(--ink);text-wrap:balance}
+    h1{font-size:clamp(1.9rem,6vw,2.5rem);margin:0 0 .4rem}
+    h2{font-size:1.5rem;margin:2.75rem 0 .8rem;padding-top:1.75rem;border-top:1px solid var(--line);scroll-margin-top:1rem}
+    h3{font-size:1.18rem;margin:1.6rem 0 .4rem}
+    p{margin:0 0 .9rem;text-wrap:pretty}
+    ul,ol{margin:0 0 1rem;padding-left:1.35rem}
+    li{margin:.35rem 0}
+    strong{font-weight:600}
+    .platnost{color:var(--muted);margin:0 0 1.5rem}
+    .kostce{background:#fff;border:1px solid var(--line);border-radius:8px;padding:1.1rem 1.25rem .35rem;margin:1.5rem 0 1.25rem}
+    .kostce h2,.rejstrik h2{font-family:var(--sans);font-weight:600;font-size:1.1rem;margin:0 0 .5rem;padding:0;border:0;letter-spacing:0}
+    .rejstrik{background:var(--paper-2);border-radius:8px;padding:1rem 1.25rem .35rem;margin:0 0 1rem}
+    .rejstrik ol{columns:2 15rem;column-gap:2rem;margin:0 0 .6rem}
+    .rejstrik li{break-inside:avoid;margin:0}
+    .rejstrik a{display:inline-block;padding:.25rem 0}
+    .karta{background:#fff;border:1px solid var(--line);border-radius:8px;padding:1rem 1.25rem .2rem;margin:.9rem 0}
+    .karta h3{margin-top:0}
+    .pozn{color:var(--ink-soft);font-size:.95rem}
+    .adresa{font-style:normal;margin:0 0 1rem}
+    .tlacitka{display:flex;flex-wrap:wrap;gap:.6rem;margin:.25rem 0 1rem}
+    .tl{font:inherit;font-weight:600;min-height:44px;padding:.55rem 1.1rem;border-radius:6px;border:1px solid var(--leaf);background:var(--leaf);color:#fff;cursor:pointer}
+    .tl.obrys{background:#fff;color:var(--leaf)}
+    .tl:hover{background:var(--leaf-dark);border-color:var(--leaf-dark);color:#fff}
+    .paticka{padding:1.75rem 0 2.25rem;font-size:.95rem}
+    .paticka p{margin:0 0 .5rem}
+    @media print{
+      .preskocit,.hlavicka nav,.paticka ul,.rejstrik,.tlacitka{display:none!important}
+      body{background:#fff}
+      .hlavicka,.paticka{background:none;color:#000}
+      .znacka{color:#000}
+      .kostce,.karta{border-color:#999}
+      a{color:inherit}
+      h2,h3{break-after:avoid}
+    }
+  </style>
 </head>
 <body>
+  <a class="preskocit" href="#obsah">Přeskočit na obsah</a>
 
-  <nav class="text-white" style="background:#17241a">
-    <div class="max-w-3xl mx-auto px-4 py-3 flex items-center gap-4">
-      <a href="index.html" class="text-white/70 hover:text-white text-sm">← Zpět na web</a>
-      <span class="text-white/30">|</span>
-      <span class="font-serif">Ovocnářství Holub</span>
+  <header class="hlavicka">
+    <div class="obal">
+      <a class="znacka" href="./">Ovocnářství Holub</a>
+      <nav aria-label="Odkazy webu">
+        <ul>
+          <li><a href="./">Úvodní stránka</a></li>
+          <li><a href="eshop.html">E-shop</a></li>
+          <li><a href="obchodni-podminky.html">Obchodní podmínky</a></li>
+        </ul>
+      </nav>
     </div>
-  </nav>
+  </header>
 
-  <main class="max-w-3xl mx-auto px-6 py-12">
-    <h1 class="font-serif text-3xl font-bold text-brand-800 mb-8">Zásady ochrany osobních údajů</h1>
+  <main id="obsah" tabindex="-1">
+    <div class="obal">
+      <h1>Ochrana osobních údajů</h1>
+      <p class="platnost">Platné od 30.&nbsp;9.&nbsp;2026</p>
 
-    <div class="bg-white rounded-lg border border-[#dfd7c9] p-6 sm:p-8 space-y-8 text-sm leading-relaxed text-gray-700">
-
-      <section>
-        <h2 class="font-semibold text-brand-800 text-base mb-2">1. Správce osobních údajů</h2>
-        <p>Správcem osobních údajů je:</p>
-        <p class="mt-2 font-medium">Pavel Holub – Ovocnářství Holub<br>Krtely 70, 384 11 Malovice<br>IČO: 12320030<br>E-mail: info@ovoce-holub.cz<br>Tel: 607 575 271</p>
-      </section>
-
-      <section>
-        <h2 class="font-semibold text-brand-800 text-base mb-2">2. Jaké údaje zpracováváme a proč</h2>
-        <p class="font-medium">Objednávka v e-shopu</p>
-        <ul class="list-disc ml-5 mt-2 space-y-1">
-          <li>jméno a příjmení, e-mail, telefon, adresa dovozu, obsah objednávky, zvolený termín, poznámka a údaje o platbě (variabilní symbol, částka, datum úhrady)</li>
-        </ul>
-        <p class="mt-2">Údaje potřebujeme k vyřízení objednávky: potvrzení e-mailem, přípravě zboží, doručení nebo předání, spárování platby a vystavení účtenky. Objednávky ukládáme na našem webhostingu a přijdou nám e-mailem.</p>
-
-        <p class="font-medium mt-4">Zákaznický účet (nepovinný)</p>
-        <ul class="list-disc ml-5 mt-2 space-y-1">
-          <li>e-mail, heslo (uložené pouze v zašifrované podobě), jméno, telefon, adresa a historie objednávek</li>
-        </ul>
-        <p class="mt-2">Účet slouží k tomu, abyste viděli své objednávky a nemuseli údaje vyplňovat znovu. Nakoupit lze i bez účtu.</p>
-
-        <p class="font-medium mt-4">Přihlášení přes Seznam, Google nebo Microsoft</p>
-        <p class="mt-2">Pokud se přihlásíte účtem u některé z těchto služeb, předá nám služba pouze vaši <strong>e-mailovou adresu, jméno a svůj vnitřní identifikátor účtu</strong> (u některých služeb i profilový obrázek). Vaše heslo k těmto službám se k nám nikdy nedostane a nežádáme přístup k vaší poště, kontaktům ani jiným datům.</p>
-        <p class="mt-2">Takto získané údaje používáme <strong>výhradně k vytvoření a provozu vašeho zákaznického účtu a k vyřízení objednávek</strong>. Neprodáváme je, nepředáváme je k reklamním účelům ani je nepoužíváme k cílení reklamy. Používání údajů získaných z rozhraní Google se řídí zásadami <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener" class="text-brand-600 underline">Google API Services User Data Policy</a> včetně požadavků na omezené použití (Limited Use).</p>
-
-        <p class="font-medium mt-4">Kontaktní a poptávkový formulář</p>
-        <ul class="list-disc ml-5 mt-2 space-y-1">
-          <li>jméno, e-mail nebo telefon a text zprávy – jen k odpovědi na váš dotaz</li>
+      <section class="kostce" aria-labelledby="kostce">
+        <h2 id="kostce">V kostce</h2>
+        <ul>
+          <li>Údaje z objednávky používáme jen k tomu, abychom vám ovoce a mošty předali nebo dovezli, přijali platbu a vystavili doklad.</li>
+          <li>Údaje neprodáváme, reklamu vám neposíláme a na webu nepoužíváme analytické ani reklamní cookies.</li>
+          <li>Objednávky ukládáme na našem webhostingu v České republice.</li>
+          <li>Kdykoli se nás můžete zeptat, co o vás víme, nebo požádat o opravu či smazání: <a href="mailto:info@ovoce-holub.cz">info@ovoce-holub.cz</a>, <a href="tel:+420607575271">+420&nbsp;607&nbsp;575&nbsp;271</a>.</li>
         </ul>
       </section>
 
-      <section>
-        <h2 class="font-semibold text-brand-800 text-base mb-2">3. Právní základ zpracování</h2>
-        <ul class="list-disc ml-5 space-y-1">
-          <li><strong>Plnění smlouvy</strong> (čl. 6 odst. 1 písm. b) GDPR) – objednávky, doručení, platby a zákaznický účet.</li>
-          <li><strong>Právní povinnost</strong> (písm. c) – účetní a daňové doklady.</li>
-          <li><strong>Oprávněný zájem</strong> (písm. f) – odpověď na dotaz z formuláře, ochrana webu před zneužitím.</li>
-          <li><strong>Souhlas</strong> (písm. a) – cookies a vložený obsah třetích stran (mapa, Facebook).</li>
-        </ul>
-      </section>
+      <nav class="rejstrik" aria-labelledby="rejstrik">
+        <h2 id="rejstrik">Obsah</h2>
+        <ol>
+          <li><a href="#spravce">Kdo údaje zpracovává</a></li>
+          <li><a href="#objednavka">Objednávka v e-shopu</a></li>
+          <li><a href="#ucet">Zákaznický účet</a></li>
+          <li><a href="#skupiny">Zákaznické skupiny s kódem</a></li>
+          <li><a href="#platby">Platby a účtenky</a></li>
+          <li><a href="#dotazy">Dotazy a zprávy</a></li>
+          <li><a href="#prijemci">Komu údaje předáváme</a></li>
+          <li><a href="#doba">Jak dlouho údaje uchováváme</a></li>
+          <li><a href="#cookies">Cookies, písma a obsah třetích stran</a></li>
+          <li><a href="#zabezpeceni">Zabezpečení</a></li>
+          <li><a href="#prava">Vaše práva</a></li>
+          <li><a href="#zmeny">Změny zásad</a></li>
+        </ol>
+      </nav>
+      <p class="pozn" lang="de">Deutsche Kurzfassung für unsere Seite für Brennereien: <a href="gdpr-de.html" hreflang="de">Datenschutzhinweise</a>.</p>
 
-      <section>
-        <h2 class="font-semibold text-brand-800 text-base mb-2">4. Jak dlouho údaje uchováváme</h2>
-        <ul class="list-disc ml-5 space-y-1">
-          <li>Objednávky a účtenky po dobu, kterou ukládají účetní a daňové předpisy (daňové doklady 10 let).</li>
-          <li>Zákaznický účet do jeho zrušení. O zrušení účtu a smazání údajů můžete kdykoli požádat na info@ovoce-holub.cz; smažeme vše, co nemusíme uchovat ze zákona.</li>
-          <li>Zprávy z formulářů nejdéle 1 rok od vyřízení.</li>
-        </ul>
-      </section>
+      <h2 id="spravce">1. Kdo údaje zpracovává</h2>
+      <p>Správcem osobních údajů je:</p>
+      <address class="adresa">
+        <strong>Pavel Holub – Ovocnářství Holub</strong><br />
+        Krtely 70, 384 11 Malovice<br />
+        IČO 12320030, DIČ CZ6803300394<br />
+        E-mail: <a href="mailto:info@ovoce-holub.cz">info@ovoce-holub.cz</a><br />
+        Telefon: <a href="tel:+420607575271">+420&nbsp;607&nbsp;575&nbsp;271</a>
+      </address>
+      <p>Jsme malý rodinný podnik a pověřence pro ochranu osobních údajů jmenovat nemusíme. S čímkoli se obracejte přímo na nás.</p>
 
-      <section>
-        <h2 class="font-semibold text-brand-800 text-base mb-2">5. Komu údaje předáváme</h2>
-        <p>Údaje neprodáváme. Předáváme je jen zpracovatelům a službám nutným k provozu webu a e-shopu:</p>
-        <div class="mt-3 space-y-3">
-          <div class="bg-gray-50 rounded-xl p-4">
-            <p class="font-medium">WEDOS Internet, a.s.</p>
-            <p class="text-gray-500 mt-1">Webhosting a e-mail – jsou zde uloženy objednávky a odesílají se odtud potvrzovací e-maily.</p>
-          </div>
-          <div class="bg-gray-50 rounded-xl p-4">
-            <p class="font-medium">Supabase, Inc.</p>
-            <p class="text-gray-500 mt-1">Provoz zákaznických účtů (přihlášení, profil, historie objednávek přihlášených zákazníků).</p>
-          </div>
-          <div class="bg-gray-50 rounded-xl p-4">
-            <p class="font-medium">Seznam.cz, a.s. · Google · Microsoft</p>
-            <p class="text-gray-500 mt-1">Jen pokud se rozhodnete přihlásit jejich účtem. Služba se při přihlášení dozví, že se přihlašujete do našeho e-shopu.</p>
-          </div>
-          <div class="bg-gray-50 rounded-xl p-4">
-            <p class="font-medium">Formsubmit.co</p>
-            <p class="text-gray-500 mt-1">Doručení objednávky a zpráv z formulářů na náš e-mail.</p>
-          </div>
-          <div class="bg-gray-50 rounded-xl p-4">
-            <p class="font-medium">ČÚZK (registr adres RÚIAN), OpenStreetMap a OSRM</p>
-            <p class="text-gray-500 mt-1">Ověření adresy dovozu a naplánování trasy rozvozu. Předává se pouze adresa, bez jména a dalších údajů.</p>
-          </div>
-          <div class="bg-gray-50 rounded-xl p-4">
-            <p class="font-medium">Česká spořitelna, a.s.</p>
-            <p class="text-gray-500 mt-1">Při platbě převodem – banka nám sdělí částku, variabilní symbol a číslo účtu plátce.</p>
-          </div>
+      <h2 id="objednavka">2. Objednávka v e-shopu</h2>
+      <h3>Jaké údaje</h3>
+      <ul>
+        <li>jméno a příjmení (při nákupu na firmu název firmy a případně IČO), e-mail a telefon,</li>
+        <li>u dovozu adresu a poznámku k doručení (např. „zvonit na Novákovi“); u adresy nalezené v registru adres také její polohu (souřadnice),</li>
+        <li>obsah objednávky a cenu, zvolený den, způsob převzetí a platby, číslo objednávky a variabilní symbol,</li>
+        <li>průběh vyřízení: kdy jsme objednávku doručili nebo předali, zda je zaplacená a případně číslo účtenky.</li>
+      </ul>
+      <h3>Proč a na jakém základě</h3>
+      <p>Abychom objednávku připravili, předali nebo dovezli, potvrdili vám ji e-mailem, spárovali platbu, vystavili doklad a mohli vyřešit případnou reklamaci. Právním základem je <strong>plnění smlouvy</strong> (čl. 6 odst. 1 písm. b) GDPR). Doklady a záznamy o prodeji vedeme, protože nám to ukládají daňové předpisy (<strong>právní povinnost</strong>, písm. c).</p>
+      <p>Bez jména, e-mailu, telefonu a u dovozu bez adresy objednávku vyřídit nemůžeme.</p>
+      <h3>Jak to probíhá</h3>
+      <ul>
+        <li>Objednávka se uloží na našem webhostingu (WEDOS, Česká republika) a přijde nám e-mailem. Vám pošleme potvrzení. Po předání nebo doručení vám přijde ještě krátký e-mail, případně s účtenkou. Aby web nešlo zahltit ani zneužít k rozesílání e-mailů, počítáme, kolik objednávek přišlo z jedné IP adresy a kolik potvrzení odešlo na jednu e-mailovou adresu. Ukládáme přitom jen otisk (hash) IP adresy a e-mailu (<strong>oprávněný zájem</strong> na ochraně webu, písm. f).</li>
+        <li>Adresu při psaní našeptáváme a ověřujeme v oficiálním registru adres RÚIAN (Český úřad zeměměřický a katastrální). Adresu napsanou bez háčků a čárek dohledáváme přes OpenStreetMap (služba Nominatim). Dotazy posílá náš server, takže tyto služby uvidí jen text adresy, ne vaše jméno ani vaši IP adresu.</li>
+        <li>Rozvoz plánujeme na neveřejné stránce farmy. Souřadnice zastávek (bez jmen a adres) pošleme veřejné službě OSRM, která spočítá nejkratší trasu. Mapa na této stránce se načítá z mapových podkladů OpenStreetMap.</li>
+        <li>Řidič může u zastávky spustit navigaci v Google Maps nebo Waze. Adresa nebo poloha zastávky se tím předá Googlu (Waze patří Googlu).</li>
+        <li>Kdyby náš server objednávku výjimečně nepřijal nebo nám ji nemohl přeposlat e-mailem, pošle nám ji váš prohlížeč náhradní cestou přes službu FormSubmit (viz <a href="#prijemci">Komu údaje předáváme</a>).</li>
+      </ul>
+
+      <h2 id="ucet">3. Zákaznický účet</h2>
+      <p>Účet je dobrovolný, nakoupit můžete i bez něj. Když si ho založíte, zpracováváme:</p>
+      <ul>
+        <li>e-mail a heslo (heslo je uložené jen v zašifrované podobě, my ho neznáme), jméno a příjmení,</li>
+        <li>údaje, které si k účtu uložíte pro příští objednávky: telefon, adresu, případně kód zákaznické skupiny,</li>
+        <li>kopii objednávek odeslaných po přihlášení (číslo, datum, termín, položky a cena), abyste je mohli snadno objednat znovu,</li>
+        <li>technické záznamy o přihlášení (čas a IP adresa), které slouží k zabezpečení účtu.</li>
+      </ul>
+      <p>Účty provozujeme ve službě Supabase. E-shop se se Supabase spojí, až když otevřete přihlášení nebo svůj účet, nebo když už přihlášení jste. Při nákupu bez účtu se nic takového neděje.</p>
+      <p>V přehledu „Moje objednávky“ vidíte i aktuální stav objednávek (přijatá, zaplacená, doručená nebo vyzvednutá, zrušená), kolik zbývá zaplatit a odkaz na účtenku. Tyto údaje posílá náš webhosting, a to jen přihlášenému účtu a jen u objednávek se stejnou e-mailovou adresou, jakou má účet. Patří k nim i objednávky, které jste na tento e-mail odeslali bez přihlášení. Adresu, telefon ani poznámku přehled neukazuje.</p>
+      <p>Právním základem je <strong>plnění smlouvy</strong>: vedeme účet, o který jste požádali (čl. 6 odst. 1 písm. b) GDPR).</p>
+      <h3>Přihlášení přes Seznam, Google nebo Microsoft</h3>
+      <p>Pokud se přihlásíte účtem u některé z těchto služeb, předá nám služba jen vaši <strong>e-mailovou adresu, jméno a svůj vnitřní identifikátor účtu</strong>, u některých služeb i odkaz na profilový obrázek. Služba se dozví, že se přihlašujete do našeho e-shopu. Vaše heslo k těmto službám se k nám nikdy nedostane a nežádáme přístup k vaší poště, kontaktům ani jiným datům. U přihlášení přes Seznam náš server jednorázově předá Seznamu přístupový klíč, aby od něj tyto údaje získal; klíč nikam neukládáme.</p>
+      <p>Takto získané údaje používáme <strong>výhradně k vytvoření a provozu vašeho zákaznického účtu a k vyřízení objednávek</strong>. Neprodáváme je, nepředáváme je k reklamním účelům ani je nepoužíváme k cílení reklamy. Používání údajů získaných z rozhraní Google se řídí zásadami <a href="https://developers.google.com/terms/api-services-user-data-policy" rel="noopener">Google API Services User Data Policy</a> včetně požadavků na omezené použití (Limited Use).</p>
+      <h3>Zrušení účtu</h3>
+      <p>O zrušení účtu požádejte z e-mailu, se kterým jste účet založili (v účtu je odkaz „Požádat o smazání účtu“), nebo nám zavolejte. Účet smažeme nejpozději do jednoho měsíce, včetně přehledu objednávek v účtu a členství ve skupině. Objednávky, které musíme uchovat kvůli daňovým předpisům, zůstanou jen v evidenci objednávek (viz <a href="#doba">Jak dlouho údaje uchováváme</a>).</p>
+
+      <h2 id="skupiny">4. Zákaznické skupiny s kódem</h2>
+      <p>Některé organizace (například zaměstnavatel nebo spolek) od nás dostaly kód, se kterým jejich lidé nakupují za zvýhodněné ceny a s dovozem na společnou adresu. Když kód zadáte:</p>
+      <ul>
+        <li>kód se uloží k vašemu účtu a ve vašem prohlížeči,</li>
+        <li>do seznamu členů skupiny na našem webhostingu zapíšeme identifikátor vašeho účtu, e-mail a datum přidání. Seznam hlídá, kolik účtů smí kód používat, a vidí ho jen farma,</li>
+        <li>objednávky skupiny vozíme na společnou adresu skupiny a u objednávky je vidět, že jde o skupinu.</li>
+      </ul>
+      <p>Když kód v účtu zrušíte, ze seznamu vás automaticky odebereme. Farma může účet ze skupiny odebrat; pak si pamatujeme jen identifikátor účtu, aby se tento účet nemohl do skupiny znovu přidat.</p>
+      <p>Právní základ: <strong>plnění smlouvy</strong> (skupinové ceny a dovoz, o které žádáte) a náš <strong>oprávněný zájem</strong> hlídat počet účtů, které kód používají (čl. 6 odst. 1 písm. b) a f) GDPR).</p>
+
+      <h2 id="platby">5. Platby a účtenky</h2>
+      <ul>
+        <li><strong>Platba převodem:</strong> po odeslání objednávky vám ukážeme QR kód s číslem našeho účtu a variabilním symbolem. Účet máme u České spořitelny, a.s. O každé příchozí platbě nám banka pošle e-mailové upozornění s částkou, variabilním symbolem, datem, číslem účtu plátce a zprávou pro příjemce. Tyto údaje uložíme k objednávce (podle variabilního symbolu) a pošleme vám potvrzení, že platba dorazila.</li>
+        <li><strong>Platba při převzetí:</strong> platíte řidiči nebo u nás při vyzvednutí. Řidič vám může ukázat i QR kód k platbě převodem.</li>
+        <li><strong>Účtenka (daňový doklad):</strong> obsahuje vaše jméno (u firmy název a IČO), u dovozu adresu, položky, cenu a DPH. Otevřít ji jde jen přes neveřejný odkaz, který vám pošleme e-mailem (se zákaznickým účtem ho najdete i v přehledu „Moje objednávky“).</li>
+      </ul>
+      <p>Právní základ: <strong>plnění smlouvy</strong>; vedení dokladů je naše <strong>právní povinnost</strong> (zákon o DPH).</p>
+
+      <h2 id="dotazy">6. Dotazy a zprávy</h2>
+      <ul>
+        <li><strong>Kontaktní formulář</strong> (česká stránka): jméno, e-mail nebo telefon a text zprávy. <strong>Poptávkový formulář</strong> na německé stránce pro pálenice: jméno nebo název podniku, telefon, e-mail, dodací adresa, druh a množství ovoce a poznámka.</li>
+        <li>Zprávu odešle náš server (WEDOS) e-mailem na naši adresu a odpovídáme vám z e-mailu nebo telefonem. Kvůli ochraně před zneužitím počítáme, kolik zpráv přišlo z jedné IP adresy. IP adresu si přitom neukládáme, jen její otisk (hash), a zhruba po dvou dnech ho mažeme. Formulář má také skryté pole proti robotům.</li>
+        <li>Jen když náš server nefunguje nebo zprávu nemůže odeslat, pošle ji váš prohlížeč náhradní cestou přes službu FormSubmit.</li>
+        <li><strong>E-mail a telefon:</strong> když nám napíšete nebo zavoláte, použijeme váš kontakt a zprávu jen k vyřízení.</li>
+        <li><strong>WhatsApp:</strong> zelené tlačítko WhatsApp je jen odkaz. Nic se přes něj nenačítá, dokud na něj neklepnete. Když nám přes WhatsApp napíšete, zpracovává konverzaci i společnost Meta Platforms Ireland Ltd. podle svých podmínek. My uvidíme vaše telefonní číslo, jméno z profilu a zprávu.</li>
+      </ul>
+      <p>Právní základ: náš <strong>oprávněný zájem</strong> odpovědět na váš dotaz a chránit web před zneužitím (čl. 6 odst. 1 písm. f) GDPR). Týká-li se dotaz objednávky nebo nabídky, jde o <strong>plnění smlouvy</strong> nebo jednání o ní (písm. b).</p>
+
+      <h2 id="prijemci">7. Komu údaje předáváme</h2>
+      <p>Údaje neprodáváme a nepředáváme je k reklamním účelům. Dostanou se jen k těmto příjemcům:</p>
+      <h3>Zpracovatelé, kteří pro nás pracují</h3>
+      <div class="karta">
+        <p><strong>WEDOS Internet, a.s.</strong> (Česká republika) – webhosting a e-mail. Jsou tu uložené objednávky, seznam členů skupin a naše e-mailové schránky. Odtud odcházejí e-maily k objednávkám.</p>
+      </div>
+      <div class="karta">
+        <p><strong>Supabase, Inc.</strong> (USA) – zákaznické účty: přihlášení, uložené údaje, přehled objednávek v účtu a e-maily k účtu (potvrzení registrace, obnova hesla).</p>
+      </div>
+      <div class="karta">
+        <p><strong>FormSubmit</strong> (formsubmit.co) – jen náhradní cesta pro případ, že náš server nefunguje nebo nám objednávku či zprávu nemůže přeposlat: prohlížeč ji pak pošle přes tuto službu na náš e-mail. Služba pracuje mimo EU. Použijeme ji jen výjimečně, aby se vaše objednávka nebo dotaz neztratily (čl. 49 odst. 1 písm. b) GDPR).</p>
+      </div>
+      <h3>Další příjemci</h3>
+      <ul>
+        <li><strong>Seznam.cz, a.s., Google a Microsoft</strong> – jen pokud se jejich účtem přihlásíte.</li>
+        <li><strong>Český úřad zeměměřický a katastrální</strong> (registr adres RÚIAN) a <strong>OpenStreetMap Foundation</strong> (vyhledávání adres Nominatim, mapové podklady) – jen text adresy nebo zobrazená oblast mapy, bez jména.</li>
+        <li><strong>Služba OSRM</strong> (výpočet trasy rozvozu) – jen souřadnice zastávek, bez jmen a adres.</li>
+        <li><strong>Google</strong> (Google Maps a Waze) – adresa nebo poloha zastávky, když řidič spustí navigaci.</li>
+        <li><strong>Česká spořitelna, a.s.</strong> – vede náš účet a posílá nám upozornění na příchozí platby.</li>
+        <li><strong>Google Fonts</strong> – písma webu, viz <a href="#cookies">Cookies, písma a obsah třetích stran</a>.</li>
+        <li><strong>Google Maps a Facebook</strong> (vložená mapa a příspěvky) – jen s vaším souhlasem.</li>
+        <li><strong>WhatsApp</strong> (Meta) – jen pokud nás přes WhatsApp kontaktujete.</li>
+        <li><strong>Úřady a daňový poradce</strong> – jen pokud to vyžaduje zákon nebo je to nutné pro vedení daňové evidence.</li>
+      </ul>
+      <h3>Předání mimo Evropskou unii</h3>
+      <p>Supabase, FormSubmit, Google, Microsoft a Meta mohou údaje zpracovávat i v USA. Google, Microsoft a Meta jsou zapojeny do rámce EU–USA pro ochranu osobních údajů (Data Privacy Framework). U Supabase se předání řídí standardními smluvními doložkami EU ve smlouvě o zpracování osobních údajů. U FormSubmit viz výše. OpenStreetMap Foundation sídlí ve Spojeném království, kde podle rozhodnutí Evropské komise platí odpovídající ochrana údajů.</p>
+
+      <h2 id="doba">8. Jak dlouho údaje uchováváme</h2>
+      <ul>
+        <li><strong>Objednávky a účtenky:</strong> po dobu, kterou nám ukládají daňové předpisy, nejdéle 10 let od konce zdaňovacího období, ve kterém k prodeji došlo (§ 35 zákona č. 235/2004 Sb., o DPH). Požádáte-li nás, údaje, které k tomu nepotřebujeme (například telefon, e-mail nebo poznámku k doručení), smažeme dříve.</li>
+        <li><strong>Zákaznický účet:</strong> dokud ho nezrušíte.</li>
+        <li><strong>Členství ve skupině:</strong> dokud kód používáte.</li>
+        <li><strong>Dotazy a e-maily:</strong> po dobu vyřízení a potom nejdéle 1 rok, pokud z nich nevznikne objednávka nebo jiná smlouva.</li>
+        <li><strong>Záznam o odeslaných e-mailech a chybách</strong> (technický záznam na našem serveru): nejvýše 90 dní a nejvýše posledních 200 záznamů. Obsahuje jen druh e-mailu nebo události, číslo objednávky a zkrácenou adresu příjemce (například j…@s….cz), žádná jména.</li>
+        <li><strong>Ochrana před zneužitím</strong> (kolik objednávek, zpráv a vyhledání adresy přišlo z jedné IP adresy a kolik potvrzení odešlo na jednu e-mailovou adresu): jen otisk IP adresy nebo e-mailu, zhruba 2 dny.</li>
+        <li><strong>Technické záznamy serveru</strong> (IP adresa, čas a otevřená stránka) uchovává provozovatel hostingu jen krátce, kvůli provozu a bezpečnosti.</li>
+      </ul>
+
+      <h2 id="cookies">9. Cookies, písma a obsah třetích stran</h2>
+      <p>Web nepoužívá analytické ani reklamní cookies a nesleduje vás napříč weby.</p>
+      <h3>Nezbytné údaje v prohlížeči (bez souhlasu)</h3>
+      <p>Následující údaje si ukládá jen váš prohlížeč (localStorage, sessionStorage). Bez nich by e-shop nefungoval, proto nepotřebují souhlas (§ 89 odst. 3 zákona č. 127/2005 Sb., o elektronických komunikacích):</p>
+      <ul>
+        <li><strong>košík</strong> – co máte v košíku, dokud objednávku neodešlete nebo košík nevyprázdníte,</li>
+        <li><strong>přihlášení k účtu</strong> – jen po přihlášení, do odhlášení,</li>
+        <li><strong>vaše volba cookies</strong> – dokud ji nezměníte,</li>
+        <li><strong>zákaznická skupina</strong> – jen pokud používáte kód skupiny nebo jste otevřeli pozvánku s kódem,</li>
+        <li><strong>skrytí nápovědy k jazyku</strong> – jen když nápovědu zavřete,</li>
+        <li><strong>dočasné údaje v okně prohlížeče</strong> – potvrzení poslední objednávky a kam se vrátit po přihlášení. Smažou se zavřením okna nebo karty.</li>
+      </ul>
+      <p>Na náš server se tyto údaje samy neposílají. Přihlášení k účtu používá jen služba zákaznických účtů. Neveřejná stránka farmy (přehled objednávek) používá vlastní přihlašovací cookie, a to jen na zařízeních farmy.</p>
+      <h3>Písma z Google Fonts</h3>
+      <p>Úvodní stránka, e-shop a německá stránka při otevření načítají písma Newsreader a Source Sans 3 ze serverů Google Fonts (Google Ireland Limited, Irsko, a Google LLC, USA). Váš prohlížeč přitom Googlu sdělí svou IP adresu a adresu našeho webu. Cookies se při tom neukládají. Důvodem je jednotný a dobře čitelný vzhled webu (<strong>oprávněný zájem</strong>, čl. 6 odst. 1 písm. f) GDPR). Tato stránka a obchodní podmínky písma od Googlu nenačítají.</p>
+      <h3>Mapa a příspěvky z Facebooku (jen se souhlasem)</h3>
+      <div class="karta">
+        <p><strong>Google Maps</strong> – mapa s polohou naší farmy v části Kontakt. Zásady: <a href="https://policies.google.com/privacy" rel="noopener">policies.google.com/privacy</a>.</p>
+      </div>
+      <div class="karta">
+        <p><strong>Facebook Page Plugin</strong> (Meta Platforms Ireland Ltd.) – příspěvky z naší facebookové stránky v části Aktuality. Zásady: <a href="https://www.facebook.com/privacy/policy" rel="noopener">facebook.com/privacy/policy</a>.</p>
+      </div>
+      <p>Tento obsah se načte, až v liště zvolíte „Povolit vše“, nebo když u mapy klepnete na „Zobrazit mapu“ (to je stejný souhlas jako „Povolit vše“). Do té doby se na jeho místě ukazuje fotka nebo odkaz a Google ani Facebook se o vaší návštěvě nedozví. Právní základ je <strong>souhlas</strong> (čl. 6 odst. 1 písm. a) GDPR).</p>
+      <p>Souhlas můžete kdykoli změnit nebo odvolat tlačítkem „Nastavení cookies“ v patičce úvodní stránky a e-shopu, nebo přímo tady:</p>
+      <div class="karta" id="nastaveni-cookies">
+        <p id="cookies-stav" aria-live="polite">Volbu změníte tlačítkem „Nastavení cookies“ v patičce úvodní stránky nebo e-shopu.</p>
+        <div class="tlacitka" id="cookies-tlacitka" hidden>
+          <button type="button" class="tl obrys" data-volba="rejected">Jen nezbytné</button>
+          <button type="button" class="tl" data-volba="accepted">Povolit vše</button>
         </div>
-        <p class="mt-3">Někteří z těchto poskytovatelů mohou údaje zpracovávat i mimo Evropskou unii; v takovém případě na základě standardních smluvních doložek nebo jiného zákonného nástroje.</p>
-      </section>
+      </div>
+      <p>Odkazy na Facebook, Instagram, Google Mapy a WhatsApp jsou obyčejné odkazy. Tyto služby se o vás dozví, až když na odkaz klepnete.</p>
 
-      <section>
-        <h2 class="font-semibold text-brand-800 text-base mb-2">6. Cookies a vložený obsah</h2>
-        <p>Nezbytné údaje v prohlížeči (obsah košíku, přihlášení k účtu, vaše volba cookies) ukládáme bez souhlasu, protože bez nich e-shop nefunguje.</p>
-        <div class="mt-3 space-y-3">
-          <div class="bg-gray-50 rounded-xl p-4">
-            <p class="font-medium">Google Maps</p>
-            <p class="text-gray-500 mt-1">Zobrazení mapy s polohou naší provozovny. Zásady: <a href="https://policies.google.com/privacy" target="_blank" rel="noopener" class="text-brand-600 underline">policies.google.com/privacy</a>.</p>
-          </div>
-          <div class="bg-gray-50 rounded-xl p-4">
-            <p class="font-medium">Facebook Page Plugin</p>
-            <p class="text-gray-500 mt-1">Zobrazení příspěvků z naší Facebook stránky. Zásady: <a href="https://www.facebook.com/privacy/policy" target="_blank" rel="noopener" class="text-brand-600 underline">facebook.com/privacy/policy</a>.</p>
-          </div>
-        </div>
-        <p class="mt-3">Obsah třetích stran se načte <strong>pouze po vašem souhlasu</strong> v cookie liště. Souhlas lze kdykoli odvolat vymazáním dat prohlížeče.</p>
-      </section>
+      <h2 id="zabezpeceni">10. Zabezpečení</h2>
+      <ul>
+        <li>Web funguje jen přes šifrované spojení (HTTPS).</li>
+        <li>Objednávky jsou uložené v části hostingu, která není z internetu přístupná.</li>
+        <li>Přehled objednávek vidí jen přihlášená zařízení farmy. Přihlašuje se odkazem, který přijde na e-mail farmy.</li>
+        <li>Účtenky se otevírají jen přes neveřejný odkaz. Hesla k zákaznickým účtům neznáme.</li>
+        <li>K údajům máme přístup jen my a lidé, kteří nám s vyřizováním a rozvozem objednávek pomáhají.</li>
+      </ul>
 
-      <section>
-        <h2 class="font-semibold text-brand-800 text-base mb-2">7. Zabezpečení</h2>
-        <p>Web běží výhradně přes šifrované spojení (HTTPS). Hesla k účtům neznáme – jsou uložena jen v zašifrované podobě. K objednávkám mají přístup pouze osoby, které je vyřizují.</p>
-      </section>
+      <h2 id="prava">11. Vaše práva</h2>
+      <p>Máte právo:</p>
+      <ul>
+        <li>vědět, jaké údaje o vás máme, a dostat jejich kopii,</li>
+        <li>na opravu nepřesných údajů,</li>
+        <li>na výmaz údajů, které nemusíme uchovávat ze zákona,</li>
+        <li>na omezení zpracování,</li>
+        <li>na přenositelnost údajů, které jste nám dali kvůli smlouvě nebo se souhlasem,</li>
+        <li>vznést námitku proti zpracování, které vychází z našeho oprávněného zájmu,</li>
+        <li>kdykoli odvolat souhlas (u mapy a Facebooku tlačítkem výše),</li>
+        <li>podat stížnost u Úřadu pro ochranu osobních údajů, Pplk. Sochora 27, 170 00 Praha 7, <a href="https://uoou.gov.cz" rel="noopener">uoou.gov.cz</a>, nebo u dozorového úřadu ve státě EU, kde žijete nebo pracujete.</li>
+      </ul>
+      <p>Stačí napsat na <a href="mailto:info@ovoce-holub.cz">info@ovoce-holub.cz</a>, zavolat na <a href="tel:+420607575271">+420&nbsp;607&nbsp;575&nbsp;271</a> nebo poslat dopis na Krtely 70, 384 11 Malovice. Odpovíme nejpozději do jednoho měsíce. Abychom údaje nevydali někomu jinému, můžeme vás požádat o ověření, že jde opravdu o vás.</p>
+      <p>Nerozhodujeme o vás automaticky a nevytváříme profily. Obchodní sdělení (newslettery) nezasíláme.</p>
 
-      <section>
-        <h2 class="font-semibold text-brand-800 text-base mb-2">8. Vaše práva</h2>
-        <p>Máte právo na přístup ke svým údajům, jejich opravu, výmaz, omezení zpracování, přenositelnost, právo vznést námitku a právo podat stížnost u Úřadu pro ochranu osobních údajů (<a href="https://uoou.gov.cz" target="_blank" rel="noopener" class="text-brand-600 underline">uoou.gov.cz</a>). S jakoukoli žádostí nám napište na info@ovoce-holub.cz.</p>
-      </section>
-
-      <section>
-        <h2 class="font-semibold text-brand-800 text-base mb-2">9. Platnost</h2>
-        <p>Tyto zásady jsou platné od 30. 9. 2026 a mohou být průběžně aktualizovány.</p>
-      </section>
-
+      <h2 id="zmeny">12. Změny zásad</h2>
+      <p>Tyto zásady platí od 30.&nbsp;9.&nbsp;2026. Když je změníme, novou verzi zveřejníme na této stránce s novým datem platnosti.</p>
     </div>
   </main>
 
-  <footer class="bg-brand-800 text-brand-300 text-center py-6 text-xs mt-8">
-    <p>© 2026 Ovocnářství Holub · Krtely 70, 384 11 Malovice</p>
+  <footer class="paticka">
+    <div class="obal">
+      <p>© 2026 Ovocnářství Holub · Pavel Holub · Krtely 70, 384 11 Malovice · IČO 12320030 · DIČ CZ6803300394 (plátce DPH)</p>
+      <ul>
+        <li><a href="./">Úvodní stránka</a></li>
+        <li><a href="eshop.html">E-shop</a></li>
+        <li><a href="obchodni-podminky.html">Obchodní podmínky</a></li>
+        <li><a href="#nastaveni-cookies">Nastavení cookies</a></li>
+        <li lang="de"><a href="gdpr-de.html" hreflang="de">Datenschutz (Deutsch)</a></li>
+      </ul>
+    </div>
   </footer>
 
+  <script>
+    // Nastavení cookies přímo na této stránce – stejná volba jako lišta na webu (klíč „ovocnarstvi-cookies“).
+    (function () {
+      var KLIC = 'ovocnarstvi-cookies'
+      var stav = document.getElementById('cookies-stav')
+      var tlacitka = document.getElementById('cookies-tlacitka')
+      if (!stav || !tlacitka) return
+      function cist() { try { return localStorage.getItem(KLIC) } catch (e) { return null } }
+      function ukazat() {
+        var v = cist()
+        stav.textContent = v === 'accepted' ? 'Teď máte povolené vše: mapa a příspěvky z Facebooku se na webu zobrazují.'
+          : v === 'rejected' ? 'Teď máte povolené jen nezbytné: mapa a příspěvky z Facebooku se nenačítají.'
+          : 'Zatím jste nevybrali, mapa a příspěvky z Facebooku se nenačítají.'
+      }
+      tlacitka.hidden = false
+      ukazat()
+      tlacitka.addEventListener('click', function (e) {
+        var b = e.target.closest ? e.target.closest('button[data-volba]') : null
+        if (!b) return
+        try { localStorage.setItem(KLIC, b.getAttribute('data-volba')) } catch (x) {
+          stav.textContent = 'Váš prohlížeč nedovoluje volbu uložit, mapa a příspěvky z Facebooku se proto nenačítají.'
+          return
+        }
+        ukazat()
+      })
+    })()
+  </script>
 </body>
 </html>

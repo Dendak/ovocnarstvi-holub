@@ -1,13 +1,20 @@
 export const OBSAH = {
   kontakt: {
     jmeno:     'Ovocnářství Holub',
+    // Adresa podle ARES / registru adres (Krtely jsou část obce Malovice, pošta Netolice).
     adresa:    'Krtely 70',
-    mesto:     'Netolice, 384 11',
+    mesto:     '384 11 Malovice',
+    // Identifikace prodávajícího (patička webu a e-shopu).
+    provozovatel: 'Pavel Holub',
+    ico:       '12320030',
+    dic:       'CZ6803300394',
     tel1:      '+420 607 575 271',
     tel2:      '+420 722 949 299',
     email:     'info@ovoce-holub.cz',
     // Sem chodí objednávky z e-shopu a poptávky pálenic (dotazy z webu jdou na email).
     emailObjednavky: 'objednavky@ovoce-holub.cz',
+    // Místo na Google Mapách (stejné jako v JSON-LD „hasMap“ v index.html a index-de.html).
+    mapa:      'https://www.google.com/maps/place/Ovocn%C3%A1%C5%99stv%C3%AD+Holub/@49.0826258,14.1677963,17z/data=!4m6!3m5!1s0x4774ad0019e39f15:0xf1e2281c3b44a6c7!8m2!3d49.0826258!4d14.1703712!16s%2Fg%2F11xfhkf620',
     facebook:  'https://www.facebook.com/OvoceHolub',
     instagram: 'https://www.instagram.com/ovocnarstviholub',
   },
@@ -17,8 +24,8 @@ export const OBSAH = {
     { nazev: 'Meruňky', fotky: ['merunky/WhatsApp Image 2026-03-15 at 13.39.21.jpeg', 'merunky/IMG_2376.JPEG'], sezona: 'červenec – srpen', sezonaOd: [7, 1], sezonaDo: [8, 31], barva: 'orange', popis: 'Voňavé a šťavnaté, skvělé čerstvé i na zavařování.' },
     { nazev: 'Broskve', fotky: ['broskve/IMG_8553.JPEG'], sezona: 'srpen – září', sezonaOd: [8, 1], sezonaDo: [9, 30], barva: 'orange', popis: 'Šťavnaté broskve na vrcholu léta.' },
     { nazev: 'Švestky', fotky: ['svestky/WhatsApp Image 2026-03-15 at 13.42.01.jpeg', 'svestky/IMG_2471.JPEG', 'svestky/IMG_2476.JPEG', 'svestky/IMG_2713.JPEG', 'svestky/IMG_2820.JPEG', 'svestky/c5b58f3a-5ae9-4fff-95eb-e7e45471e0d6.jpg'], sezona: '1. 8. – 15. 10.', sezonaOd: [8, 1], sezonaDo: [10, 15], barva: 'purple', popis: 'Švestky přímo ze sadu – skvělé na zavařování i do koláče.', odrudy: ['Haganta', 'Top King', 'Topend Plus', 'Čačanská', 'Stanley'] },
-    { nazev: 'Hrušky',  fotky: ['hrusky/119992199_2437457283066181_6907105438319047381_n.jpg', 'hrusky/542007542_1218005136796557_6760772214935127534_n.jpg', 'hrusky/hrusky.jpg', 'hrusky/5a349822-0f8a-429d-90d5-3bbaaafeb442.jpg', 'hrusky/94ae6d72-e62e-4f8b-bfdc-778ca23dbc24.jpg', 'hrusky/IMG_0622.jpeg', 'hrusky/IMG_0868.jpeg', 'hrusky/IMG_1134.JPEG', 'hrusky/IMG_1416.JPEG', 'hrusky/IMG_2480.JPEG', 'hrusky/IMG_2787.JPEG', 'hrusky/c993f4e2-fc75-4b5f-b42f-2ba935d8a624.jpg'], sezona: '1. 8. – 31. 1.', sezonaOd: [8, 1], sezonaDo: [1, 31], barva: 'yellow', popis: 'Šťavnaté hrušky různých odrůd.', odrudy: ['Konference', 'Williams', 'Lucasova', 'Novembra', 'Bohemica', 'Packahams'] },
-    { nazev: 'Jablka',  fotky: ['jablka/119992725_2437457233066186_4983175529147161289_n.jpg', 'jablka/IMG_0889.jpeg', 'jablka/IMG_2863.JPEG', 'jablka/IMG_2866.JPEG', 'jablka/IMG_2867.JPEG', 'jablka/IMG_3016.JPG'], sezona: '15. 8. – 31. 3.', sezonaOd: [8, 15], sezonaDo: [3, 31], barva: 'green', popis: 'Více než 15 odrůd, sklizené z vlastního sadu a skladované pro vás.', odrudy: ['Bohemia', 'Rubinola', 'Topaz', 'Golden', 'Gala', 'Rozela', 'Idared', 'Sirius', 'Lucy', 'Jonagold', 'Jonaprince', 'Fuji', 'Braeburn'], wide: true, vzdy: true },
+    { nazev: 'Hrušky',  fotky: ['hrusky/119992199_2437457283066181_6907105438319047381_n.jpg', 'hrusky/542007542_1218005136796557_6760772214935127534_n.jpg', 'hrusky/hrusky.jpg', 'hrusky/5a349822-0f8a-429d-90d5-3bbaaafeb442.jpg', 'hrusky/94ae6d72-e62e-4f8b-bfdc-778ca23dbc24.jpg', 'hrusky/IMG_0622.jpeg', 'hrusky/IMG_0868.jpeg', 'hrusky/IMG_1134.JPEG', 'hrusky/IMG_1416.JPEG', 'hrusky/IMG_2480.JPEG', 'hrusky/IMG_2787.JPEG', 'hrusky/c993f4e2-fc75-4b5f-b42f-2ba935d8a624.jpg'], sezona: '1. 8. – 31. 1.', sezonaOd: [8, 1], sezonaDo: [1, 31], sklizenOd: [8, 1], sklizenDo: [10, 31], barva: 'yellow', popis: 'Šťavnaté hrušky různých odrůd.', odrudy: ['Konference', 'Williams', 'Lucasova', 'Novembra', 'Bohemica', 'Packhams'] },
+    { nazev: 'Jablka',  fotky: ['jablka/119992725_2437457233066186_4983175529147161289_n.jpg', 'jablka/IMG_0889.jpeg', 'jablka/IMG_2863.JPEG', 'jablka/IMG_2866.JPEG', 'jablka/IMG_2867.JPEG', 'jablka/IMG_3016.JPG'], sezona: '15. 8. – 31. 3.', sezonaOd: [8, 15], sezonaDo: [3, 31], sklizenOd: [9, 1], sklizenDo: [10, 31], barva: 'green', popis: 'Více než 15 odrůd, sklizené z vlastního sadu a skladované pro vás.', odrudy: ['Bohemia', 'Rubinola', 'Topaz', 'Golden', 'Gala', 'Rozela', 'Idared', 'Sirius', 'Lucy', 'Jonagold', 'Jonaprince', 'Fuji', 'Braeburn'], wide: true, vzdy: true },
   ],
   aktuality: {
     // Ovoce v sezóně se doplňuje automaticky podle data (sezonaOd/sezonaDo);
@@ -47,6 +54,16 @@ export const OBSAH = {
 
 export function imgSrc(path) {
   return import.meta.env.BASE_URL + 'img/' + path.split('/').map(encodeURIComponent).join('/')
+}
+
+// Zmenšené verze fotek (WebP) pro srcset: img/<složka>/_w480/<jméno>.webp a _w960/<jméno>.webp.
+// Pro SVG/GIF (a jiné formáty) zmenšeniny nejsou – vrací undefined, prohlížeč pak vezme jen src.
+export function imgSrcSet(path) {
+  if (!/\.(jpe?g|png)$/i.test(path)) return undefined
+  const casti = path.split('/')
+  const jmeno = casti.pop().replace(/\.[^.]+$/, '') + '.webp'
+  const varianta = sirka => imgSrc([...casti, `_w${sirka}`, jmeno].join('/')) + ` ${sirka}w`
+  return `${varianta(480)}, ${varianta(960)}`
 }
 
 // Fotky, kde podstatné není uprostřed – kam má ořez „zaostřit“ (CSS object-position).
@@ -81,7 +98,16 @@ export function isInSeason(o, now) {
 }
 
 // Ovoce v sezóně napřed (skladované „vzdy“ až za sezónním), zbytek v původním pořadí.
-export function sortBySeason(list, now) {
-  const rank = o => (isInSeason(o, now) ? (o.vzdy ? 1 : 0) : 2)
+// `ok` může navíc vyřadit druhy, které nejsou k mání (např. o => vNabidce(o.nazev)).
+export function sortBySeason(list, now, ok = () => true) {
+  const rank = o => (isInSeason(o, now) && ok(o) ? (o.vzdy ? 1 : 0) : 2)
   return list.map((o, i) => [o, i]).sort((a, b) => rank(a[0]) - rank(b[0]) || a[1] - b[1]).map(([o]) => o)
+}
+
+// Právě se sklízí? Podle okna sklizně (sklizenOd/sklizenDo), jinak podle prodejní sezóny.
+// Mimo sklizeň, ale v prodejní sezóně (nebo u „vzdy“) jde ovoce ze skladu.
+export function stavSezony(o, now) {
+  if (isInSeason({ sezonaOd: o.sklizenOd || o.sezonaOd, sezonaDo: o.sklizenDo || o.sezonaDo }, now)) return 'sklizen'
+  if (o.vzdy || isInSeason({ ...o, vzdy: false }, now)) return 'sklad'
+  return null
 }
