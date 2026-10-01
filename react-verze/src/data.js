@@ -8,6 +8,7 @@ export const OBSAH = {
     provozovatel: 'Pavel Holub',
     ico:       '12320030',
     dic:       'CZ6803300394',
+    zapis:     'zapsán v živnostenském rejstříku',
     tel1:      '+420 607 575 271',
     tel2:      '+420 722 949 299',
     email:     'info@ovoce-holub.cz',

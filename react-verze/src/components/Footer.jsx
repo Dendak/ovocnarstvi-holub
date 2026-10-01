@@ -6,7 +6,7 @@ const k = OBSAH.kontakt
 const LINKS_CS = [['#ovoce', 'Ovoce'], ['#mosty', 'Mošty'], ['#galerie', 'Fotky'], ['#aktuality', 'Aktuality'], ['#kontakt', 'Kontakt'], [`${BASE}eshop.html`, 'E-shop']]
 const PRAVNI_CS = [[`${BASE}obchodni-podminky.html`, 'Obchodní podmínky'], [`${BASE}gdpr.html`, 'Ochrana osobních údajů']]
 // Identifikace prodávajícího (§ 435 občanského zákoníku).
-const IDENTIFIKACE_CS = `${k.provozovatel} · ${k.adresa}, ${k.mesto} · IČO ${k.ico} · DIČ ${k.dic} (plátce DPH)`
+const IDENTIFIKACE_CS = `${k.provozovatel} · ${k.adresa}, ${k.mesto} · IČO ${k.ico} · DIČ ${k.dic} (plátce DPH) · ${k.zapis}`
 
 /**
  * Patička sdílená hlavní stránkou, e-shopem a německou stránkou.

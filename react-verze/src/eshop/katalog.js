@@ -149,7 +149,7 @@ const produktyMosty = [{
   druhNazev: 'Mošty',
   nazev: 'Domácí mošt',
   chut: null,
-  popis: 'Mošt z jablek z vlastního sadu, bez přidaných cukrů a konzervantů. Vyberte si příchuť a velikost balení bag-in-box – po otevření vydrží několik týdnů.',
+  popis: 'Mošt z jablek z vlastního sadu, bez přidaných cukrů a konzervantů. Ochucené mošty jsou jablečný mošt s ovocem podle příchuti; podíl ovoce se liší podle várky. Minimální trvanlivost 6 měsíců od vylisování, po otevření balení bag-in-box vydrží několik týdnů.',
   hodiSe: [],
   sklizen: 'celoročně',
   foto: MOSTY_FOTO.foto,

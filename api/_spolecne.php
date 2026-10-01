@@ -33,7 +33,7 @@ const PRODAVAJICI = [
   'sazba_dph' => 12,        // snížená sazba – čerstvé ovoce (potraviny)
   'sazba_dph_napoje' => 21, // základní sazba – mošty (ovocné šťávy jsou od 1. 1. 2024 v 21 %)
   'telefon' => '+420 607 575 271',
-  'zapis' => '',
+  'zapis' => 'Podnikatel zapsaný v živnostenském rejstříku',
 ];
 
 // Zkušební provoz účtenek (na přání majitele): true = smazaná účtenka uvolní své číslo a číslování pokračuje
