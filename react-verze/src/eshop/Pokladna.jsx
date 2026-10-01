@@ -49,9 +49,9 @@ const VYCHOZI_MESTO = 'České Budějovice'
 
 // Address check against the official Czech address register (api/adresa.php → RÚIAN).
 // Returns { stav: 'ok' | 'vice' | 'nenalezeno' | 'chyba', kandidati }.
-async function overitAdresu(adresa, mesto = '') {
+async function overitAdresu(adresa, mesto = '', zeme = 'CZ') {
   try {
-    const res = await fetch(`${import.meta.env.BASE_URL}api/adresa.php?q=${encodeURIComponent(adresa)}&mesto=${encodeURIComponent(mesto)}`)
+    const res = await fetch(`${import.meta.env.BASE_URL}api/adresa.php?q=${encodeURIComponent(adresa)}&mesto=${encodeURIComponent(mesto)}${zeme === 'AT' ? '&zeme=at' : ''}`)
     if (!res.ok) throw new Error()
     const d = await res.json()
     // limit dotazů nebo výpadek registru: adresu nelze ověřit, ale není to „nenalezeno“
@@ -89,7 +89,7 @@ function OvereniAdresy({ overeni, aktualni, vybrat }) {
       <>
         <p className="text-sm text-leaf font-medium mt-1.5">✓ {ulice}{zbytek.length > 0 && <>, <strong className="font-bold text-ink">{zbytek.join(', ')}</strong></>}</p>
         {!overeni.vybrana.adresa.includes(VYCHOZI_MESTO) && (
-          <p className="text-sm text-ink-soft mt-1">Mimo České Budějovice dovážíme po domluvě – po objednávce se vám ozveme s termínem.</p>
+          <p className="text-sm text-ink-soft mt-1">{overeni.vybrana.adresa.endsWith('Rakousko') ? 'Do Rakouska' : 'Mimo České Budějovice'} dovážíme po domluvě – po objednávce se vám ozveme s termínem.</p>
         )}
       </>
     )
@@ -134,7 +134,7 @@ export default function Pokladna({ onZpet, onHotovo: predatHotovo }) {
   const terminyOdberu = useMemo(() => terminy(DNY_ODBERU, 6, ted), [ted])
   const [f, setF] = useState(() => ({
     jmeno: '', prijmeni: '', firma: false, nazevFirmy: '', ico: '', telefon: '', email: '',
-    adresa: PEVNA_ADRESA || '', psc: '', mesto: VYCHOZI_MESTO,
+    adresa: PEVNA_ADRESA || '', psc: '', mesto: VYCHOZI_MESTO, zeme: 'CZ',
     doruceni: 'rozvoz', termin: terminy(DNY_ROZVOZU)[0] || '', terminOdberu: terminy(DNY_ODBERU)[0] || '',
     platba: 'prevzeti', poznamka: '',
   }))
@@ -195,7 +195,7 @@ export default function Pokladna({ onZpet, onHotovo: predatHotovo }) {
       ...(jmeno || prijmeni ? { jmeno, prijmeni } : {}),
       telefon: m.telefon || prev.telefon,
       ...(PEVNA_ADRESA ? { adresa: PEVNA_ADRESA }
-        : m.adresa ? { adresa: m.adresa, psc: m.psc || '', mesto: m.mesto || VYCHOZI_MESTO } : {}),
+        : m.adresa ? { adresa: m.adresa, psc: m.psc || '', mesto: m.mesto || VYCHOZI_MESTO, zeme: m.zeme === 'AT' ? 'AT' : 'CZ' } : {}),
     }))
   }, [uzivatel])
 
@@ -212,6 +212,7 @@ export default function Pokladna({ onZpet, onHotovo: predatHotovo }) {
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email.trim())) e.email = 'Vyplňte e-mail – pošleme na něj potvrzení objednávky.'
     if (f.doruceni === 'rozvoz' && !f.adresa.trim()) e.adresa = 'Vyplňte ulici a číslo domu.'
     if (f.doruceni === 'rozvoz' && !PEVNA_ADRESA && !f.mesto.trim()) e.mesto = 'Vyplňte město.'
+    if (f.doruceni === 'rozvoz' && !PEVNA_ADRESA && f.zeme === 'AT' && !/^\d{4}$/.test(f.psc.trim())) e.psc = 'Rakouské PSČ má 4 číslice.'
     // Den se ověřuje podle aktuálního času (stránka mohla zůstat otevřená přes uzávěrku).
     const nyni = new Date()
     if (f.doruceni === 'rozvoz' && !terminy(DNY_ROZVOZU, 6, nyni).includes(f.termin)) e.termin = CHYBA_TERMINU
@@ -220,14 +221,14 @@ export default function Pokladna({ onZpet, onHotovo: predatHotovo }) {
   }
 
   // The check is valid for one street + town pair.
-  const klicAdresy = `${f.adresa.trim()}|${f.mesto.trim()}`
+  const klicAdresy = `${f.adresa.trim()}|${f.mesto.trim()}|${f.zeme}`
 
   const zkontrolovatAdresu = async () => {
     const q = klicAdresy
     if (f.doruceni !== 'rozvoz' || f.adresa.trim().length < 3) return overeni
     if (overeni.q === q && overeni.stav && overeni.stav !== 'overuji') return overeni
     setOvereni({ q, stav: 'overuji', kandidati: [] })
-    const v = { q, ...(await overitAdresu(f.adresa.trim(), f.mesto.trim())) }
+    const v = { q, ...(await overitAdresu(f.adresa.trim(), f.zeme === 'AT' ? `${f.psc.trim()} ${f.mesto.trim()}`.trim() : f.mesto.trim(), f.zeme)) }
     setOvereni(v)
     setNeovereneOK('')
     if (v.vybrana?.psc) set('psc', v.vybrana.psc)
@@ -240,7 +241,7 @@ export default function Pokladna({ onZpet, onHotovo: predatHotovo }) {
     setChyby(c => ({ ...c, adresa: undefined, mesto: undefined }))
     setNeovereneOK('')
     setF(prev => ({ ...prev, adresa: k.ulice, psc: k.psc || prev.psc, mesto: k.mesto || prev.mesto }))
-    const q = `${k.ulice}|${k.mesto || f.mesto.trim()}`
+    const q = `${k.ulice}|${k.mesto || f.mesto.trim()}|${f.zeme}`
     if (k.gps) { setOvereni({ q, stav: 'ok', kandidati: [k], vybrana: k }); return }
     setOvereni({ q, stav: 'overuji', kandidati: [] })
     const v = await overitAdresu(k.adresa)
@@ -279,7 +280,7 @@ export default function Pokladna({ onZpet, onHotovo: predatHotovo }) {
       : !adr?.vybrana ? 'neovereno'
         : !adr.vybrana.adresa.includes(VYCHOZI_MESTO) ? 'mimo' : null
     setStav('odesilam')
-    const adresaDovozu = adr?.vybrana ? adr.vybrana.adresa : `${f.adresa.trim()}, ${`${f.psc.trim()} ${f.mesto.trim()}`.trim()}`
+    const adresaDovozu = adr?.vybrana ? adr.vybrana.adresa : `${f.adresa.trim()}, ${`${f.psc.trim()} ${f.mesto.trim()}`.trim()}${f.zeme === 'AT' ? ', Rakousko' : ''}`
     const celeJmeno = f.firma ? f.nazevFirmy.trim() : `${f.jmeno.trim()} ${f.prijmeni.trim()}`.trim()
     const ico = f.firma ? f.ico.trim() : ''
 
@@ -297,7 +298,7 @@ export default function Pokladna({ onZpet, onHotovo: predatHotovo }) {
       const token = SKUPINA ? await auth.token().catch(() => null) : null
       const r = await odeslatObjednavku({
         email: f.email.trim(), jmeno: celeJmeno, telefon: f.telefon.trim(), ico,
-        rozvoz, den, adresa: rozvoz ? f.adresa.trim() : '', psc: rozvoz ? f.psc.trim() : '', mesto: rozvoz ? f.mesto.trim() : '',
+        rozvoz, den, adresa: rozvoz ? f.adresa.trim() : '', psc: rozvoz ? f.psc.trim() : '', mesto: rozvoz ? f.mesto.trim() : '', zeme: rozvoz ? f.zeme : 'CZ',
         adresaOverena: rozvoz && adr?.vybrana ? adr.vybrana.adresa : '',
         platba: prevodem ? 'prevod' : 'prevzeti',
         poznamka: f.poznamka.trim(),
@@ -369,7 +370,7 @@ export default function Pokladna({ onZpet, onHotovo: predatHotovo }) {
             radky, polozky: kosik.polozky.map(p => ({ key: p.key, pocet: p.pocet })),
           }),
           // Delivery details are kept with the account for next time (company orders are one-off).
-          f.firma ? null : auth.ulozitProfil({ jmeno: f.jmeno.trim(), prijmeni: f.prijmeni.trim(), telefon: f.telefon.trim(), ...(PEVNA_ADRESA || !rozvoz ? {} : { adresa: f.adresa.trim(), psc: f.psc.trim(), mesto: f.mesto.trim() }) }),
+          f.firma ? null : auth.ulozitProfil({ jmeno: f.jmeno.trim(), prijmeni: f.prijmeni.trim(), telefon: f.telefon.trim(), ...(PEVNA_ADRESA || !rozvoz ? {} : { adresa: f.adresa.trim(), psc: f.psc.trim(), mesto: f.mesto.trim(), zeme: f.zeme }) }),
         ])
       }
       kosik.vyprazdnit()
@@ -491,6 +492,14 @@ export default function Pokladna({ onZpet, onHotovo: predatHotovo }) {
                   <Chyba id="termin-chyba" text={chybaTerminu} />
                 </div>
                 {!PEVNA_ADRESA && <>
+                  <div>
+                    <label htmlFor="zeme" className={popisek}>Země</label>
+                    <select id="zeme" autoComplete="country" value={f.zeme} className={field}
+                      onChange={e => { const z = e.target.value; setF(p => ({ ...p, zeme: z, psc: '', mesto: z === 'AT' && p.mesto === VYCHOZI_MESTO ? '' : z === 'CZ' && !p.mesto ? VYCHOZI_MESTO : p.mesto })); setChyby(c => ({ ...c, psc: undefined, adresa: undefined })) }}>
+                      <option value="CZ">Česko</option>
+                      <option value="AT">Rakousko (po domluvě)</option>
+                    </select>
+                  </div>
                   {/* Obec napřed: podle ní se hledají návrhy ulic i ověřuje adresa. */}
                   <div className="grid grid-cols-[1fr_6.5rem] gap-4">
                     <div>
@@ -500,15 +509,18 @@ export default function Pokladna({ onZpet, onHotovo: predatHotovo }) {
                     </div>
                     <div>
                       <label htmlFor="psc" className={popisek}>PSČ</label>
-                      <input id="psc" inputMode="numeric" autoComplete="postal-code" value={f.psc} onChange={e => set('psc', e.target.value)} className={field} />
+                      <input id="psc" inputMode="numeric" autoComplete="postal-code" value={f.psc} onChange={e => set('psc', e.target.value)} onBlur={f.zeme === 'AT' ? zkontrolovatAdresu : undefined} className={field} {...chybaPole('psc')} />
+                      <Chyba id="psc-chyba" text={chyby.psc} />
                     </div>
                   </div>
                   <div>
                     <label htmlFor="adresa" className={popisek}>Ulice a číslo domu *</label>
-                    <AdresaInput id="adresa" value={f.adresa} mesto={f.mesto} onChange={v => set('adresa', v)} onVyber={vybratNavrh}
-                      onBlur={zkontrolovatAdresu} placeholder="Začněte psát, např. Lannova 12" className={field}
+                    <AdresaInput id="adresa" value={f.adresa} mesto={f.mesto} zeme={f.zeme} onChange={v => set('adresa', v)} onVyber={vybratNavrh}
+                      onBlur={zkontrolovatAdresu} placeholder={f.zeme === 'AT' ? 'např. Hauptstraße 12' : 'Začněte psát, např. Lannova 12'} className={field}
                       aria-required="true" {...chybaPole('adresa', chyby.adresa, 'adresa-obec adresa-overeni')} />
-                    <p id="adresa-obec" className="text-sm text-ink-soft mt-1">Adresy hledáme v obci {f.mesto.trim() || '…'} (změníte ji v poli Město / obec).</p>
+                    <p id="adresa-obec" className="text-sm text-ink-soft mt-1">{f.zeme === 'AT'
+                      ? 'Rakouskou adresu ověříme, až vyplníte ulici s číslem, PSČ a obec. Do Rakouska dovážíme po domluvě.'
+                      : <>Adresy hledáme v obci {f.mesto.trim() || '…'} (změníte ji v poli Město / obec).</>}</p>
                     <div id="adresa-overeni" aria-live="polite">
                       <OvereniAdresy overeni={overeni} aktualni={klicAdresy}
                         vybrat={k => { setOvereni(o => ({ ...o, vybrana: k })); setF(p => ({ ...p, psc: k.psc || p.psc })); setChyby(c => ({ ...c, adresa: undefined })) }} />

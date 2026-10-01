@@ -587,7 +587,7 @@ $souradnice = function (string $adresa) use (&$geo, &$dotazu, &$vypadek): ?array
   if (is_array($z) && ($z['nenalezeno'] ?? 0) > time() - 7 * 86400) return null;
   if ($vypadek || $dotazu >= 3) return null;
   if ($dotazu++) usleep(1100000);
-  $url = 'https://nominatim.openstreetmap.org/search?' . http_build_query(['q' => $adresa, 'format' => 'json', 'limit' => 1, 'countrycodes' => 'cz']);
+  $url = 'https://nominatim.openstreetmap.org/search?' . http_build_query(['q' => $adresa, 'format' => 'json', 'limit' => 1, 'countrycodes' => 'cz,at']);
   $ctx = stream_context_create(['http' => ['timeout' => 6, 'header' => "User-Agent: ovoce-holub.cz rozvoz (objednavky@ovoce-holub.cz)\r\n"]]);
   $raw = @file_get_contents($url, false, $ctx);
   $r = $raw === false ? null : json_decode($raw, true);

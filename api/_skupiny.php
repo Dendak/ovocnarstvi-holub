@@ -20,6 +20,15 @@ const SUPABASE_KLIC = 'sb_publishable_CBcBegREJoaGr_o0BYnyuw_Vp0xkCHB'; // veře
 // ============================================================
 function skupiny(): array {
   return [
+    // Rodina Holubových: vše za 0 Kč (sleva 100 %), bez pevné adresy. Kód zná jen rodina.
+    '9860ed92ca48c140b5755738c805de5f2372b35b7bf685afe6179bc06a357940' => [
+      'id' => 'rodina',
+      'nazev' => 'Rodina',
+      'ceny' => [],
+      'sleva' => 100,
+      'popis' => 'Objednávky pro rodinu – vše za 0 Kč.',
+      'max' => 10,
+    ],
     '487dc591135f2d67ef68f07e299401d3ead416060a71866ad704084cbee45316' => [
       'id' => 'elektron',
       'nazev' => 'Elektron',

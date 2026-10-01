@@ -5,7 +5,8 @@ import { sklonovat } from './katalog'
 // `mesto` narrows the search to one town. Picking a suggestion puts just the street line into the field;
 // `onVyber(kandidat)` gets the whole record: { adresa, ulice, psc, mesto, gps | null }.
 // Další vlastnosti (aria-invalid, aria-describedby, aria-required …) jdou přímo na pole.
-export default function AdresaInput({ id, value, mesto = '', onChange, onVyber, onBlur, className, placeholder, ...rest }) {
+// `zeme` 'AT' = rakouská adresa: bez našeptávače (ověří se až celá).
+export default function AdresaInput({ id, value, mesto = '', zeme = 'CZ', onChange, onVyber, onBlur, className, placeholder, ...rest }) {
   const [navrhy, setNavrhy] = useState([])
   const [otevreno, setOtevreno] = useState(false)
   const [aktivni, setAktivni] = useState(-1)
@@ -15,7 +16,7 @@ export default function AdresaInput({ id, value, mesto = '', onChange, onVyber, 
 
   useEffect(() => {
     const q = value.trim()
-    if (q.length < 3 || q === vybrane) return
+    if (q.length < 3 || q === vybrane || zeme === 'AT') return
     const ctrl = new AbortController()
     const t = setTimeout(async () => {
       setHleda(true)
@@ -30,7 +31,7 @@ export default function AdresaInput({ id, value, mesto = '', onChange, onVyber, 
       setHleda(false)
     }, 300)
     return () => { clearTimeout(t); ctrl.abort() }
-  }, [value, vybrane, mesto])
+  }, [value, vybrane, mesto, zeme])
 
   const vybrat = k => {
     setVybrane(k.ulice)

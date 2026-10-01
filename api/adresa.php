@@ -3,6 +3,7 @@
 //   ?q=Lannova 12&mesto=České Budějovice            → ověření (přesné adresy se souřadnicemi)
 //   ?q=Lann&mesto=České Budějovice&naseptat=1       → našeptávač při psaní
 // Adresy psané bez diakritiky se při ověření dohledají přes OpenStreetMap.
+//   &zeme=at → rakouská adresa: ověří se v OpenStreetMap (Nominatim); našeptávač tam není (pravidla Nominatimu ho zakazují).
 require __DIR__ . '/_spolecne.php';
 header('Content-Type: application/json; charset=utf-8');
 
@@ -56,6 +57,37 @@ function v_obci(array $k, string $mesto): bool {
 $q = trim(mb_substr(retezec($_GET['q'] ?? ''), 0, 120));
 $mesto = trim(mb_substr(retezec($_GET['mesto'] ?? ''), 0, 60));
 if (mb_strlen($q) < 3) konec(['kandidati' => []]);
+$zeme = retezec($_GET['zeme'] ?? '') === 'at' ? 'at' : 'cz';
+
+// ---------- Rakousko ----------
+if ($zeme === 'at') {
+  if (isset($_GET['naseptat'])) konec(['kandidati' => []]);
+  if (!preg_match('/\d/', $q)) konec(['kandidati' => [], 'chybiCislo' => true]);
+  $klic = 'at:' . mb_strtolower("$q|$mesto");
+  $cache = nacist_json('adresy.json', []);
+  $ulozeno = $cache[$klic] ?? null;
+  if (is_array($ulozeno) && (!empty($ulozeno['kandidati']) || ($ulozeno['cas'] ?? 0) > time() - 86400)) konec(['kandidati' => $ulozeno['kandidati'] ?? []]);
+  if (!limit('adresa', 60, 3600)) konec(['kandidati' => [], 'limit' => true]);
+  $osm = http_json('https://nominatim.openstreetmap.org/search?' . http_build_query([
+    'q' => $mesto !== '' ? "$q, $mesto" : $q, 'format' => 'json', 'addressdetails' => 1, 'limit' => 5, 'countrycodes' => 'at']));
+  $out = [];
+  foreach ($osm ?? [] as $x) {
+    $a = $x['address'] ?? [];
+    if (empty($a['house_number'])) continue;
+    $obec = $a['city'] ?? $a['town'] ?? $a['village'] ?? $a['municipality'] ?? '';
+    $ulice = trim(($a['road'] ?? $a['hamlet'] ?? $obec) . ' ' . $a['house_number']);
+    $psc = $a['postcode'] ?? '';
+    $adresa = "$ulice, " . trim("$psc $obec") . ', Rakousko';
+    $out[$adresa] = ['adresa' => $adresa, 'ulice' => $ulice, 'psc' => $psc, 'mesto' => $obec, 'gps' => [round((float)$x['lat'], 6), round((float)$x['lon'], 6)]];
+  }
+  $vysledek = ['kandidati' => array_slice(array_values($out), 0, 5)];
+  if ($osm !== null) {
+    $cache = array_slice($cache, -500, null, true);
+    $cache[$klic] = $vysledek + ['cas' => time()];
+    ulozit_json('adresy.json', $cache, false);
+  }
+  konec($osm === null ? $vysledek + ['nedostupne' => true] : $vysledek);
+}
 
 // ---------- našeptávač ----------
 // Pamatují se jen úspěšné neprázdné výsledky; prázdný výsledek nebo výpadek registru se příště zkusí znovu.

@@ -315,6 +315,7 @@ $denKlient = text_pole($d['den'] ?? '', 40);
 $adresa = $rozvoz ? text_pole($d['adresa'] ?? '', 200) : '';
 $psc = $rozvoz ? text_pole($d['psc'] ?? '', 10) : '';
 $mesto = $rozvoz ? text_pole($d['mesto'] ?? '', 60) : '';
+$zeme = $rozvoz && ($d['zeme'] ?? '') === 'AT' ? 'AT' : 'CZ';
 $adresaKlient = $rozvoz ? text_pole($d['adresaOverena'] ?? '', 200) : '';
 $platba = ($d['platba'] ?? '') === 'prevod' ? 'prevod' : 'prevzeti';
 $poznamka = text_pole($d['poznamka'] ?? '', 1000, true);
@@ -399,7 +400,7 @@ if ($skupina && !empty($skupina['adresa'])) {
   $adresaOverena = $a['adresa'];
   $gps = $a['gps'];
 }
-$adresaDovozu = $adresaOverena !== '' ? $adresaOverena : $adresa . ', ' . trim("$psc $mesto");
+$adresaDovozu = $adresaOverena !== '' ? $adresaOverena : $adresa . ', ' . trim("$psc $mesto") . ($zeme === 'AT' ? ', Rakousko' : '');
 
 // ---------- termín ----------
 $datum = datum_terminu($denKlient);
@@ -440,7 +441,7 @@ $zaznam = [
   'cislo' => $cislo, 'vs' => $vs, 'castka' => $castka, 'email' => $email, 'jmeno' => $jmeno,
   'souhrn' => $souhrn, 'vytvoreno' => date('c'), 'zaplaceno' => 0, 'platby' => [],
   'rozvoz' => $rozvoz, 'den' => $den, 'datum' => $datum, 'telefon' => $telefon,
-  'adresa' => $adresa, 'psc' => $psc, 'mesto' => $mesto, 'ico' => $ico,
+  'adresa' => $adresa, 'psc' => $psc, 'mesto' => $mesto, 'zeme' => $zeme, 'ico' => $ico,
   'adresa_overena' => $adresaOverena, 'gps_overena' => $gps,
   'polozky' => $radky, 'celkem' => $celkem, 'platba' => $platba, 'poznamka' => $poznamka,
   'skupina' => $skupina['nazev'] ?? '',
