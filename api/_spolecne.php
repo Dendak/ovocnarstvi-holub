@@ -232,9 +232,10 @@ function ip_klienta(): string {
 }
 
 // Limit počtu volání z jedné IP adresy.
-function limit(string $nazev, int $max, int $sekund): bool {
+// $celkove = true: limit pro všechny návštěvníky dohromady (ne pro jednu IP adresu).
+function limit(string $nazev, int $max, int $sekund, bool $celkove = false): bool {
   $adresar = sys_get_temp_dir();
-  $ip = hash('sha256', ip_klienta() . $nazev);
+  $ip = hash('sha256', ($celkove ? 'vse' : ip_klienta()) . $nazev);
   $soubor = "$adresar/oh_{$nazev}_$ip";
   // Občas uklidit staré záznamy všech limitů (po dvou dnech už nic neomezují).
   if (random_int(1, 50) === 1) {

@@ -26,6 +26,15 @@ try {
 }
 $chyba = ''; $info = '';
 $akce = is_string($_POST['akce'] ?? null) ? $_POST['akce'] : '';
+if ($akce === 'prihlasit-heslem') {
+  $heslo = retezec($_POST['heslo'] ?? '');
+  // Omezení pokusů: na jednu adresu i celkově (hádání hesla z více adres).
+  if (!limit('rozvoz-heslo', 10, 3600) || !limit('rozvoz-heslo-vse', 40, 3600, true)) $chyba = 'Příliš mnoho pokusů, zkuste to za hodinu.';
+  elseif (!empty($n['heslo_farmy']) && $heslo !== '' && password_verify($heslo, $n['heslo_farmy'])) {
+    prihlasit_zarizeni();
+    header('Location: rozvoz.php'); exit;
+  } else $chyba = 'Špatné heslo.';
+}
 if ($akce === 'poslat-odkaz') {
   $email = strtolower(trim(retezec($_POST['email'] ?? '')));
   if (!limit('rozvoz', 6, 3600)) $chyba = 'Příliš mnoho pokusů, zkuste to za hodinu.';
@@ -147,10 +156,18 @@ if (!prihlasen()) {
   $formular = isset($potvrdit)
     ? '<form method="post" class="box" style="display:block"><input type="hidden" name="akce" value="potvrdit"><input type="hidden" name="t" value="' . h($potvrdit) . '">'
       . '<p>Přihlásit tento telefon / počítač k přehledu objednávek?</p><button class="btn hl" style="width:100%">Přihlásit</button></form>'
-    : '<form method="post" class="box" style="display:block"><input type="hidden" name="akce" value="poslat-odkaz">'
+    : (!empty($n['heslo_farmy'])
+      ? '<form method="post" class="box" style="display:block"><input type="hidden" name="akce" value="prihlasit-heslem">'
+        . '<label for="heslo" class="muted">Heslo</label>'
+        . '<input type="password" id="heslo" name="heslo" autocomplete="current-password" required autofocus style="width:100%;padding:12px;border:1px solid var(--line);border-radius:8px;font-size:16px;margin-top:6px">'
+        . '<button class="btn hl" style="margin-top:12px;width:100%">Přihlásit</button></form>'
+        . '<details class="box" style="display:block"><summary class="muted" style="cursor:pointer">Zapomenuté heslo? Poslat odkaz e-mailem</summary>'
+      : '')
+    . '<form method="post"' . (!empty($n['heslo_farmy']) ? ' style="margin-top:12px"' : ' class="box" style="display:block"') . '><input type="hidden" name="akce" value="poslat-odkaz">'
       . '<label for="email" class="muted">Váš e-mail @ovoce-holub.cz</label>'
       . '<input type="email" id="email" name="email" autocomplete="email" required placeholder="pavel@ovoce-holub.cz" style="width:100%;padding:12px;border:1px solid var(--line);border-radius:8px;font-size:16px;margin-top:6px">'
-      . '<button class="btn hl" style="margin-top:12px;width:100%">Poslat odkaz pro přihlášení</button></form>';
+      . '<button class="btn' . (!empty($n['heslo_farmy']) ? '' : ' hl') . '" style="margin-top:12px;width:100%">Poslat odkaz pro přihlášení</button></form>'
+    . (!empty($n['heslo_farmy']) ? '</details>' : '');
   stranka('Objednávky – přihlášení', '<main style="max-width:420px;padding-top:48px"><h1>Objednávky a rozvoz</h1>'
     . '<p class="muted">Přihlášení stačí jednou – zařízení si ho pamatuje.</p>'
     . ($chyba ? '<p class="err">' . h($chyba) . '</p>' : '') . ($info ? '<p class="box">' . h($info) . '</p>' : '')

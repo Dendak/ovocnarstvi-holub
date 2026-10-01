@@ -27,7 +27,17 @@ $zprava = '';
 $chyba = false;
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$poskozeno) {
   $akce = retezec($_POST['akce'] ?? 'heslo');
-  if ($akce === 'odhlasit-vse' && $prihlasen) {
+  if ($akce === 'heslo-farmy' && $prihlasen) {
+    // Heslo pro přihlášení k přehledu objednávek (místo odkazu z e-mailu). Ukládá se jen jeho otisk.
+    $nove = retezec($_POST['nove'] ?? ''); $znovu = retezec($_POST['znovu'] ?? '');
+    if (mb_strlen($nove) < 8) { $zprava = 'Heslo musí mít aspoň 8 znaků.'; $chyba = true; }
+    elseif ($nove !== $znovu) { $zprava = 'Hesla se neshodují.'; $chyba = true; }
+    else {
+      zmenit_nastaveni(function (array &$n) use ($nove) { $n['heslo_farmy'] = password_hash($nove, PASSWORD_DEFAULT); $n['heslo_farmy_zmeneno'] = date('c'); });
+      $n = nastaveni();
+      $zprava = 'Hotovo – k přehledu objednávek se teď přihlásíte tímto heslem. Odkaz z e-mailu zůstává jako záloha, kdybyste heslo zapomněli.';
+    }
+  } elseif ($akce === 'odhlasit-vse' && $prihlasen) {
     odhlasit_vsechna_zarizeni();
     prihlasit_zarizeni(); // tento telefon / počítač zůstane přihlášený
     $zprava = 'Hotovo – všechna ostatní zařízení jsou odhlášená. Tady zůstáváte přihlášení. Odkazy na účtenky u zákazníků fungují dál.';
@@ -138,6 +148,19 @@ if ($log): ?>
   <button type="submit"><?= empty($n['heslo']) ? 'Zapnout párování' : ($plna ? 'Změnit heslo' : 'Uložit heslo a přihlásit') ?></button>
   <p class="muted">Heslo se uloží jen pokud se s ním podaří přihlásit. Uloží se na hostingu do chráněné složky, nikam se neposílá.
     Odkazy na účtenky ani přihlášené telefony se změnou hesla nerozbijí.</p>
+</form>
+<?php endif ?>
+<?php if ($prihlasen && !$poskozeno): ?>
+<form method="post" class="box" autocomplete="off">
+  <input type="hidden" name="akce" value="heslo-farmy">
+  <h2>Heslo k objednávkám</h2>
+  <p class="muted"><?= empty($n['heslo_farmy']) ? 'Zatím se k přehledu objednávek přihlašuje odkazem z e-mailu. Nastavte heslo a příště stačí zadat jen to.'
+    : 'Heslo je nastavené (' . h(date('j. n. Y', strtotime($n['heslo_farmy_zmeneno'] ?? 'now'))) . '). Tady ho můžete změnit.' ?></p>
+  <label for="nove">Nové heslo (aspoň 8 znaků)</label>
+  <input id="nove" name="nove" type="password" autocomplete="new-password" minlength="8" required>
+  <label for="znovu">Heslo znovu</label>
+  <input id="znovu" name="znovu" type="password" autocomplete="new-password" minlength="8" required>
+  <button type="submit"><?= empty($n['heslo_farmy']) ? 'Nastavit heslo' : 'Změnit heslo' ?></button>
 </form>
 <?php endif ?>
 <?php if ($prihlasen): ?>
