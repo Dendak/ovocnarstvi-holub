@@ -1,5 +1,5 @@
 <?php
-// Ověření kódu zákaznické skupiny (např. „elektron“).
+// Ověření kódu zákaznické skupiny (kód zná jen skupina).
 //   ?kod=…                              → jen zjistí, jestli kód existuje a skupina není plná (při registraci)
 //   ?kod=… + Authorization: Bearer …    → zapíše přihlášený účet mezi členy skupiny (hlídá limit účtů)
 //   ?kod=…&odebrat=1 + Authorization    → účet ze skupiny odebere (zákazník kód zrušil)

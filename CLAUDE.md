@@ -19,12 +19,11 @@ Web a e-shop ovocnářství (CZ + DE stránka pro rakouské pálenice). Produkce
 - `img/` — fotky + povinné náhledy `_w480/`, `_w960/` (WebP). Surové fotky `img/Fotky*/` jsou gitignorované.
 - `supabase/schema.sql` — tabulka `objednavky` + RLS (spouští se ručně v SQL editoru). Účty zákazníků + přihlášení přes Seznam.
 - Root `robots.txt`, `sitemap.xml`, `CNAME` se kopírují do buildu ve workflow.
-- Root `index-de.html` je **starý pozůstatek**, nenasazuje se. Živá DE stránka je `react-verze/index-de.html`.
 
 ## Příkazy (z `react-verze/`)
 - `npm ci`, `npm run dev`, `npm run build`, `npm run lint`
 - Nové fotky: `node scripts/zmensit-fotky.mjs` (vyžaduje Chrome, env `CHROME`). Bez náhledů build **schválně spadne**.
-- Build Wedos: `DEPLOY_TARGET=wedos npm run build` (base `/`). Bez proměnné je base `/ovocnarstvi-holub/` (GitHub Pages).
+- Build Wedos: `DEPLOY_TARGET=wedos npm run build` (base `/`). Bez proměnné je base `/ovocnarstvi-holub/` (zbytek po GitHub Pages).
 
 ## Ceny, termíny, skupiny — kde měnit
 - Ceny a produkty **jen** v `react-verze/src/eshop/katalog.js` (`DRUHY_OVOCE`, mošty z `OBSAH.mosty`).
@@ -37,8 +36,7 @@ Web a e-shop ovocnářství (CZ + DE stránka pro rakouské pálenice). Produkce
 
 ## Nasazení (.github/workflows)
 - `deploy-wedos.yml` — **produkce**: build + kopie `img`, robots, sitemap, `.htaccess` → FTP na Wedos. Secrets: `FTP_SERVER`, `FTP_USERNAME`, `FTP_PASSWORD`.
-- `deploy.yml` — GitHub Pages (bez PHP, e-shop tam nefunguje). Pravděpodobně přežitek, viz POZNAMKY.
-- Obě běží při každém pushi na `main`.
+- Běží při každém pushi na `main` (a ručně přes workflow_dispatch). GitHub Pages se už nenasazuje.
 
 ## Konvence
 - Identifikátory a komentáře česky (`kosik`, `objednavka`, `skupina`, `terminy`). Commit zprávy krátce, anglicky nebo česky.

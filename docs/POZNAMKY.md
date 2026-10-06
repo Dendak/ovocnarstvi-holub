@@ -4,13 +4,17 @@ Deník práce na webu, aby šlo navázat z jakéhokoli zařízení. Nejnovějš�
 Na konci každé session: co je hotové, co je rozdělané, co dál.
 
 ## Rozdělané / další kroky
-- [ ] Rozhodnout o `deploy.yml` (GitHub Pages). Produkce je na Wedos, Pages build nemá PHP a má jinou base cestu. Nejspíš vypnout.
-- [ ] Smazat starý root `index-de.html` (nenasazuje se, špatný canonical `ovocnarstvi-holub.cz`).
-- [ ] Zkontrolovat, že kódy zákaznických skupin nejsou čitelné v komentářích (repo je veřejné). Hlavně skupina s nulovými cenami nesmí mít uhodnutelný kód.
+- [ ] **Kód skupiny Elektron je `elektron`** (stejný jako id, dřív i v komentářích ve veřejném repu, je v git historii). Kdokoli se může přidat a obsadit 10 míst. Změnit kód = nový sha256 v `api/_skupiny.php`, stávající členové musí zadat nový kód (klient ho denně ověřuje). Čeká na rozhodnutí.
+- [ ] GitHub Pages je v nastavení repa pořád zapnuté (stará verze, CNAME ovoce-holub.cz). Případně vypnout v Settings → Pages.
 - [ ] Větev `origin/eshop` — zjistit, jestli je ještě potřeba.
 - [ ] `react-verze/README.md` je šablona Vite. Případně nahradit odkazem na CLAUDE.md.
 
 ## Historie
+### 2026-10-06 (2)
+- Smazán `deploy.yml` (GitHub Pages). Produkce jen Wedos.
+- Smazán starý root `index-de.html`.
+- Z komentářů odstraněn čitelný kód skupiny. Kód rodinné skupiny ověřen: není triviální slovo.
+
 ### 2026-10-06
 - Repo naklonováno do `C:\Users\holub\code\ovocnarstvi-holub` (mimo OneDrive).
 - Přidán `CLAUDE.md` (přehled projektu) a tento soubor pro práci napříč zařízeními.

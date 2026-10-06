@@ -56,7 +56,7 @@ export function nastavitSkupinu(skupina) {
   return pred !== localStorage.getItem(KLIC)
 }
 
-// Pozvánka odkazem: eshop.html?kod=elektron. Kód si prohlížeč zapamatuje, dokud se zákazník
+// Pozvánka odkazem: eshop.html?kod=<kód skupiny>. Kód si prohlížeč zapamatuje, dokud se zákazník
 // nezaregistruje nebo nepřihlásí – pak se uplatní sám. Z adresy se hned odstraní.
 const KLIC_POZVANKY = 'oh_kod_pozvanka'
 try {
