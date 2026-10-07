@@ -4,8 +4,12 @@ Deník práce na webu, aby šlo navázat z jakéhokoli zařízení. Nejnovějš�
 Na konci každé session: co je hotové, co je rozdělané, co dál.
 
 ## Rozdělané / další kroky
-- [ ] **Mapa rozvozu na Wedos** (`api/mapa/`): založit schránku `denis@ovoce-holub.cz`, po nasazení otestovat
-  přihlášení Pavla i Denise (odkaz z e-mailu → heslo → mapa s daty). Pak repo `mapa-rozvozu-ovoce` přepnout na soukromé.
+- [ ] **Mapa rozvozu na Wedos** (`api/mapa/`): nasazeno 7. 10., bez přihlášení otestováno (401/403, CDN BYPASS).
+  Zbývá: založit schránku `denis@ovoce-holub.cz`, první přihlášení Pavla i Denise (odkaz z e-mailu → heslo → mapa s daty).
+  Kdyby po přihlášení stálo „Mapa ještě není nahraná“: hlavní FTP účet `w395099` (nahrává mapu) má jiný kořen než účet
+  tohoto repa → upravit `server-dir` ve workflow mapy. Pak repo `mapa-rozvozu-ovoce` přepnout na soukromé a vypnout Pages.
+- [ ] `/.ftp-deploy-sync-state.json` je přes web veřejně čitelný (seznam nasazených souborů). Repo je veřejné, takže nic
+  nového neprozradí, ale šlo by ho zakázat v `.htaccess`, který generuje `deploy-wedos.yml`.
 - [ ] **Kód skupiny Elektron je `elektron`** (stejný jako id, dřív i v komentářích ve veřejném repu, je v git historii). Kdokoli se může přidat a obsadit 10 míst. Změnit kód = nový sha256 v `api/_skupiny.php`, stávající členové musí zadat nový kód (klient ho denně ověřuje). Čeká na rozhodnutí.
 - [ ] GitHub Pages je v nastavení repa pořád zapnuté (stará verze, CNAME ovoce-holub.cz). Případně vypnout v Settings → Pages.
 - [ ] Větev `origin/eshop` — zjistit, jestli je ještě potřeba.
@@ -15,6 +19,8 @@ Na konci každé session: co je hotové, co je rozdělané, co dál.
 ### 2026-10-07
 - Přidána `api/mapa/`: mapa rozvozu z repa `mapa-rozvozu-ovoce` za přihlášením e-mailem a heslem
   (pavel@ a denis@ovoce-holub.cz). Excely se vydávají jen přihlášeným, bez cache.
+- Heslo hlavního FTP účtu `w395099` změněno (používá ho jen repo mapy). Toto repo nasazuje jiným účtem
+  (secrets z 27. 3. fungují dál).
 
 ### 2026-10-06 (2)
 - Smazán `deploy.yml` (GitHub Pages). Produkce jen Wedos.
