@@ -1,0 +1,10 @@
+# Mapa rozvozu: všechno jde přes index.php (přihlášení). Mapa načítá excely relativně (fetch("Obst.xlsx")),
+# proto se tady přesměrují na index.php?soubor=… – stránka mapy pak nepotřebuje žádnou úpravu.
+DirectoryIndex index.php
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  # Vlastní RewriteEngine vypne pravidla z kořenového .htaccess, takže přesměrování na HTTPS je i tady.
+  RewriteCond %{HTTPS} off
+  RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+  RewriteRule ^(Obst(-Vorjahre)?\.xlsx)$ index.php?soubor=$1 [L]
+</IfModule>
