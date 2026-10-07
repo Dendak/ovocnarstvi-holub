@@ -16,6 +16,9 @@ Web a e-shop ovocnářství (CZ + DE stránka pro rakouské pálenice). Produkce
 - `api/` — PHP 8 backend (jen na Wedos): objednávky, stav, skupiny, adresy, kontakt, párování plateb, stránka rozvozu pro farmu (`rozvoz.php`), doklady, nastavení.
   - `_*.php` jsou sdílené soubory, ne endpointy. Konstanty (e-maily, účet, SMTP/IMAP) jsou v `_spolecne.php`.
   - Data jen na serveru v `api/data/` (objednávky JSON, `nastaveni.php` s hesly). V repu je jen `.htaccess`.
+  - `api/mapa/` — mapa rozvozu do Rakouska jen pro přihlášené (e-mail + heslo, heslo si každý nastaví odkazem z e-mailu).
+    Kdo smí: `MAPA_UCTY` (sha256 e-mailu). Samotnou mapu a excely nahrává soukromé repo `Dendak/mapa-rozvozu-ovoce`
+    přes FTP do `api/data/mapa/`; účty a odkazy jsou v `api/data/mapa-ucty.json`, `mapa-odkazy.json`.
 - `img/` — fotky + povinné náhledy `_w480/`, `_w960/` (WebP). Surové fotky `img/Fotky*/` jsou gitignorované.
 - `supabase/schema.sql` — tabulka `objednavky` + RLS (spouští se ručně v SQL editoru). Účty zákazníků + přihlášení přes Seznam.
 - Root `robots.txt`, `sitemap.xml`, `CNAME` se kopírují do buildu ve workflow.
