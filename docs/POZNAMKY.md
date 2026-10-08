@@ -8,6 +8,8 @@ Na konci každé session: co je hotové, co je rozdělané, co dál.
   Po nasazení: přihlásit se jako farma → `api/nastaveni.php` → „Párování plateb“ → zadat heslo k `pavel@`.
   První kontrola projde posledních 7 dní, takže platby od ~1. 10. se doplní, když se heslo zadá do 9. 10.
   Starší ručně. Pak na nastaveni.php ověřit, že není „Poslední nepřijaté upozornění … chybí platný podpis DKIM“.
+- [ ] **Potvrzení o platbě zákazníkům je pozastavené** (`POTVRZENI_PLATBY_ZAKAZNIKOVI = false` v `api/_spolecne.php`,
+  od 8. 10.). Farma dál dostává „ZAPLACENO …“. Zapnout, až majitel rozhodne.
 - [ ] **Mapa rozvozu na Wedos** (`api/mapa/`): nasazeno 7. 10., bez přihlášení otestováno (401/403, CDN BYPASS).
   Zbývá: založit schránku `denis@ovoce-holub.cz`, první přihlášení Pavla i Denise (odkaz z e-mailu → heslo → mapa s daty).
   Kdyby po přihlášení stálo „Mapa ještě není nahraná“: hlavní FTP účet `w395099` (nahrává mapu) má jiný kořen než účet

@@ -38,6 +38,10 @@ const PRODAVAJICI = [
   'zapis' => 'Podnikatel zapsaný v živnostenském rejstříku',
 ];
 
+// Potvrzení o přijetí platby zákazníkovi e-mailem. Od 8. 10. 2026 pozastaveno (na přání majitele) – platba se
+// připíše a farma dostane „ZAPLACENO …“, zákazník nic. Zapnout = true.
+const POTVRZENI_PLATBY_ZAKAZNIKOVI = false;
+
 // Zkušební provoz účtenek (na přání majitele): true = smazaná účtenka uvolní své číslo a číslování pokračuje
 // od nejvyššího zbývajícího. Po skončení zkoušek přepnout na false: vystavenou účtenku pak nejde smazat,
 // farma ji může jen stornovat s poznámkou a čísla se už nikdy znovu nepoužijí.
@@ -838,14 +842,14 @@ function zpracovat_zpravu_banky(string $raw, array &$stav, array &$vysledek): vo
   }
   $zaplacenoTed = $o['zaplaceno'] + 0.001 >= $cil && $bylo + 0.001 < $cil && empty($o['zruseno']) && empty($o['zaplaceno_hotove']);
   if ($zaplacenoTed) {
-    poslat_email($o['email'], "Platba za objednávku {$o['cislo']} přijata – Ovocnářství Holub",
+    if (POTVRZENI_PLATBY_ZAKAZNIKOVI) poslat_email($o['email'], "Platba za objednávku {$o['cislo']} přijata – Ovocnářství Holub",
       "Dobrý den,\n\nplatba $celkem za objednávku {$o['cislo']} k nám dorazila. Děkujeme!\n\n{$o['souhrn']}\n$uctenkaText\nOvocnářství Holub\n" . WEB . "\n",
       email_html('Platba přijata, děkujeme', '<p style="line-height:1.5">Dobrý den,<br>platba <b>' . h($celkem) . '</b> za objednávku <b>' . h($o['cislo']) . '</b> k nám dorazila.</p>'
         . '<div style="background:#fff;border:1px solid #dfd7c9;border-radius:8px;padding:18px 20px;line-height:1.55;font-size:14px">' . nl2br(h($o['souhrn'])) . '</div>' . $uctenkaHtml),
       null, false);
     poslat_email(ODESILATEL, "ZAPLACENO {$o['cislo']} | $celkem | {$o['jmeno']}",
-      "Objednávka {$o['cislo']} je zaplacená ($celkem z $ma).\nZákazník dostal potvrzení o přijetí platby.\n\n{$o['souhrn']}\n",
-      email_html("Zaplaceno {$o['cislo']}", '<p>Objednávka je zaplacená: <b>' . h($celkem) . '</b> z ' . h($ma) . '. Zákazník dostal potvrzení.</p>'
+      "Objednávka {$o['cislo']} je zaplacená ($celkem z $ma).\n" . (POTVRZENI_PLATBY_ZAKAZNIKOVI ? "Zákazník dostal potvrzení o přijetí platby.\n" : '') . "\n{$o['souhrn']}\n",
+      email_html("Zaplaceno {$o['cislo']}", '<p>Objednávka je zaplacená: <b>' . h($celkem) . '</b> z ' . h($ma) . '.' . (POTVRZENI_PLATBY_ZAKAZNIKOVI ? ' Zákazník dostal potvrzení.' : '') . '</p>'
         . '<div style="font-size:14px">' . nl2br(h($o['souhrn'])) . '</div>'), null, false);
   } elseif (!$upozorneni && $o['zaplaceno'] + 0.001 < $cil) {
     poslat_email(ODESILATEL, "NEÚPLNÁ PLATBA {$o['cislo']} | $celkem z $ma | {$o['jmeno']}",
