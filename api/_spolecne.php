@@ -16,6 +16,8 @@ header('Referrer-Policy: strict-origin-when-cross-origin');
 date_default_timezone_set('Europe/Prague');
 
 const ODESILATEL = 'objednavky@ovoce-holub.cz';
+// Schránka, do které Česká spořitelna posílá upozornění na příchozí platby (čte ji platby.php, heslo se zadá v nastaveni.php).
+const SCHRANKA_PLATEB = 'pavel@ovoce-holub.cz';
 const JMENO_ODESILATELE = 'Ovocnářství Holub';
 const WEB = 'https://ovoce-holub.cz';
 const UCET = ['cislo' => '662075319/0800', 'iban' => 'CZ3008000000000662075319', 'majitel' => 'Pavel Holub'];

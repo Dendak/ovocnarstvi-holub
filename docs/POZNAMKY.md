@@ -4,6 +4,10 @@ Deník práce na webu, aby šlo navázat z jakéhokoli zařízení. Nejnovějš�
 Na konci každé session: co je hotové, co je rozdělané, co dál.
 
 ## Rozdělané / další kroky
+- [ ] **Párování plateb čte schránku `pavel@`** (upozornění ČS chodí tam, ne do `objednavky@`, proto se platby nepárovaly).
+  Po nasazení: přihlásit se jako farma → `api/nastaveni.php` → „Párování plateb“ → zadat heslo k `pavel@`.
+  První kontrola projde posledních 7 dní, takže platby od ~1. 10. se doplní, když se heslo zadá do 9. 10.
+  Starší ručně. Pak na nastaveni.php ověřit, že není „Poslední nepřijaté upozornění … chybí platný podpis DKIM“.
 - [ ] **Mapa rozvozu na Wedos** (`api/mapa/`): nasazeno 7. 10., bez přihlášení otestováno (401/403, CDN BYPASS).
   Zbývá: založit schránku `denis@ovoce-holub.cz`, první přihlášení Pavla i Denise (odkaz z e-mailu → heslo → mapa s daty).
   Kdyby po přihlášení stálo „Mapa ještě není nahraná“: hlavní FTP účet `w395099` (nahrává mapu) má jiný kořen než účet
@@ -16,6 +20,10 @@ Na konci každé session: co je hotové, co je rozdělané, co dál.
 - [ ] `react-verze/README.md` je šablona Vite. Případně nahradit odkazem na CLAUDE.md.
 
 ## Historie
+### 2026-10-08
+- Platby se nepárovaly: `platby.php` četl jen `objednavky@`, upozornění ČS ale chodí do `pavel@`.
+  Párování teď čte `pavel@` (`SCHRANKA_PLATEB`, vlastní heslo `heslo_platby` v nastavení), jen zprávy od csas.cz.
+
 ### 2026-10-07
 - Přidána `api/mapa/`: mapa rozvozu z repa `mapa-rozvozu-ovoce` za přihlášením e-mailem a heslem
   (pavel@ a denis@ovoce-holub.cz). Excely se vydávají jen přihlášeným, bez cache.
