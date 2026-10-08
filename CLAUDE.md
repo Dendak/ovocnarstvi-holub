@@ -35,7 +35,7 @@ Web a e-shop ovocnářství (CZ + DE stránka pro rakouské pálenice). Produkce
 - Zákaznické skupiny (ceny, slevy, adresy): `api/_skupiny.php` (kódy jako sha256) + klient `src/eshop/skupina.js`. Kódy skupin nikdy nepsat v čitelné podobě do repa (je veřejné).
 
 ## Tok objednávky
-`Pokladna.jsx` → POST `api/potvrzeni.php` (server přepočítá cenu, uloží, pošle e-mail farmě a zákazníkovi s QR platbou) → záloha přes formsubmit.co, když server selže → přihlášenému se uloží kopie do Supabase. Platby se párují z notifikací ČS v e-mailu (`platby.php`, cron + při návštěvě e-shopu). Skutečný stav objednávky je v serverovém JSON (`stav.php`), ne v Supabase `stav`.
+`Pokladna.jsx` → POST `api/potvrzeni.php` (server přepočítá cenu, uloží, pošle e-mail farmě a zákazníkovi s QR platbou) → záloha přes formsubmit.co, když server selže → přihlášenému se uloží kopie do Supabase. Platby se párují z notifikací ČS ve schránce `pavel@` (`SCHRANKA_PLATEB`, heslo se zadá v `api/nastaveni.php`; `platby.php`, cron + při návštěvě e-shopu). Skutečný stav objednávky je v serverovém JSON (`stav.php`), ne v Supabase `stav`.
 
 ## Nasazení (.github/workflows)
 - `deploy-wedos.yml` — **produkce**: build + kopie `img`, robots, sitemap, `.htaccess` → FTP na Wedos. Secrets: `FTP_SERVER`, `FTP_USERNAME`, `FTP_PASSWORD`.

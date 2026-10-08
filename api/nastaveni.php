@@ -1,5 +1,6 @@
 <?php
-// Nastavení párování plateb: sem se zadá heslo ke schránce objednavky@.
+// Nastavení e-shopu: heslo ke schránce objednavky@ (odesílání e-mailů, záložní přihlášení farmy)
+// a ke schránce SCHRANKA_PLATEB (pavel@, upozornění banky pro párování plateb).
 // Heslo se uloží jen tehdy, když se s ním skutečně podaří přihlásit – nikdo cizí ho tedy nezmění.
 // Jakmile je heslo uložené, je stránka (log, diagnostika, odhlášení zařízení) jen pro přihlášenou farmu.
 // Formulář na heslo zůstává i bez přihlášení: když se změní heslo ke schránce, nechodí ani e-maily s odkazem
@@ -41,6 +42,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$poskozeno) {
     odhlasit_vsechna_zarizeni();
     prihlasit_zarizeni(); // tento telefon / počítač zůstane přihlášený
     $zprava = 'Hotovo – všechna ostatní zařízení jsou odhlášená. Tady zůstáváte přihlášení. Odkazy na účtenky u zákazníků fungují dál.';
+  } elseif ($akce === 'heslo-platby' && $prihlasen) {
+    // Heslo ke schránce s upozorněními banky – jen pro přihlášenou farmu.
+    $heslo = retezec($_POST['heslo'] ?? '');
+    if (!limit('nastaveni', 5, 3600)) {
+      $zprava = 'Příliš mnoho pokusů. Zkuste to za hodinu.'; $chyba = true;
+    } elseif ($heslo === '') {
+      $zprava = 'Zadejte heslo.'; $chyba = true;
+    } else {
+      try {
+        (new Imap(SCHRANKA_PLATEB, $heslo))->konec();
+        zmenit_nastaveni(function (array &$n) use ($heslo) { $n['heslo_platby'] = $heslo; $n['heslo_platby_ulozeno'] = date('c'); });
+        $n = nastaveni();
+        $zprava = 'Hotovo – přihlášení do schránky ' . SCHRANKA_PLATEB . ' funguje a párování plateb je zapnuté. Upozornění z banky se projdou při příští kontrole (do pár minut).';
+      } catch (RuntimeException $e) {
+        $zprava = 'Nepodařilo se přihlásit: ' . $e->getMessage() . '. Heslo nebylo uloženo.'; $chyba = true;
+      }
+    }
   } elseif ($akce === 'heslo') {
     $heslo = retezec($_POST['heslo'] ?? '');
     if (!limit('nastaveni', 5, 3600)) {
@@ -58,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$poskozeno) {
           $prihlasen = $plna = true;
           $zprava = 'Hotovo – heslo ke schránce je uložené a tento telefon je přihlášený k přehledu objednávek.';
         } else {
-          $zprava = 'Hotovo – přihlášení do schránky funguje a párování plateb je zapnuté.'
+          $zprava = 'Hotovo – přihlášení do schránky funguje.'
             . ($prihlasen ? '' : ' Teď se přihlaste k přehledu objednávek (rozvoz.php) – nastavení pak bude jen pro přihlášené.');
         }
         $n = nastaveni();
@@ -109,13 +127,13 @@ a{color:#2f5a33}
   Když e-mail s odkazem nepřichází – třeba proto, že se změnilo heslo ke schránce <?= h(ODESILATEL) ?> –,
   zadejte tady heslo k této schránce. Pokud se s ním podaří do schránky přihlásit, uloží se a tento telefon se rovnou přihlásí.</p>
 <?php else: ?>
-<p class="muted">Platby převodem se párují podle upozornění České spořitelny, která chodí do schránky <?= h(ODESILATEL) ?>.
+<p class="muted">Platby převodem se párují podle upozornění České spořitelny, která chodí do schránky <?= h(SCHRANKA_PLATEB) ?>.
   Připíšou se jen upozornění, která opravdu poslala banka (s jejím platným elektronickým podpisem).</p>
 <?php endif ?>
 <?php if ($zprava): ?><p class="<?= $chyba ? 'err' : 'ok' ?>" role="<?= $chyba ? 'alert' : 'status' ?>"><?= h($zprava) ?></p><?php endif ?>
 <?php if ($plna): ?>
 <div class="box">
-  <p>Párování plateb: <?= empty($n['heslo']) ? '<span class="err">nenastaveno</span>' : '<span class="ok">zapnuto</span>' ?></p>
+  <p>Párování plateb: <?= empty($n['heslo_platby']) ? '<span class="err">nenastaveno</span> – chybí heslo ke schránce ' . h(SCHRANKA_PLATEB) : '<span class="ok">zapnuto</span> (' . h(SCHRANKA_PLATEB) . ')' ?></p>
   <?php if (!empty($stav['kontrola'])): ?><p class="muted">Poslední kontrola schránky: <?= h(date('j. n. Y H:i', (int)$stav['kontrola'])) ?></p><?php endif ?>
   <?php if (!empty($stav['chyba'])): ?><p class="err">Poslední chyba: <?= h((string)$stav['chyba']) ?></p><?php endif ?>
   <?php if ($prihlasen && !empty($stav['odmitnuto']['cas'])): ?><p class="muted">Poslední nepřijaté upozornění na platbu (<?= h(date('j. n. Y H:i', strtotime($stav['odmitnuto']['cas']))) ?>): <?= h((string)($stav['odmitnuto']['duvod'] ?? '')) ?></p><?php endif ?>
@@ -140,12 +158,23 @@ if ($log): ?>
 <div class="box"><p><b>Poslední odeslané e-maily</b></p>
 <pre class="muted" style="white-space:pre-wrap;margin:0"><?= h(implode("\n", array_map('maskovat_radek_logu', array_reverse($log)))) ?></pre></div>
 <?php endif ?>
+<?php if ($ochrana && $prihlasen && !$poskozeno): ?>
+<form method="post" class="box" autocomplete="off">
+  <input type="hidden" name="akce" value="heslo-platby">
+  <h2>Párování plateb</h2>
+  <p class="muted">Upozornění České spořitelny na příchozí platby chodí do schránky <?= h(SCHRANKA_PLATEB) ?>. Web z ní čte jen zprávy od banky.</p>
+  <label for="heslo-platby">Heslo ke schránce <?= h(SCHRANKA_PLATEB) ?></label>
+  <input id="heslo-platby" name="heslo" type="password" required>
+  <button type="submit"><?= empty($n['heslo_platby']) ? 'Zapnout párování' : 'Změnit heslo' ?></button>
+  <p class="muted">Heslo se uloží jen pokud se s ním podaří přihlásit. Uloží se na hostingu do chráněné složky, nikam se neposílá.</p>
+</form>
+<?php endif ?>
 <?php if ($ochrana && !$poskozeno): ?>
 <form method="post" class="box" autocomplete="off">
   <input type="hidden" name="akce" value="heslo">
   <label for="heslo">Heslo ke schránce <?= h(ODESILATEL) ?></label>
   <input id="heslo" name="heslo" type="password" required>
-  <button type="submit"><?= empty($n['heslo']) ? 'Zapnout párování' : ($plna ? 'Změnit heslo' : 'Uložit heslo a přihlásit') ?></button>
+  <button type="submit"><?= empty($n['heslo']) ? 'Uložit heslo' : ($plna ? 'Změnit heslo' : 'Uložit heslo a přihlásit') ?></button>
   <p class="muted">Heslo se uloží jen pokud se s ním podaří přihlásit. Uloží se na hostingu do chráněné složky, nikam se neposílá.
     Odkazy na účtenky ani přihlášené telefony se změnou hesla nerozbijí.</p>
 </form>
