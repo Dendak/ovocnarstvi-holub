@@ -4,10 +4,9 @@ Deník práce na webu, aby šlo navázat z jakéhokoli zařízení. Nejnovějš�
 Na konci každé session: co je hotové, co je rozdělané, co dál.
 
 ## Rozdělané / další kroky
-- [ ] **Párování plateb čte schránku `pavel@`** (upozornění ČS chodí tam, ne do `objednavky@`, proto se platby nepárovaly).
-  Po nasazení: přihlásit se jako farma → `api/nastaveni.php` → „Párování plateb“ → zadat heslo k `pavel@`.
-  První kontrola projde posledních 7 dní, takže platby od ~1. 10. se doplní, když se heslo zadá do 9. 10.
-  Starší ručně. Pak na nastaveni.php ověřit, že není „Poslední nepřijaté upozornění … chybí platný podpis DKIM“.
+- [ ] **Párování plateb z `pavel@` běží od 10. 10.** (heslo zadané, `platby.php` vrací `{"ok":true}`).
+  První kontrola prošla jen posledních 7 dní (od ~3. 10.). Platby z 1.–2. 10. zkontrolovat a spárovat ručně.
+  Na nastaveni.php ověřit, že není „Poslední nepřijaté upozornění … chybí platný podpis DKIM“.
 - [ ] **Potvrzení o platbě zákazníkům je pozastavené** (`POTVRZENI_PLATBY_ZAKAZNIKOVI = false` v `api/_spolecne.php`,
   od 8. 10.). Farma dál dostává „ZAPLACENO …“. Zapnout, až majitel rozhodne.
 - [ ] **Mapa rozvozu na Wedos** (`api/mapa/`): nasazeno 7. 10., bez přihlášení otestováno (401/403, CDN BYPASS).
@@ -26,6 +25,7 @@ Na konci každé session: co je hotové, co je rozdělané, co dál.
 - Nové zařízení (Windows) nastavené. Chybí Node.js 22 + npm, Chrome (zmenšování fotek), případně PHP. Lokální tajné soubory nejsou potřeba.
 - `nastaveni.php` od 1. 10. odmítal každý formulář („Formulář odeslaný z cizí stránky“): `Referrer-Policy: no-referrer`
   → prohlížeč posílá `Origin: null` → `cizi_puvod()` = cizí. Změněno na `same-origin`. Heslo k `pavel@` proto nešlo zadat.
+- Po opravě heslo k `pavel@` zadané, párování plateb zapnuté a ověřené (`platby.php` → `{"ok":true}`).
 
 ### 2026-10-08
 - Platby se nepárovaly: `platby.php` četl jen `objednavky@`, upozornění ČS ale chodí do `pavel@`.
