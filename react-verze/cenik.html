@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="cs">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex" />
+    <title>Ceník k tisku – Ovocnářství Holub</title>
+    <link rel="icon" type="image/svg+xml" href="%BASE_URL%favicon.svg" />
+    <link rel="stylesheet" href="/src/cenik.css" />
+  </head>
+  <body>
+    <!-- Ceník k vytištění (A5, 2 strany). Data jsou ze src/data.js – stejná jako na webu a v e-shopu. -->
+    <div class="ovladani">
+      <p><strong>Ceník k tisku</strong> – ceny a dostupnost jsou stejné jako na webu.
+        Tisk: <kbd>Ctrl</kbd>+<kbd>P</kbd> → papír <b>A5</b>, okraje <b>žádné</b>, měřítko <b>100 %</b>.</p>
+      <button type="button" onclick="window.print()">Tisknout</button>
+    </div>
+    <main id="cenik"></main>
+    <script type="module" src="/src/cenik.js"></script>
+  </body>
+</html>

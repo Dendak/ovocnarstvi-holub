@@ -3,6 +3,11 @@ import { OBSAH, imgSrc, imgSrcSet } from '../data'
 const FOTO = 'mosty/most-sklenice.jpg'
 
 const bezEmoji = s => s.replace(/\p{Extended_Pictographic}️?\s*/gu, '').trim()
+// „ (jen 5 l)“, když je u příchuti vyprodaná jedna velikost (data.js: vyprodano: ['3l']).
+const jenVelikost = p => {
+  const zbyva = ['3 l', '5 l'].filter(v => !p.vyprodano?.includes(v.replace(' ', '')))
+  return p.dostupne !== false && zbyva.length === 1 ? ` (jen ${zbyva[0]})` : ''
+}
 
 export default function Mosty() {
   const { platnostOd, skupiny } = OBSAH.mosty
@@ -44,7 +49,7 @@ export default function Mosty() {
                 <span className="text-ink leading-snug">
                   {sk.polozky.map((p, j) => (
                     <span key={p.nazev} className={p.dostupne === false ? 'text-muted line-through' : ''}>
-                      {bezEmoji(p.nazev)}{j < sk.polozky.length - 1 ? ', ' : ''}
+                      {bezEmoji(p.nazev)}{jenVelikost(p)}{j < sk.polozky.length - 1 ? ', ' : ''}
                     </span>
                   ))}
                 </span>

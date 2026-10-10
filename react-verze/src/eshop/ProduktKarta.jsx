@@ -8,10 +8,12 @@ export default function ProduktKarta({ produkt }) {
   // Juice: flavour + size make up the variant; other products have plain variants.
   const prichute = produkt.prichute
   const [prichutId, setPrichutId] = useState(prichute?.find(p => p.dostupne)?.id)
-  const [velikost, setVelikost] = useState(produkt.velikosti?.[0].id)
+  const [zvolenaVelikost, setVelikost] = useState(produkt.velikosti?.[0].id)
   const [vlastniVarianta, setVariantaId] = useState(produkt.varianty[0].id)
-  const variantaId = prichute ? `${prichutId}-${velikost}` : vlastniVarianta
   const prichut = prichute?.find(p => p.id === prichutId)
+  // Velikost vyprodaná u zvolené příchuti (např. mrkev jen 5 l) se nahradí dostupnou.
+  const velikost = prichut && !prichut.dostupneVelikosti.includes(zvolenaVelikost) ? prichut.dostupneVelikosti[0] : zvolenaVelikost
+  const variantaId = prichute ? `${prichutId}-${velikost}` : vlastniVarianta
   const [pocetText, setPocetText] = useState('1')
   const [pridano, setPridano] = useState(false)
   const varianta = produkt.varianty.find(v => v.id === variantaId)
@@ -96,13 +98,13 @@ export default function ProduktKarta({ produkt }) {
                     className="border border-line rounded-lg px-3 py-2 text-base sm:text-sm w-full bg-white focus:outline-none focus:ring-2 focus:ring-leaf/20">
                     {prichute.map(p => (
                       <option key={p.id} value={p.id} disabled={!p.dostupne}>
-                        {p.nazev}{p.dostupne ? ` – ${produkt.velikosti.map(v => `${v.label} ${formatKc(p.ceny[v.id])}`).join(' · ')}` : ' – vyprodáno'}
+                        {p.nazev}{p.dostupne ? ` – ${produkt.velikosti.filter(v => p.dostupneVelikosti.includes(v.id)).map(v => `${v.label} ${formatKc(p.ceny[v.id])}`).join(' · ')}` : ' – vyprodáno'}
                       </option>
                     ))}
                   </select>
                 </div>
                 <div className="flex flex-wrap gap-2" role="group" aria-label="Balení">
-                  {produkt.velikosti.map(v => (
+                  {produkt.velikosti.map(v => prichut.dostupneVelikosti.includes(v.id) ? (
                     <button key={v.id} type="button" aria-pressed={v.id === velikost}
                       onClick={() => setVelikost(v.id)}
                       className={`text-sm px-3 py-1.5 rounded-lg border transition cursor-pointer text-left ${
@@ -111,6 +113,12 @@ export default function ProduktKarta({ produkt }) {
                       {v.label}
                       <span className={`ml-1.5 ${v.id === velikost ? 'text-white/80' : 'text-ink-soft'}`}>{formatKc(prichut.ceny[v.id])}</span>
                       <span className={`block text-xs tabular-nums ${v.id === velikost ? 'text-white/80' : 'text-ink-soft'}`}>{formatJednotkovaCena(prichut.ceny[v.id], v.litry, 'l')}</span>
+                    </button>
+                  ) : (
+                    <button key={v.id} type="button" disabled
+                      className="text-sm px-3 py-1.5 rounded-lg border border-line text-muted text-left cursor-not-allowed">
+                      {v.label}
+                      <span className="block text-xs">vyprodáno</span>
                     </button>
                   ))}
                 </div>
