@@ -3,7 +3,8 @@
 // podle variabilního symbolu je spáruje s objednávkami a pošle potvrzení zákazníkovi i farmě.
 // Je to osobní schránka – stahují se z ní jen zprávy od banky (hledání podle odesílatele), ostatní pošta se nečte.
 // Spouští se cronem na Wedos a při návštěvě e-shopu (nejvýš jednou za pár minut).
-// Veřejně vrací jen {ok}; podrobnosti (a ?znovu=1 = projít znovu posledních 7 dní) jen přihlášené farmě.
+// Veřejně vrací jen {ok}; podrobnosti (a ?znovu=1 = projít znovu posledních 7 dní, ?ted=1 = zkontrolovat hned,
+// tlačítko v rozvoz.php) jen přihlášené farmě.
 require __DIR__ . '/_spolecne.php';
 
 const INTERVAL = 180;
@@ -23,8 +24,9 @@ if (empty($n['heslo_platby'])) konec(['ok' => false, 'duvod' => 'nenastaveno']);
 $zamek = fopen(data_cesta('platby.lock'), 'c');
 if (!flock($zamek, LOCK_EX | LOCK_NB)) konec(['ok' => true, 'duvod' => 'bezi']);
 $znovu = $farma && isset($_GET['znovu']);
+$ted = $farma && isset($_GET['ted']);
 $stav = nacist_json('stav.json', []);
-if (!$znovu && time() - ($stav['kontrola'] ?? 0) < INTERVAL) konec(['ok' => true, 'duvod' => 'nedavno']);
+if (!$znovu && !$ted && time() - ($stav['kontrola'] ?? 0) < INTERVAL) konec(['ok' => true, 'duvod' => 'nedavno']);
 $stav['kontrola'] = time();
 ulozit_json('stav.json', $stav);
 

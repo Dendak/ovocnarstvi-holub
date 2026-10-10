@@ -37,6 +37,8 @@ Na konci každé session: co je hotové, co je rozdělané, co dál.
 - Tištěný ceník místo LaTeXu: `ovoce-holub.cz/cenik.html` (A5, 2 strany, data z `data.js`, noindex). PR #3.
   Kontakt na ceníku z `OBSAH.kontakt` (info@, nové `telDE`). `holous25@seznam.cz` už nikde být nemá (na webu není).
   Adresa podle ARES: Krtely 70, 384 11 Malovice (PSČ pošty Netolice), na ceníku s „(u Netolic)“.
+- Přehled objednávek (`rozvoz.php`): tlačítko „Zkontrolovat platby“ → `platby.php?ted=1` (jen farma, bez 3min. intervalu).
+  Jestli na Wedosu běží cron na `platby.php`, z repa nejde ověřit (viz „Poslední kontrola“ u tlačítka / v nastaveni.php).
 
 ### 2026-10-08
 - Platby se nepárovaly: `platby.php` četl jen `objednavky@`, upozornění ČS ale chodí do `pavel@`.

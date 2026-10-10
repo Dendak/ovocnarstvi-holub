@@ -848,6 +848,16 @@ $karta = function (array $o) use ($platba, $tlacitko, $zaplaceno, $cil, $dorucen
 };
 
 $obsah = hlavicka('Objednávky', ['?uctenky=1' => 'Účtenky', '?skupiny=1' => 'Skupiny', 'nastaveni.php' => 'Nastavení']) . '<main>' . $hlaseniHtml;
+// Ruční kontrola plateb (jinak ji spouští cron a návštěvy e-shopu, nejvýš jednou za 3 minuty). Po spárování se stránka obnoví.
+$kontrola = (int)(nacist_json('stav.json', [])['kontrola'] ?? 0);
+$obsah .= '<p><button type="button" class="btn" id="platby">Zkontrolovat platby</button> <span class="muted" id="platby-stav" role="status">'
+  . ($kontrola ? 'Poslední kontrola ' . h(date('j. n. H:i', $kontrola)) : '') . '</span></p>'
+  . '<script>document.getElementById("platby").onclick=async e=>{const b=e.currentTarget,s=document.getElementById("platby-stav");b.disabled=true;s.textContent="Kontroluji…";'
+  . 'try{const r=await(await fetch("platby.php?ted=1",{cache:"no-store"})).json();'
+  . 'if(!r.ok)s.textContent=r.duvod==="nenastaveno"?"Párování není zapnuté – zadejte heslo v Nastavení.":r.duvod==="prihlaseni"?"Do schránky se nejde přihlásit – zkontrolujte heslo v Nastavení.":"Kontrola se nepovedla.";'
+  . 'else if(r.duvod==="bezi")s.textContent="Kontrola právě běží, zkuste to za chvíli.";'
+  . 'else{s.textContent="Hotovo – upozornění z banky: "+(r.z_banky||0)+", spárováno: "+(r.sparovano||0)+".";if(r.sparovano)setTimeout(()=>location.reload(),1500)}'
+  . '}catch{s.textContent="Kontrola se nepovedla (spojení)."}b.disabled=false}</script>';
 if (!$dny) {
   $obsah .= '<p class="box">Zatím žádné objednávky z e-shopu.</p>';
 } else {
