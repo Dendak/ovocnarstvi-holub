@@ -4,6 +4,12 @@ Deník práce na webu, aby šlo navázat z jakéhokoli zařízení. Nejnovějš�
 Na konci každé session: co je hotové, co je rozdělané, co dál.
 
 ## Rozdělané / další kroky
+- [ ] **Ceny moštů** jsou pod trhem (hlavně 3 l a ochucené; srovnání 10. 10.: 3 l jinde 120–240 Kč, rakytník 3 l 159–269 Kč).
+  Návrh: 5 l jablko 170–180, ochucené 190–220, rakytník 260–280; 3 l jablko 120–125, ochucené 135–150, rakytník ~190.
+  Čeká na rozhodnutí majitele. Změna = jen `src/data.js` (`OBSAH.mosty`) + `platnostOd`.
+- [ ] **Posílání ovoce balíkem** (zatím jen odběr a rozvoz ČB): vybraná krabice eobaly.cz 5VVL 400×300×200 (2 vrstvy, ~5 kg)
+  + proložky. Nejdřív zkušební balík. Pro e-shop by bylo potřeba: doprava v `katalog.js` (DORUCENI), cena, obchodní podmínky.
+- [ ] Na tištěném ceníku jsou i Meruňky a Broskve (ve starém PDF nebyly) – nechat, nebo vynechat? Nerozhodnuto.
 - [ ] **Párování plateb z `pavel@` běží od 10. 10.** (heslo zadané, `platby.php` vrací `{"ok":true}`).
   První kontrola prošla jen posledních 7 dní (od ~3. 10.). Platby z 1.–2. 10. zkontrolovat a spárovat ručně.
   Na nastaveni.php ověřit, že není „Poslední nepřijaté upozornění … chybí platný podpis DKIM“.
@@ -26,6 +32,11 @@ Na konci každé session: co je hotové, co je rozdělané, co dál.
 - `nastaveni.php` od 1. 10. odmítal každý formulář („Formulář odeslaný z cizí stránky“): `Referrer-Policy: no-referrer`
   → prohlížeč posílá `Origin: null` → `cizi_puvod()` = cizí. Změněno na `same-origin`. Heslo k `pavel@` proto nešlo zadat.
 - Po opravě heslo k `pavel@` zadané, párování plateb zapnuté a ověřené (`platby.php` → `{"ok":true}`).
+- Mošty podle nového ceníku: přidán Květ bezu, Černý rybíz vyprodaný, Mrkev jen 5 l (`vyprodano: ['3l']` – nové pole,
+  e-shop vyprodanou velikost nenabídne). Vánoční mošt dostupný.
+- Tištěný ceník místo LaTeXu: `ovoce-holub.cz/cenik.html` (A5, 2 strany, data z `data.js`, noindex). PR #3.
+  Kontakt na ceníku z `OBSAH.kontakt` (info@, nové `telDE`). `holous25@seznam.cz` už nikde být nemá (na webu není).
+  Adresa podle ARES: Krtely 70, 384 11 Malovice (PSČ pošty Netolice), na ceníku s „(u Netolic)“.
 
 ### 2026-10-08
 - Platby se nepárovaly: `platby.php` četl jen `objednavky@`, upozornění ČS ale chodí do `pavel@`.

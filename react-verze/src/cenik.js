@@ -29,7 +29,7 @@ const ovoce = OBSAH.ovoce.map(o => `<tr><td>${esc(o.nazev)}</td><td>${esc(o.sezo
 const instagram = new URL(k.instagram).pathname.replaceAll('/', '')
 const kontakt = `
   <dl class="kontakt">
-    <dt>Adresa</dt><dd>${esc(k.adresa)}, ${esc(k.mesto)}</dd>
+    <dt>Adresa</dt><dd>${esc(k.adresa)}, ${esc(k.mesto)} (u Netolic)</dd>
     <dt>Telefon</dt><dd><b>${esc(bezPredvolby(k.tel1))}</b>, ${esc(bezPredvolby(k.tel2))}</dd>
     <dt>Deutsch · English</dt><dd>${esc(k.telDE)}</dd>
     <dt>E-mail</dt><dd>${esc(k.email)}</dd>
