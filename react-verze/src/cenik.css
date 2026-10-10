@@ -21,18 +21,20 @@
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
-/* Ceník k tisku (cenik.html): dvě strany A5 ve stylu webu – papír, inkoust, zelená, patkové nadpisy.
-   Na obrazovce jako listy papíru, při tisku bez ovládání. */
+/* Ceník k tisku (cenik.html) – ceník na stánek, ve stylu webu a loga.
+   Rozvržení: tmavě zelený pruh se znakem (logo) → obsah vycentrovaný na výšku → kontakt s QR kódem.
+   Strany jsou navržené pro A5; A4 a A3 jsou zvětšené přes --mira (nastavuje cenik.js). */
 :root {
   --paper: #f8f5ef;
-  --paper-2: #efe9de;
   --line: #dfd7c9;
   --ink: #1d231c;
-  --ink-soft: #4b5448;
   --muted: #636b5f;
   --leaf: #2f5a33;
+  --forest: #17241a;
+  --cream: #f3eee2;
   --berry: #8c2f2b;
   --serif: "Newsreader", Georgia, "Times New Roman", serif;
+  --sans: "Source Sans 3", system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
 @page { size: A5 portrait; margin: 0; }
@@ -42,7 +44,7 @@ body {
   margin: 0;
   background: #e9e4da;
   color: var(--ink);
-  font-family: "Source Sans 3", system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--sans);
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
 }
@@ -81,55 +83,19 @@ body {
 .format label:has(input:focus-visible) { outline: 2px solid var(--ink); outline-offset: -3px; }
 
 .strana {
-  position: relative;
-  zoom: var(--mira, 1); /* A4 a A3 = zvětšená A5 (nastavuje cenik.js) */
+  zoom: var(--mira, 1);
   width: 148mm;
   height: 210mm;
   margin: 24px auto;
-  padding: 10mm 12mm 9mm;
+  padding: 8mm 9mm 8mm;
   background: #fff;
   box-shadow: 0 1px 4px rgb(0 0 0 / 0.15);
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
-/* jemný rámeček jako na jídelním lístku */
-.strana::before {
-  content: "";
-  position: absolute;
-  inset: 5mm;
-  border: 0.6pt solid var(--line);
-  border-radius: 3mm;
-  pointer-events: none;
-}
-
 /* Obsah mezi záhlavím a patičkou vycentrovaný na výšku – volné místo se rozdělí nahoru i dolů. */
-.obsah { flex: 1; display: flex; flex-direction: column; justify-content: safe center; }
-
-/* ---------- záhlaví ---------- */
-.zahlavi { text-align: center; margin-bottom: 4mm; }
-.logo { display: block; height: 16mm; width: auto; margin: 0 auto 2.5mm; border-radius: 1.6mm; }
-h1 {
-  margin: 0;
-  font-family: var(--serif);
-  font-weight: 500;
-  font-size: 22pt;
-  line-height: 1.1;
-  letter-spacing: -0.01em;
-  color: var(--ink);
-}
-.podnadpis {
-  margin: 1.5mm auto 0;
-  font-size: 9.5pt;
-  color: var(--muted);
-}
-.podnadpis::after {
-  content: "";
-  display: block;
-  width: 14mm;
-  margin: 2.5mm auto 0;
-  border-top: 1.2pt solid var(--leaf);
-}
+.obsah { flex: 1; display: flex; flex-direction: column; justify-content: safe center; padding: 4mm 0; }
 
 .stitek {
   margin: 0;
@@ -140,94 +106,119 @@ h1 {
   color: var(--leaf);
 }
 
-/* ---------- mošty: řádky s tečkami k cenám ---------- */
-.mosty { padding: 0 2mm; }
-.radek {
+/* ---------- záhlaví: pruh v barvě loga ---------- */
+.pruh {
   display: grid;
-  grid-template-columns: auto 1fr 13mm 13mm;
-  align-items: baseline;
-  font-size: 12pt;
-  line-height: 1.38;
+  grid-template-columns: auto 1fr;
+  gap: 5mm;
+  align-items: center;
+  padding: 4.5mm 6mm;
+  border-radius: 3mm;
+  background: var(--forest);
+  color: var(--cream);
 }
-.radek .nazev { font-family: var(--serif); font-size: 13pt; }
-.tecky { border-bottom: 1pt dotted #b8b09f; margin: 0 2mm; transform: translateY(-1.2mm); }
-.cena { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
-.radek.hlava { font-size: 9pt; line-height: 1; padding-bottom: 0.6mm; }
-.radek.hlava .cena { font-weight: 600; letter-spacing: 0.03em; color: var(--leaf); }
-.skupina { padding: 1.1mm 0; border-top: 0.6pt solid var(--line); }
-.radek.hlava + .skupina { border-top-color: var(--ink); }
-.mosty > .stitek { margin: 2.5mm 0 0.5mm; }
-.mosty > .stitek + .skupina { border-top: 0; padding-top: 0; }
-.pryc { text-decoration: line-through; text-decoration-thickness: 1pt; color: var(--muted); font-weight: 400; }
-.vyprodano .nazev { text-decoration: line-through; text-decoration-thickness: 1pt; color: var(--muted); }
-.vyprodano .tecky { border-color: var(--line); }
+.pruh .logo { display: block; height: 19mm; width: auto; border-radius: 1.6mm; }
+.pruh h1 {
+  margin: 0;
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: 25pt;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+.pruh p { margin: 1.6mm 0 0; font-size: 9pt; line-height: 1.35; color: color-mix(in srgb, var(--cream) 72%, var(--forest)); }
 
-.pozn { margin: 2.5mm 2mm 0; font-size: 8.5pt; color: var(--muted); }
-
-/* ---------- kalendář sezón ---------- */
-.kalendar { padding: 0 1mm; }
-.sezona {
+/* ---------- strana 1: mošty po cenových hladinách ---------- */
+.mosty { padding: 0 3mm; }
+.hladina {
   display: grid;
-  grid-template-columns: 30mm 1fr;
-  align-items: stretch;
+  grid-template-columns: 1fr 16mm 16mm;
+  column-gap: 2mm;
+  align-items: baseline;
+  padding: 3mm 0;
   border-top: 0.6pt solid var(--line);
 }
-.sezona > div:first-child { padding: 0.9mm 0; }
-.sezona .nazev { display: block; font-family: var(--serif); font-size: 11.5pt; line-height: 1.15; }
-.sezona .kdy { display: block; font-size: 8pt; color: var(--muted); }
+.hladina.hlava { align-items: end; padding: 0 0 1.8mm; border-top: 0; }
+.hladina.ciste { border-top: 1.2pt solid var(--ink); }
+.prichute { margin: 0; font-family: var(--serif); font-size: 16pt; line-height: 1.38; text-wrap: pretty; }
+.prichute > span, .prichute > s { white-space: nowrap; }
+.prichute i { font-style: normal; color: var(--leaf); }
+.prichute s { color: var(--muted); text-decoration-thickness: 1pt; }
+.prichute small {
+  margin-left: 1mm;
+  padding: 0.2mm 1.4mm;
+  border: 0.7pt solid currentColor;
+  border-radius: 2mm;
+  font-family: var(--sans);
+  font-size: 7.5pt;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--berry);
+  vertical-align: 0.25em;
+}
+.hladina.ciste .prichute { font-size: 20pt; }
+.cena { font-size: 17pt; font-weight: 600; text-align: center; font-variant-numeric: tabular-nums; }
+.hladina.ciste .cena { font-size: 20pt; }
+.cena.pryc { font-weight: 400; color: var(--muted); text-decoration: line-through; text-decoration-thickness: 1pt; }
+/* záhlaví sloupců: kreslené bag-in-boxy 5 l a 3 l */
+.krabice { display: flex; flex-direction: column; align-items: center; gap: 0.8mm; color: var(--leaf); font-size: 9pt; font-weight: 600; }
+.krabice svg { display: block; width: 8mm; height: auto; stroke: var(--leaf); stroke-width: 1.1; stroke-linejoin: round; }
+.krabice .cela { fill: #fff; }
+.krabice .vrch { fill: color-mix(in srgb, var(--leaf) 16%, #fff); }
+.krabice .bok { fill: color-mix(in srgb, var(--leaf) 34%, #fff); }
+.krabice .uchyt, .krabice .kohout { fill: var(--leaf); stroke: none; }
+.mosty > .stitek { margin: 3.2mm 0 0.6mm; }
+
+.pozn { margin: 3mm 3mm 0; font-size: 8.5pt; color: var(--muted); }
+
+/* ---------- strana 2: kalendář sezón ---------- */
+.kalendar { padding: 0 1mm; }
+.legenda { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 1mm 4.5mm; margin-bottom: 2.5mm; font-size: 8pt; color: var(--muted); }
+.legenda span { display: inline-flex; align-items: center; gap: 1.4mm; }
+.legenda i { display: inline-block; width: 5.5mm; height: 2.4mm; border-radius: 1.2mm; }
+.legenda i.sklizen { background: var(--leaf); }
+.legenda i.sklad { background: color-mix(in srgb, var(--leaf) 32%, #fff); }
+.legenda i.dnes { width: 0; height: 3.6mm; border-radius: 0; border-left: 1.2pt solid var(--berry); }
+.sezona { display: grid; grid-template-columns: 29mm 1fr; border-top: 0.6pt solid var(--line); }
+.sezona > div:first-child { padding: 1.5mm 0; }
+.sezona .nazev { display: block; font-family: var(--serif); font-size: 13pt; line-height: 1.15; }
+.sezona .kdy { display: block; font-size: 7.5pt; color: var(--muted); }
 .draha { position: relative; }
 .mrizka, .mesice { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(12, 1fr); }
 .mrizka span:nth-child(odd) { background: var(--paper); }
-.pas { position: absolute; top: 50%; height: 3.4mm; margin-top: -1.7mm; border-radius: 1.7mm; }
-.dnes { position: absolute; top: 0; bottom: 0; width: 0; border-left: 1pt solid var(--berry); }
-.sezona.hlava { border-top: 0; height: 7mm; }
+.pas { position: absolute; top: 50%; height: 3.8mm; margin-top: -1.9mm; border-radius: 1.9mm; background: var(--barva); }
+.pas.sklad { background: color-mix(in srgb, var(--barva) 32%, #fff); }
+.dnes { position: absolute; top: 0; bottom: 0; width: 0; border-left: 1.2pt solid var(--berry); }
+.sezona.hlava { height: 5mm; border-top: 0; }
 .mesice span { align-self: end; padding-bottom: 1mm; text-align: center; font-size: 7.5pt; letter-spacing: 0.04em; color: var(--muted); }
-.dnes-popis {
-  position: absolute; top: -1mm; transform: translateX(-50%);
-  font-size: 7pt; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em;
-  color: #fff; background: var(--berry); border-radius: 1mm; padding: 0.2mm 1.2mm;
-}
-.sezona.hlava .mesice { top: 2.8mm; }
 .kalendar .sezona:last-child { border-bottom: 0.6pt solid var(--line); }
 
-.nabidka {
-  margin: 4mm 1mm 0;
-  padding: 3mm 4mm;
-  background: var(--paper);
-  border-radius: 2mm;
-  font-size: 10pt;
-  line-height: 1.45;
-}
+.nabidka { margin: 4.5mm 1mm 0; padding: 3mm 4mm; border-radius: 2mm; background: var(--paper); font-size: 10pt; line-height: 1.45; }
 .nabidka .stitek { display: block; margin-bottom: 0.8mm; }
+.nabidka i { font-style: normal; color: var(--leaf); }
 
 /* ---------- kontakt + QR ---------- */
 .kontakt {
   flex: none;
-  padding: 4mm 1mm 0;
-  border-top: 0.6pt solid var(--line);
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 4mm;
   align-items: center;
+  padding: 3.5mm 2mm 0;
+  border-top: 0.6pt solid var(--line);
 }
-.kontakt dl {
-  margin: 0;
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 0.6mm 3mm;
-  font-size: 9.5pt;
-  line-height: 1.35;
-}
-.kontakt dt { font-size: 7.5pt; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--leaf); padding-top: 0.4mm; }
+.kontakt dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 0.6mm 3mm; font-size: 9.5pt; line-height: 1.35; }
+.kontakt dt { padding-top: 0.4mm; font-size: 7.5pt; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--leaf); }
 .kontakt dd { margin: 0; }
 .kontakt .sit { color: var(--muted); }
 .kontakt a { color: inherit; text-decoration: none; }
 @media screen { .kontakt a:hover { text-decoration: underline; } }
-.qr { display: block; margin: 0; text-align: center; width: 24mm; }
+.qr { display: block; width: 24mm; text-align: center; }
 .qr-kod { display: block; width: 20mm; height: 20mm; margin: 0 auto 1.2mm; }
 .qr-kod svg { display: block; width: 100%; height: 100%; }
 .qr .popis { display: block; font-size: 7.5pt; line-height: 1.3; color: var(--muted); }
-.qr .popis b { color: var(--ink); font-size: 8.5pt; }
+.qr .popis b { font-size: 8.5pt; color: var(--ink); }
 .qr.bez-kodu .qr-kod { display: none; }
 
 @media screen and (max-width: 600px) {
@@ -238,7 +229,7 @@ h1 {
 @media print {
   body { background: #fff; }
   .ovladani { display: none; }
-  /* o kousek nižší než A5, ať zaokrouhlení nepřidá prázdnou stranu */
+  /* o kousek nižší než papír, ať zaokrouhlení nepřidá prázdnou stranu */
   .strana { height: 209mm; margin: 0; box-shadow: none; break-after: page; }
   .strana:last-child { break-after: auto; }
 }
