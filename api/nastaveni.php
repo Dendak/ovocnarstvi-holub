@@ -8,7 +8,8 @@
 require __DIR__ . '/_spolecne.php';
 header('Content-Type: text/html; charset=utf-8');
 header('X-Robots-Tag: noindex');
-header('Referrer-Policy: no-referrer');
+// same-origin, ne no-referrer: s no-referrer posílá prohlížeč u formuláře „Origin: null“ a cizi_puvod() by ho odmítla.
+header('Referrer-Policy: same-origin');
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && cizi_puvod()) { http_response_code(403); exit('Formulář odeslaný z cizí stránky.'); }
 
