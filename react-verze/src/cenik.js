@@ -61,17 +61,20 @@ const nabidka = Object.entries(OBSAH.aktuality.nabidka || {})
   .map(([druh, odrudy]) => `<b>${esc(druh)}</b> ${esc(odrudy.join(', ') || 'všechny odrůdy')}`).join(' · ')
 
 // ---------- kontakt + QR kód na e-shop (na obou stranách) ----------
+// Odkazy fungují na obrazovce a v PDF (Tisk → Uložit jako PDF); na papíře vypadají jako text.
+const odkaz = (href, text) => `<a href="${esc(href)}">${text}</a>`
+const tel = (cislo, text = esc(cislo)) => odkaz(`tel:${cislo.replace(/\s/g, '')}`, text)
 const instagram = new URL(k.instagram).pathname.replaceAll('/', '')
 const kontakt = `
   <footer class="kontakt">
     <dl>
-      <dt>Adresa</dt><dd>${esc(k.adresa)}, ${esc(k.mesto)} (u Netolic)</dd>
-      <dt>Telefon</dt><dd><b>${esc(bezPredvolby(k.tel1))}</b> · ${esc(bezPredvolby(k.tel2))}</dd>
-      <dt>DE · EN</dt><dd>${esc(k.telDE)}</dd>
-      <dt>E-mail</dt><dd>${esc(k.email)}</dd>
-      <dt>Sledujte</dt><dd>${esc(k.facebook.replace(/^https?:\/\/(www\.)?/, ''))} · ig @${esc(instagram)}</dd>
+      <dt>Adresa</dt><dd>${odkaz(k.mapa, `${esc(k.adresa)}, ${esc(k.mesto)} (u Netolic)`)}</dd>
+      <dt>Telefon</dt><dd>${tel(k.tel1, `<b>${esc(bezPredvolby(k.tel1))}</b>`)} · ${tel(k.tel2, esc(bezPredvolby(k.tel2)))}</dd>
+      <dt>DE · EN</dt><dd>${tel(k.telDE)}</dd>
+      <dt>E-mail</dt><dd>${odkaz(`mailto:${k.email}`, esc(k.email))}</dd>
+      <dt>Sledujte</dt><dd>${odkaz(k.facebook, esc(k.facebook.replace(/^https?:\/\/(www\.)?/, '')))} · ${odkaz(k.instagram, `ig @${esc(instagram)}`)}</dd>
     </dl>
-    <figure class="qr"><span class="qr-kod"></span><figcaption>E-shop s rozvozem<br><b>ovoce-holub.cz</b></figcaption></figure>
+    <a class="qr" href="${ESHOP}"><span class="qr-kod"></span><span class="popis">E-shop s rozvozem<br><b>ovoce-holub.cz</b></span></a>
   </footer>`
 
 document.getElementById('cenik').innerHTML = `

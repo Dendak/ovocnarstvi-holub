@@ -208,11 +208,13 @@ h1 {
 }
 .kontakt dt { font-size: 7.5pt; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--leaf); padding-top: 0.4mm; }
 .kontakt dd { margin: 0; }
-.qr { margin: 0; text-align: center; width: 24mm; }
+.kontakt a { color: inherit; text-decoration: none; }
+@media screen { .kontakt a:hover { text-decoration: underline; } }
+.qr { display: block; margin: 0; text-align: center; width: 24mm; }
 .qr-kod { display: block; width: 20mm; height: 20mm; margin: 0 auto 1.2mm; }
 .qr-kod svg { display: block; width: 100%; height: 100%; }
-.qr figcaption { font-size: 7.5pt; line-height: 1.3; color: var(--muted); }
-.qr figcaption b { color: var(--ink); font-size: 8.5pt; }
+.qr .popis { display: block; font-size: 7.5pt; line-height: 1.3; color: var(--muted); }
+.qr .popis b { color: var(--ink); font-size: 8.5pt; }
 .qr.bez-kodu .qr-kod { display: none; }
 
 @media screen and (max-width: 600px) {
