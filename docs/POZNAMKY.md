@@ -4,9 +4,13 @@ Deník práce na webu, aby šlo navázat z jakéhokoli zařízení. Nejnovějš�
 Na konci každé session: co je hotové, co je rozdělané, co dál.
 
 ## Rozdělané / další kroky
-- [ ] **Ceny moštů** jsou pod trhem (hlavně 3 l a ochucené; srovnání 10. 10.: 3 l jinde 120–240 Kč, rakytník 3 l 159–269 Kč).
-  Návrh: 5 l jablko 170–180, ochucené 190–220, rakytník 260–280; 3 l jablko 120–125, ochucené 135–150, rakytník ~190.
-  Čeká na rozhodnutí majitele. Změna = jen `src/data.js` (`OBSAH.mosty`) + `platnostOd`.
+- [ ] **Ceny moštů** – průzkum 10. 10. 2026: Holub je nejlevnější z nalezených farem (soused Lhenická ovocná šťáva
+  5 l jablko 200, skořice/zázvor 230, rakytník 270; Pacov 190/130, Frydrych 190/120). Návrh (5 l / 3 l):
+  jablko 180/125 · hruška-řepa-mrkev 195/135 · skořice…zázvor 205/140 · višeň-č. rybíz 215/150 · rakytník 260/185 ·
+  Vánoční mošt podle receptury. Ovoce: jablka nechat (farma 28, e-shop 40), hrušky farma 32, e-shop 55.
+  Předtím: ověřit telefonem Steinocher (5 l za 150 v 2025), ZEMCHEBA (jablka 24–25), spočítat receptury (višeň, rybíz,
+  rakytník, limetka); zjistit, jestli lisujeme sami (v cizí moštárně je 3 l za 110 ztrátový). Zdražit s novou sezónou moštů,
+  zákazníkům oznámit předem. Změna = `src/data.js` (`OBSAH.mosty`, `platnostOd`) + `katalog.js` (cenaKg), ceník se přepočítá sám.
 - [ ] **Posílání ovoce balíkem** (zatím jen odběr a rozvoz ČB): vybraná krabice eobaly.cz 5VVL 400×300×200 (2 vrstvy, ~5 kg)
   + proložky. Nejdřív zkušební balík. Pro e-shop by bylo potřeba: doprava v `katalog.js` (DORUCENI), cena, obchodní podmínky.
 - [ ] Na tištěném ceníku jsou i Meruňky a Broskve (ve starém PDF nebyly) – nechat, nebo vynechat? Nerozhodnuto.
