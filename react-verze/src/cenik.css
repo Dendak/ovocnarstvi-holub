@@ -211,6 +211,7 @@ h1 {
 }
 .kontakt dt { font-size: 7.5pt; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--leaf); padding-top: 0.4mm; }
 .kontakt dd { margin: 0; }
+.kontakt .sit { color: var(--muted); }
 .kontakt a { color: inherit; text-decoration: none; }
 @media screen { .kontakt a:hover { text-decoration: underline; } }
 .qr { display: block; margin: 0; text-align: center; width: 24mm; }

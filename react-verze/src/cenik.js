@@ -64,7 +64,7 @@ const nabidka = Object.entries(OBSAH.aktuality.nabidka || {})
 // Odkazy fungují na obrazovce a v PDF (Tisk → Uložit jako PDF); na papíře vypadají jako text.
 const odkaz = (href, text) => `<a href="${esc(href)}">${text}</a>`
 const tel = (cislo, text = esc(cislo)) => odkaz(`tel:${cislo.replace(/\s/g, '')}`, text)
-const instagram = new URL(k.instagram).pathname.replaceAll('/', '')
+const ucet = url => new URL(url).pathname.replaceAll('/', '') // „OvoceHolub“, „ovocnarstviholub“
 const kontakt = `
   <footer class="kontakt">
     <dl>
@@ -72,7 +72,7 @@ const kontakt = `
       <dt>Telefon</dt><dd>${tel(k.tel1, `<b>${esc(bezPredvolby(k.tel1))}</b>`)} · ${tel(k.tel2, esc(bezPredvolby(k.tel2)))}</dd>
       <dt>DE · EN</dt><dd>${tel(k.telDE)}</dd>
       <dt>E-mail</dt><dd>${odkaz(`mailto:${k.email}`, esc(k.email))}</dd>
-      <dt>Sledujte</dt><dd>${odkaz(k.facebook, esc(k.facebook.replace(/^https?:\/\/(www\.)?/, '')))} · ${odkaz(k.instagram, `ig @${esc(instagram)}`)}</dd>
+      <dt>Sledujte</dt><dd>${odkaz(k.facebook, `<span class="sit">Facebook</span> ${esc(ucet(k.facebook))}`)} · ${odkaz(k.instagram, `<span class="sit">Instagram</span> @${esc(ucet(k.instagram))}`)}</dd>
     </dl>
     <a class="qr" href="${ESHOP}"><span class="qr-kod"></span><span class="popis">E-shop s rozvozem<br><b>ovoce-holub.cz</b></span></a>
   </footer>`
