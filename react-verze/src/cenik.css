@@ -48,7 +48,7 @@ body {
 }
 
 .ovladani {
-  max-width: 148mm;
+  max-width: max(calc(148mm * var(--mira, 1)), 680px); /* šířka listu, ale aspoň 680 px */
   margin: 24px auto 0;
   padding: 0 16px;
   display: flex;
@@ -71,9 +71,18 @@ body {
   padding: 8px 18px;
   cursor: pointer;
 }
+.akce { display: flex; gap: 10px; align-items: center; }
+/* přepínač A5 / A4 / A3 */
+.format { display: inline-flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: #fff; }
+.format label { padding: 7px 12px; font-weight: 600; cursor: pointer; }
+.format label + label { border-left: 1px solid var(--line); }
+.format input { position: absolute; opacity: 0; pointer-events: none; }
+.format label:has(input:checked) { background: var(--leaf); color: #fff; }
+.format label:has(input:focus-visible) { outline: 2px solid var(--ink); outline-offset: -3px; }
 
 .strana {
   position: relative;
+  zoom: var(--mira, 1); /* A4 a A3 = zvětšená A5 (nastavuje cenik.js) */
   width: 148mm;
   height: 210mm;
   margin: 24px auto;

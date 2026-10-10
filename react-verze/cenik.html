@@ -12,8 +12,15 @@
     <!-- Ceník k vytištění (A5, 2 strany). Data jsou ze src/data.js – stejná jako na webu a v e-shopu. -->
     <div class="ovladani">
       <p><strong>Ceník k tisku</strong> – ceny a dostupnost jsou stejné jako na webu.
-        Tisk: <kbd>Ctrl</kbd>+<kbd>P</kbd> → papír <b>A5</b>, okraje <b>žádné</b>, měřítko <b>100 %</b>.</p>
-      <button type="button" onclick="window.print()">Tisknout</button>
+        Tisk: <kbd>Ctrl</kbd>+<kbd>P</kbd> → papír <b id="papir">A5</b>, okraje <b>žádné</b>, měřítko <b>100 %</b>.</p>
+      <div class="akce">
+        <div class="format" role="radiogroup" aria-label="Velikost papíru">
+          <label><input type="radio" name="format" value="A5" checked> A5</label>
+          <label><input type="radio" name="format" value="A4"> A4</label>
+          <label><input type="radio" name="format" value="A3"> A3</label>
+        </div>
+        <button type="button" onclick="window.print()">Tisknout</button>
+      </div>
     </div>
     <main id="cenik"></main>
     <script type="module" src="/src/cenik.js"></script>

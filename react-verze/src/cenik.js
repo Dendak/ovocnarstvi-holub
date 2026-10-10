@@ -95,6 +95,23 @@ document.getElementById('cenik').innerHTML = `
     ${kontakt}
   </section>`
 
+// Velikost papíru: strany jsou navržené pro A5, A4 a A3 jsou jen zvětšené (řada A má stejný poměr stran).
+// Volba se pamatuje v prohlížeči; jde ji dát i do adresy (cenik.html?format=a4).
+const FORMATY = { A5: 1, A4: Math.SQRT2, A3: 2 }
+const stylStrany = document.head.appendChild(document.createElement('style'))
+const nastavitFormat = f => {
+  if (!FORMATY[f]) f = 'A5'
+  document.documentElement.style.setProperty('--mira', FORMATY[f])
+  stylStrany.textContent = `@page { size: ${f} portrait; margin: 0; }`
+  document.getElementById('papir').textContent = f
+  document.querySelector(`input[name="format"][value="${f}"]`).checked = true
+  try { localStorage.setItem('cenik-format', f) } catch { /* soukromý režim */ }
+}
+document.querySelectorAll('input[name="format"]').forEach(i => i.addEventListener('change', () => nastavitFormat(i.value)))
+let ulozeny = null
+try { ulozeny = localStorage.getItem('cenik-format') } catch { /* soukromý režim */ }
+nastavitFormat(new URLSearchParams(location.search).get('format')?.toUpperCase() || ulozeny || 'A5')
+
 // Kdyby přibyly příchutě nebo ovoce a strana přetekla, obsah se mírně zmenší (nejvýš na 80 %).
 document.fonts.ready.then(() => document.querySelectorAll('.strana').forEach(s => {
   const obsah = s.querySelector('.obsah')
