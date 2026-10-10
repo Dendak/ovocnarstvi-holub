@@ -1,0 +1,21 @@
+name: Kontrola plateb (každých 10 minut)
+
+# Zavolá api/platby.php stejně jako návštěva e-shopu (server sám kontroluje nejvýš jednou za 3 minuty).
+# Cron na Wedosu umí nejčastěji jednou za hodinu. GitHub plánované běhy občas o pár minut zpozdí
+# a po 60 dnech bez změny v repu je vypne (pošle e-mail, pak stačí v Actions znovu zapnout).
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: platby
+  cancel-in-progress: false
+
+jobs:
+  platby:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Zkontrolovat platby
+        run: curl -fsS --max-time 90 https://ovoce-holub.cz/api/platby.php

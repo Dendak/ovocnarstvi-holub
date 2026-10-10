@@ -38,7 +38,8 @@ Na konci každé session: co je hotové, co je rozdělané, co dál.
   Kontakt na ceníku z `OBSAH.kontakt` (info@, nové `telDE`). `holous25@seznam.cz` už nikde být nemá (na webu není).
   Adresa podle ARES: Krtely 70, 384 11 Malovice (PSČ pošty Netolice), na ceníku s „(u Netolic)“.
 - Přehled objednávek (`rozvoz.php`): tlačítko „Zkontrolovat platby“ → `platby.php?ted=1` (jen farma, bez 3min. intervalu).
-  Jestli na Wedosu běží cron na `platby.php`, z repa nejde ověřit (viz „Poslední kontrola“ u tlačítka / v nastaveni.php).
+  Cron na Wedosu neběžel (umí max. 1× za hodinu). Místo něj `.github/workflows/platby.yml` volá `platby.php` každých 10 min
+  (GitHub ho po 60 dnech bez commitu vypne – pak v Actions znovu zapnout).
 
 ### 2026-10-08
 - Platby se nepárovaly: `platby.php` četl jen `objednavky@`, upozornění ČS ale chodí do `pavel@`.
