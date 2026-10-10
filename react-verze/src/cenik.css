@@ -94,9 +94,12 @@ body {
   pointer-events: none;
 }
 
+/* Obsah mezi záhlavím a patičkou vycentrovaný na výšku – volné místo se rozdělí nahoru i dolů. */
+.obsah { flex: 1; display: flex; flex-direction: column; justify-content: safe center; }
+
 /* ---------- záhlaví ---------- */
 .zahlavi { text-align: center; margin-bottom: 4mm; }
-.logo { display: block; height: 14mm; width: auto; margin: 0 auto 2.5mm; border-radius: 1.6mm; }
+.logo { display: block; height: 16mm; width: auto; margin: 0 auto 2.5mm; border-radius: 1.6mm; }
 h1 {
   margin: 0;
   font-family: var(--serif);
@@ -140,8 +143,8 @@ h1 {
 .radek .nazev { font-family: var(--serif); font-size: 13pt; }
 .tecky { border-bottom: 1pt dotted #b8b09f; margin: 0 2mm; transform: translateY(-1.2mm); }
 .cena { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
-.radek.hlava { font-size: 8pt; line-height: 1; }
-.radek.hlava .cena { font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--leaf); }
+.radek.hlava { font-size: 9pt; line-height: 1; padding-bottom: 0.6mm; }
+.radek.hlava .cena { font-weight: 600; letter-spacing: 0.03em; color: var(--leaf); }
 .skupina { padding: 1.1mm 0; border-top: 0.6pt solid var(--line); }
 .radek.hlava + .skupina { border-top-color: var(--ink); }
 .mosty > .stitek { margin: 2.5mm 0 0.5mm; }
@@ -190,7 +193,7 @@ h1 {
 
 /* ---------- kontakt + QR ---------- */
 .kontakt {
-  margin-top: auto;
+  flex: none;
   padding: 4mm 1mm 0;
   border-top: 0.6pt solid var(--line);
   display: grid;

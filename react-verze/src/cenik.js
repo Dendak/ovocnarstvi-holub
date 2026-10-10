@@ -80,16 +80,26 @@ const kontakt = `
 document.getElementById('cenik').innerHTML = `
   <section class="strana">
     ${zahlavi('Domácí mošty', 'Z jablek z našeho sadu, bez přidaného cukru a konzervantů')}
-    <div class="mosty">${mosty}</div>
-    <p class="pozn">Ceny v Kč za balení bag-in-box včetně obalu a DPH · ceník ze dne ${dnes}</p>
+    <div class="obsah">
+      <div class="mosty">${mosty}</div>
+      <p class="pozn">Ceny v Kč za balení bag-in-box včetně obalu a DPH · ceník ze dne ${dnes}</p>
+    </div>
     ${kontakt}
   </section>
   <section class="strana">
     ${zahlavi('Kdy máme ovoce', 'Sezóna se může podle počasí o pár dní posunout')}
-    <div class="kalendar">${kalendar}</div>
-    ${nabidka ? `<p class="nabidka"><span class="stitek">Právě teď · ${dnes}</span>${nabidka}</p>` : ''}
+    <div class="obsah">
+      <div class="kalendar">${kalendar}</div>
+      ${nabidka ? `<p class="nabidka"><span class="stitek">Právě teď · ${dnes}</span>${nabidka}</p>` : ''}
+    </div>
     ${kontakt}
   </section>`
+
+// Kdyby přibyly příchutě nebo ovoce a strana přetekla, obsah se mírně zmenší (nejvýš na 80 %).
+document.fonts.ready.then(() => document.querySelectorAll('.strana').forEach(s => {
+  const obsah = s.querySelector('.obsah')
+  for (let z = 1; s.scrollHeight > s.clientHeight && z > 0.8;) obsah.style.zoom = (z -= 0.02).toFixed(2)
+}))
 
 // QR kód se načte až v prohlížeči (stejná knihovna jako QR platba v e-shopu); bez něj zůstane jen popisek.
 import('qrcode')
