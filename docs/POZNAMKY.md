@@ -9,7 +9,7 @@ Na konci každé session: co je hotové, co je rozdělané, co dál.
   jablko 180/125 · hruška-řepa-mrkev 195/135 · skořice…zázvor 205/140 · višeň-č. rybíz 215/150 · rakytník 260/185 ·
   Vánoční mošt podle receptury. Ovoce: jablka nechat (farma 28, e-shop 40), hrušky farma 32, e-shop 55.
   Předtím: ověřit telefonem Steinocher (5 l za 150 v 2025), ZEMCHEBA (jablka 24–25), spočítat receptury (višeň, rybíz,
-  rakytník, limetka); zjistit, jestli lisujeme sami (v cizí moštárně je 3 l za 110 ztrátový). Zdražit s novou sezónou moštů,
+  rakytník, limetka). Lisujeme v moštárně (ne sami) → marže je tenká, hlavně u 3 l. Zdražit s novou sezónou moštů,
   zákazníkům oznámit předem. Změna = `src/data.js` (`OBSAH.mosty`, `platnostOd`) + `katalog.js` (cenaKg), ceník se přepočítá sám.
 - [ ] **Posílání ovoce balíkem** (zatím jen odběr a rozvoz ČB): vybraná krabice eobaly.cz 5VVL 400×300×200 (2 vrstvy, ~5 kg)
   + proložky. Nejdřív zkušební balík. Pro e-shop by bylo potřeba: doprava v `katalog.js` (DORUCENI), cena, obchodní podmínky.
