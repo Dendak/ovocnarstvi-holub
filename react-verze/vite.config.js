@@ -14,6 +14,7 @@ const STRANKY = {
   gdprDe: 'gdpr-de.html',
   podminky: 'obchodni-podminky.html',
   eshop: 'eshop.html',
+  cenik: 'cenik.html',
 }
 
 // api/_cenik.php: ceník a pravidla termínů pro kontrolu objednávek na serveru (api/potvrzeni.php).

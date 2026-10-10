@@ -1,0 +1,103 @@
+@import "./fonts/fonts.css";
+
+/* Ceník k tisku (cenik.html): dvě strany A5. Na obrazovce jako listy papíru, při tisku bez ovládání. */
+:root {
+  --paper: #f8f5ef;
+  --line: #dfd7c9;
+  --ink: #1d231c;
+  --muted: #636b5f;
+  --leaf: #2f5a33;
+}
+
+@page { size: A5 portrait; margin: 0; }
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: #e9e4da;
+  color: var(--ink);
+  font-family: "Source Sans 3", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+.ovladani {
+  max-width: 148mm;
+  margin: 24px auto 0;
+  padding: 0 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 15px;
+  line-height: 1.5;
+}
+.ovladani p { margin: 0; flex: 1 1 260px; }
+.ovladani kbd { font: inherit; border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; background: #fff; }
+.ovladani button {
+  font: inherit;
+  font-weight: 600;
+  color: #fff;
+  background: var(--leaf);
+  border: 0;
+  border-radius: 8px;
+  padding: 8px 18px;
+  cursor: pointer;
+}
+
+.strana {
+  width: 148mm;
+  height: 210mm;
+  margin: 24px auto;
+  padding: 12mm 12mm 10mm;
+  background: #fff;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.15);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+h1 {
+  margin: 0 0 5mm;
+  text-align: center;
+  font-family: "Newsreader", Georgia, "Times New Roman", serif;
+  font-weight: 500;
+  font-size: 22pt;
+  color: var(--leaf);
+}
+
+table { width: 100%; border-collapse: collapse; font-size: 12.5pt; }
+th, td { padding: 1.3mm 2.5mm; text-align: left; border: 1px solid var(--ink); }
+th { font-weight: 600; background: var(--paper); }
+thead tr { border-bottom: 2.5px solid var(--ink); }
+tbody { border-top: 2px solid var(--ink); }
+tbody td { border-top-color: var(--line); border-bottom-color: var(--line); }
+tbody tr:last-child td { border-bottom-color: var(--ink); }
+.cena { width: 20mm; text-align: right; font-variant-numeric: tabular-nums; }
+td.pryc { text-decoration: line-through; text-decoration-thickness: 1.5px; color: var(--muted); }
+
+.pozn { margin: 2mm 0 0; font-size: 9.5pt; color: var(--muted); }
+
+.kontakt {
+  margin: auto 0 0;
+  padding-top: 4mm;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.8mm 4mm;
+  font-size: 10.5pt;
+}
+.kontakt dt { color: var(--muted); }
+.kontakt dd { margin: 0; }
+
+@media screen and (max-width: 600px) {
+  /* Na telefonu se listy jen zmenší (tisk z telefonu je výjimka). */
+  .strana { zoom: 0.6; }
+}
+
+@media print {
+  body { background: #fff; }
+  .ovladani { display: none; }
+  /* o kousek nižší než A5, ať zaokrouhlení nepřidá prázdnou stranu */
+  .strana { height: 209mm; margin: 0; box-shadow: none; break-after: page; }
+  .strana:last-child { break-after: auto; }
+  th { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}

@@ -134,15 +134,19 @@ const MOSTY_FOTO = {
 const VELIKOSTI = [{ id: '3l', label: '3 l', litry: 3, klic: 'cena3l' }, { id: '5l', label: '5 l', litry: 5, klic: 'cena5l' }]
 const prichute = OBSAH.mosty.skupiny.flatMap(sk => sk.polozky.map(p => {
   const nazev = p.nazev.replace(/^\p{Extended_Pictographic}\s*/u, '')
+  // velikosti, které nejsou vyprodané (data.js: vyprodano: ['3l'])
+  const dostupneVelikosti = p.dostupne === false ? [] : VELIKOSTI.map(v => v.id).filter(id => !p.vyprodano?.includes(id))
   return {
     id: nazev.replace(/[^\p{L}\p{N}]+/gu, '-').toLowerCase(),
     nazev,
     // název na objednávce a účtence: „Mošt hruška“, „Vánoční mošt“
     nazevPolozky: /mošt/i.test(nazev) ? nazev : `Mošt ${nazev.toLowerCase()}`,
-    dostupne: p.dostupne !== false,
+    dostupne: dostupneVelikosti.length > 0,
+    dostupneVelikosti,
     ceny: Object.fromEntries(VELIKOSTI.map(v => [v.id, cenaSkupiny('mosty', sk[v.klic])])),
   }
 }))
+const dostupneVarianty = prichute.flatMap(p => VELIKOSTI.filter(v => p.dostupneVelikosti.includes(v.id)).map(v => ({ p, v })))
 const produktyMosty = [{
   id: 'most',
   druh: 'mosty',
@@ -160,13 +164,13 @@ const produktyMosty = [{
   jednotka: 'ks',
   prichute,
   velikosti: VELIKOSTI.map(({ id, label, litry }) => ({ id, label, litry })),
-  varianty: prichute.filter(p => p.dostupne).flatMap(p => VELIKOSTI.map(v => ({
+  varianty: dostupneVarianty.map(({ p, v }) => ({
     id: `${p.id}-${v.id}`, label: v.label, nazev: p.nazevPolozky, cena: p.ceny[v.id], litry: v.litry,
-  }))),
+  })),
   cenaZaJednotku: null,
-  cenaOd: Math.min(...prichute.filter(p => p.dostupne).flatMap(p => Object.values(p.ceny))),
+  cenaOd: Math.min(...dostupneVarianty.map(({ p, v }) => p.ceny[v.id])),
   // nejnižší cena za litr (jednotková cena u balení)
-  cenaOdLitr: Math.min(...prichute.filter(p => p.dostupne).flatMap(p => VELIKOSTI.map(v => p.ceny[v.id] / v.litry))),
+  cenaOdLitr: Math.min(...dostupneVarianty.map(({ p, v }) => p.ceny[v.id] / v.litry)),
 }]
 
 // Bedýnky jen pro zákaznickou skupinu: pevná váha za pevnou cenu, složená z odrůd, které jsou
