@@ -117,6 +117,9 @@ button{margin-top:12px;background:#2f5a33;color:#fff;border:0;border-radius:6px;
 button.cervene{background:#8c2f2b}
 .ok{color:#2f5a33;font-weight:bold}.err{color:#8c2f2b;font-weight:bold}.muted{color:#6b6f66;font-size:14px}
 a{color:#2f5a33}
+/* Na počítači dva sloupce: vlevo stav a log, vpravo formuláře (jen když je levý sloupec vyplněný). */
+@media (min-width:1000px){main:has(.sloupce>div:first-child>.box){max-width:1040px}
+.sloupce:has(>div:first-child>.box){display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 28px;align-items:start}}
 </style></head><body><main>
 <?php if ($prihlasen): ?><p class="muted"><a href="rozvoz.php">← Zpět na objednávky</a></p><?php endif ?>
 <h1>Nastavení</h1>
@@ -132,6 +135,7 @@ a{color:#2f5a33}
   Připíšou se jen upozornění, která opravdu poslala banka (s jejím platným elektronickým podpisem).</p>
 <?php endif ?>
 <?php if ($zprava): ?><p class="<?= $chyba ? 'err' : 'ok' ?>" role="<?= $chyba ? 'alert' : 'status' ?>"><?= h($zprava) ?></p><?php endif ?>
+<div class="sloupce"><div>
 <?php if ($plna): ?>
 <div class="box">
   <p>Párování plateb: <?= empty($n['heslo_platby']) ? '<span class="err">nenastaveno</span> – chybí heslo ke schránce ' . h(SCHRANKA_PLATEB) : '<span class="ok">zapnuto</span> (' . h(SCHRANKA_PLATEB) . ')' ?></p>
@@ -159,6 +163,7 @@ if ($log): ?>
 <div class="box"><p><b>Poslední odeslané e-maily</b></p>
 <pre class="muted" style="white-space:pre-wrap;margin:0"><?= h(implode("\n", array_map('maskovat_radek_logu', array_reverse($log)))) ?></pre></div>
 <?php endif ?>
+</div><div>
 <?php if ($ochrana && $prihlasen && !$poskozeno): ?>
 <form method="post" class="box" autocomplete="off">
   <input type="hidden" name="akce" value="heslo-platby">
@@ -202,4 +207,5 @@ if ($log): ?>
   <button type="submit" class="cervene">Odhlásit všechna zařízení</button>
 </form>
 <?php endif ?>
+</div></div>
 </main></body></html>

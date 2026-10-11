@@ -10,7 +10,7 @@ Na konci každé session: co je hotové, co je rozdělané, co dál.
   Vánoční mošt podle receptury. Ovoce: jablka nechat (farma 28, e-shop 40), hrušky farma 32, e-shop 55.
   Předtím: ověřit telefonem Steinocher (5 l za 150 v 2025), ZEMCHEBA (jablka 24–25), spočítat receptury (višeň, rybíz,
   rakytník, limetka). Lisujeme v moštárně (ne sami), jsme plátci DPH (mošt 21 %) → marže je tenká, hlavně u 3 l.
-  Chybí: kterou moštárnu a za kolik (5 l / 3 l / ochucené) – pak spočítat marži po hladinách. Zdražit s novou sezónou moštů,
+  Moštárna: 5 l za 75–78 Kč vč. obalu (11. 10. 2026). Chybí: cena 3 l a ochucených, zda je cena s DPH. Zdražit s novou sezónou moštů,
   zákazníkům oznámit předem. Změna = `src/data.js` (`OBSAH.mosty`, `platnostOd`) + `katalog.js` (cenaKg), ceník se přepočítá sám.
 - [ ] **Posílání ovoce balíkem** (zatím jen odběr a rozvoz ČB): vybraná krabice eobaly.cz 5VVL 400×300×200 (2 vrstvy, ~5 kg)
   + proložky. Nejdřív zkušební balík. Pro e-shop by bylo potřeba: doprava v `katalog.js` (DORUCENI), cena, obchodní podmínky.

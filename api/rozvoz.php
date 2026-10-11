@@ -118,6 +118,12 @@ details.storno form{display:flex;gap:6px;margin-top:6px}details.storno input{fle
 .pozor{border-color:var(--berry);background:#fbeeec}.pozor p{margin:0 0 6px}.nevyrizene .btn{margin:8px 8px 0 0;border-color:var(--berry);color:var(--berry);font-weight:bold}
 .pata{margin-top:32px;padding-top:12px;border-top:1px solid var(--line)}.pata .btn{margin-top:4px}
 @media (max-width:370px){header{padding-left:10px}header h1{font-size:17px!important}header nav a{padding:11px 5px;font-size:14px}}
+@media (min-width:1100px){main.siroky{max-width:1240px}main.siroky>.box{max-width:760px}
+.karty{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;align-items:start}.karty .obj{margin:0;overflow-wrap:anywhere}
+main.siroky>.karty,.rozvoz:not(.s-mapou) .karty{grid-template-columns:repeat(2,minmax(0,1fr))}
+.rozvoz.s-mapou{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:24px;align-items:start}
+.rozvoz.s-mapou .rozvoz-mapa{position:sticky;top:56px;display:flex;flex-direction:column;max-height:calc(100vh - 68px)}
+.rozvoz.s-mapou #mapa{flex:1 1 300px;height:auto;min-height:260px;margin-top:0}}
 </style></head><body>' . $obsah
     // Dvojí ťuknutí na tlačítko odešle formulář jen jednou (hodnota tlačítka se přitom zachová);
     // po 8 s jde odeslat znovu, kdyby se na slabém signálu nic nestalo.
@@ -847,7 +853,8 @@ $karta = function (array $o) use ($platba, $tlacitko, $zaplaceno, $cil, $dorucen
   return $s;
 };
 
-$obsah = hlavicka('Objednávky', ['?uctenky=1' => 'Účtenky', '?skupiny=1' => 'Skupiny', 'nastaveni.php' => 'Nastavení']) . '<main>' . $hlaseniHtml;
+// main.siroky: na počítači širší stránka (mapa vedle karet, karty ve dvou sloupcích); na telefonu beze změny.
+$obsah = hlavicka('Objednávky', ['?uctenky=1' => 'Účtenky', '?skupiny=1' => 'Skupiny', 'nastaveni.php' => 'Nastavení']) . '<main class="siroky">' . $hlaseniHtml;
 // Ruční kontrola plateb (jinak ji spouští cron a návštěvy e-shopu, nejvýš jednou za 3 minuty). Po spárování se stránka obnoví.
 $kontrola = (int)(nacist_json('stav.json', [])['kontrola'] ?? 0);
 $obsah .= '<p><button type="button" class="btn" id="platby">Zkontrolovat platby</button> <span class="muted" id="platby-stav" role="status">'
@@ -921,6 +928,8 @@ if (!$dny) {
         'vybrat' => $zaplaceno($o) ? 'zaplaceno' : ($prevodem($o) ? 'čeká na převod ' : 'vybrat ') . kc($cil($o) - (int)$o['zaplaceno']),
       ], $z['obj']),
     ];
+    // Na počítači mapa s trasou vlevo (zůstává na místě) a karty vpravo; na telefonu pod sebou.
+    $obsah .= '<div class="rozvoz' . ($mapa ? ' s-mapou' : '') . '"><div class="rozvoz-mapa">';
     if ($mapa) $obsah .= '<div id="mapa"></div>' . ($trasa ? '<p class="muted">Nejkratší okruh ze statku a zpět: <b>' . h(str_replace('.', ',', (string)$trasa['km'])) . ' km</b>, cca <b>' . h(intdiv($trasa['min'], 60) ? intdiv($trasa['min'], 60) . ' h ' . ($trasa['min'] % 60) . ' min' : $trasa['min'] . ' min') . '</b> jízdy. Čísla zastávek odpovídají pořadí jízdy.</p>' : '<p class="muted">Trasu po silnicích se teď nepodařilo spočítat – pořadí je podle vzdušné vzdálenosti.</p>');
     if (count($zastavky) < count($rozvoz)) $obsah .= '<p class="muted">Objednávky na stejnou adresu (např. skupina) jsou jedna zastávka – na kartách s písmeny 3a, 3b…</p>';
     // Navigace jen přes nedoručené zastávky a od místa, kde telefon právě je (bez „origin“ začne Google Maps tam).
@@ -940,7 +949,7 @@ if (!$dny) {
     }
     $vybrat = array_sum(array_map(fn($o) => !empty($o['doruceno']) || $zaplaceno($o) || $prevodem($o) ? 0 : max(0, $cil($o) - (int)$o['zaplaceno']), $rozvoz));
     if ($vybrat > 0) $obsah .= '<p><b>Zbývá vybrat na místě: ' . h(kc($vybrat)) . '</b> <span class="muted">(hotově nebo QR kódem)</span></p>';
-    foreach ($rozvoz as $o) $obsah .= $karta($o);
+    $obsah .= '</div><div class="karty">' . implode('', array_map($karta, $rozvoz)) . '</div></div>';
     if ($mapa) {
       // Leaflet z cdnjs s kontrolním součtem (SRI): pozměněný soubor prohlížeč nespustí (mapa pak jen chybí, přehled funguje dál).
       $obsah .= '<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js" integrity="' . LEAFLET_JS_SRI . '" crossorigin="anonymous" referrerpolicy="no-referrer"></script><script>'
@@ -956,12 +965,10 @@ if (!$dny) {
     }
   }
   if ($odber) {
-    $obsah .= '<h2>Osobní odběr – Krtely</h2>';
-    foreach ($odber as $o) $obsah .= $karta($o);
+    $obsah .= '<h2>Osobní odběr – Krtely</h2><div class="karty">' . implode('', array_map($karta, $odber)) . '</div>';
   }
   if ($zrusene) {
-    $obsah .= '<h2>Stornované</h2>';
-    foreach ($zrusene as $o) $obsah .= $karta($o);
+    $obsah .= '<h2>Stornované</h2><div class="karty">' . implode('', array_map($karta, $zrusene)) . '</div>';
   }
   if (!$aktivni && !$zrusene) $obsah .= '<p class="box">Na tento den nejsou objednávky.</p>';
 }
