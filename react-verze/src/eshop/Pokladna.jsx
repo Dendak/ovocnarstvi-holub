@@ -135,7 +135,7 @@ export default function Pokladna({ onZpet, onHotovo: predatHotovo }) {
   const [f, setF] = useState(() => ({
     jmeno: '', prijmeni: '', firma: false, nazevFirmy: '', ico: '', telefon: '', email: '',
     adresa: PEVNA_ADRESA || '', psc: '', mesto: VYCHOZI_MESTO, zeme: 'CZ',
-    doruceni: 'rozvoz', termin: terminy(DNY_ROZVOZU)[0] || '', terminOdberu: terminy(DNY_ODBERU)[0] || '',
+    doruceni: 'rozvoz', termin: terminy(DNY_ROZVOZU)[0] || '', terminOdberu: terminy(DNY_ODBERU)[0] || '', casOdberu: '',
     platba: 'prevzeti', poznamka: '',
   }))
   const [chyby, setChyby] = useState({})
@@ -217,6 +217,7 @@ export default function Pokladna({ onZpet, onHotovo: predatHotovo }) {
     const nyni = new Date()
     if (f.doruceni === 'rozvoz' && !terminy(DNY_ROZVOZU, 6, nyni).includes(f.termin)) e.termin = CHYBA_TERMINU
     if (f.doruceni === 'odber' && !terminy(DNY_ODBERU, 6, nyni).includes(f.terminOdberu)) e.terminOdberu = CHYBA_TERMINU
+    if (f.doruceni === 'odber' && !/^\d{1,2}:\d{2}$/.test(f.casOdberu)) e.casOdberu = 'Vyplňte, kdy přibližně přijedete – ať na vás čekáme.'
     return e
   }
 
@@ -287,6 +288,7 @@ export default function Pokladna({ onZpet, onHotovo: predatHotovo }) {
     const k = OBSAH.kontakt
     const rozvoz = f.doruceni === 'rozvoz'
     const den = rozvoz ? f.termin : f.terminOdberu
+    const cas = rozvoz ? '' : f.casOdberu
     const prevodem = f.platba === 'prevod'
     // Řádky s cenami podle prohlížeče – jen pro zálohu (FormSubmit, starý server bez ceníku).
     // Server ceny, součet i částku k platbě počítá sám podle svého ceníku z košíku (produkt, varianta, počet).
@@ -298,7 +300,7 @@ export default function Pokladna({ onZpet, onHotovo: predatHotovo }) {
       const token = SKUPINA ? await auth.token().catch(() => null) : null
       const r = await odeslatObjednavku({
         email: f.email.trim(), jmeno: celeJmeno, telefon: f.telefon.trim(), ico,
-        rozvoz, den, adresa: rozvoz ? f.adresa.trim() : '', psc: rozvoz ? f.psc.trim() : '', mesto: rozvoz ? f.mesto.trim() : '', zeme: rozvoz ? f.zeme : 'CZ',
+        rozvoz, den, cas, adresa: rozvoz ? f.adresa.trim() : '', psc: rozvoz ? f.psc.trim() : '', mesto: rozvoz ? f.mesto.trim() : '', zeme: rozvoz ? f.zeme : 'CZ',
         adresaOverena: rozvoz && adr?.vybrana ? adr.vybrana.adresa : '',
         platba: prevodem ? 'prevod' : 'prevzeti',
         poznamka: f.poznamka.trim(),
@@ -331,7 +333,7 @@ export default function Pokladna({ onZpet, onHotovo: predatHotovo }) {
       const souhrn = ulozeno && typeof d.souhrn === 'string' && d.souhrn ? d.souhrn : [
         ...radky, '',
         `Celkem: ${celkem}${rozvoz ? ' (doprava v ceně)' : ''}`,
-        rozvoz ? `Dovoz až domů: ${den} dopoledne, ${adresaDovozu}` : `Osobní odběr: ${den}, ${k.adresa}, ${k.mesto}`,
+        rozvoz ? `Dovoz až domů: ${den} dopoledne, ${adresaDovozu}` : `Osobní odběr: ${den} kolem ${cas}, ${k.adresa}, ${k.mesto}`,
         prevodem ? `Platba: převodem předem, VS ${vs}` : 'Platba: při převzetí',
         ...(SKUPINA ? [`Skupina: ${SKUPINA.nazev} (zvýhodněné ceny)`] : []),
         ...(f.poznamka.trim() ? [`Poznámka: ${f.poznamka.trim()}`] : []),
@@ -345,11 +347,11 @@ export default function Pokladna({ onZpet, onHotovo: predatHotovo }) {
           headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
           body: JSON.stringify({
             // The subject starts with the day so the day's orders sort together in the inbox.
-            _subject: `${rozvoz ? 'ROZVOZ' : 'ODBĚR'} ${den} | ${cislo} | ${celeJmeno} | ${celkem}${SKUPINA ? ` | skupina ${SKUPINA.nazev}` : ''}`,
+            _subject: `${rozvoz ? 'ROZVOZ' : 'ODBĚR'} ${den}${cas ? ` ${cas}` : ''} | ${cislo} | ${celeJmeno} | ${celkem}${SKUPINA ? ` | skupina ${SKUPINA.nazev}` : ''}`,
             _template: 'box',
             _replyto: f.email.trim(),
             objednavka: cislo + (ulozeno ? '' : ' (NENÍ v přehledu objednávek – zapsat ručně)'),
-            termin: `${rozvoz ? 'Rozvoz' : 'Osobní odběr'} – ${den}`,
+            termin: rozvoz ? `Rozvoz – ${den}` : `Osobní odběr – ${den}, příjezd kolem ${cas}`,
             jmeno: ico ? `${celeJmeno} (IČO ${ico})` : celeJmeno,
             telefon: f.telefon.trim(),
             email: f.email.trim(),
@@ -366,7 +368,7 @@ export default function Pokladna({ onZpet, onHotovo: predatHotovo }) {
         // Kopie do účtu a údaje na příště – jen doplněk, na potvrzení objednávky se nečeká.
         Promise.allSettled([
           ulozitDoUctu({
-            cislo, datum: new Date().toISOString(), termin: `${rozvoz ? 'Dovoz' : 'Odběr'} ${den}`, celkem,
+            cislo, datum: new Date().toISOString(), termin: rozvoz ? `Dovoz ${den}` : `Odběr ${den} kolem ${cas}`, celkem,
             radky, polozky: kosik.polozky.map(p => ({ key: p.key, pocet: p.pocet })),
           }),
           // Delivery details are kept with the account for next time (company orders are one-off).
@@ -480,6 +482,10 @@ export default function Pokladna({ onZpet, onHotovo: predatHotovo }) {
                   {terminyOdberu.map(t => <option key={t}>{t}</option>)}
                 </select>
                 <Chyba id="terminOdberu-chyba" text={chybaTerminuOdberu} />
+                <label htmlFor="casOdberu" className={popisek + ' mt-3'}>Kdy přibližně přijedete? *</label>
+                <input id="casOdberu" type="time" step={900} aria-required="true" value={f.casOdberu} onChange={e => set('casOdberu', e.target.value)}
+                  className={field} {...chybaPole('casOdberu')} />
+                <Chyba id="casOdberu-chyba" text={chyby.casOdberu} />
               </div>
             ) : (
               <div className="pt-2 space-y-3">

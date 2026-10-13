@@ -580,6 +580,8 @@ $den = array_values(array_filter($vse, fn($o) => (($o['datum'] ?? '') ?: 'bez-te
 $aktivni = array_values(array_filter($den, fn($o) => empty($o['zruseno'])));
 $rozvoz = array_values(array_filter($aktivni, fn($o) => !empty($o['rozvoz'])));
 $odber = array_values(array_filter($aktivni, fn($o) => empty($o['rozvoz'])));
+// Osobní odběry podle času příjezdu (bez času na konec).
+usort($odber, fn($a, $b) => (($a['cas'] ?? '') ?: '99') <=> (($b['cas'] ?? '') ?: '99'));
 $zrusene = array_values(array_filter($den, fn($o) => !empty($o['zruseno'])));
 
 // ---------- geokódování adres (OpenStreetMap Nominatim, výsledky se pamatují) ----------
@@ -815,6 +817,7 @@ $karta = function (array $o) use ($platba, $tlacitko, $zaplaceno, $cil, $dorucen
       $s .= '<span class="stitek hot">Mimo České Budějovice – termín dovozu zákazníkovi potvrďte telefonem</span>';
     }
   }
+  if (!$dovoz && !empty($o['cas'])) $s .= '<div><b>Přijede kolem ' . h($o['cas']) . '</b></div>';
   if (!empty($o['telefon'])) $s .= '<div><a class="tel" href="tel:' . h(preg_replace('/[^\d+]/', '', $o['telefon'])) . '">' . h($o['telefon']) . '</a></div>';
   $s .= '<ul>' . implode('', array_map(fn($r) => '<li>' . h($r) . '</li>', $o['polozky'] ?? [])) . '</ul>';
   if (empty($o['polozky'])) $s .= '<div class="muted" style="white-space:pre-line">' . h($o['souhrn']) . '</div>';

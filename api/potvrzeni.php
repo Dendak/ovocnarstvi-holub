@@ -5,7 +5,7 @@
 // Objednávku uloží (přehled rozvozu, párování plateb), pošle ji farmě na objednavky@ovoce-holub.cz
 // a zákazníkovi potvrzení (u převodu s QR platbou, kterou vytvoří tady na serveru).
 //
-// POST JSON: cislo 'OH-RRMMDD-NNNN', email, jmeno, telefon, ico, rozvoz, den ('středa 1. 10.'), adresa, psc, mesto,
+// POST JSON: cislo 'OH-RRMMDD-NNNN', email, jmeno, telefon, ico, rozvoz, den ('středa 1. 10.'), cas (u osobního odběru přibližný čas příjezdu 'HH:MM'), adresa, psc, mesto,
 //   adresaOverena (adresa z registru adres vybraná v pokladně), platba 'prevod'|'prevzeti', poznamka,
 //   kosik [{produkt, varianta, pocet}] (klíče jako v košíku), celkem (součet v prohlížeči – jen ke kontrole),
 //   skupina (id skupiny, když prohlížeč počítá její ceny; k tomu hlavička Authorization: Bearer <token Supabase>),
@@ -312,6 +312,9 @@ $telefon = text_pole($d['telefon'] ?? '', 40);
 $ico = preg_replace('/\D/', '', text_pole($d['ico'] ?? '', 12));
 $rozvoz = !empty($d['rozvoz']);
 $denKlient = text_pole($d['den'] ?? '', 40);
+// Přibližný čas příjezdu u osobního odběru (starší pokladna ho neposílá – pak prázdný).
+$cas = !$rozvoz && is_string($d['cas'] ?? null) && preg_match('/^([01]?\d|2[0-3]):([0-5]\d)$/', $d['cas'], $mcas)
+  ? sprintf('%02d:%s', (int)$mcas[1], $mcas[2]) : '';
 $adresa = $rozvoz ? text_pole($d['adresa'] ?? '', 200) : '';
 $psc = $rozvoz ? text_pole($d['psc'] ?? '', 10) : '';
 $mesto = $rozvoz ? text_pole($d['mesto'] ?? '', 60) : '';
@@ -340,7 +343,7 @@ if ($maKosik) {
 
 // Otisk objednávky: stejné číslo se stejným obsahem = opakované odeslání (výpadek spojení), ne kolize.
 $otisk = sha1((string)json_encode([mb_strtolower($email), $jmeno, $telefon, $ico, $rozvoz, $denKlient, $adresa, $psc, $mesto, $adresaKlient,
-  $platba, $poznamka, $skupinaId, $kosik, $maKosik ? null : ($d['polozky'] ?? null)], JSON_UNESCAPED_UNICODE));
+  $platba, $poznamka, $skupinaId, $kosik, $cas, $maKosik ? null : ($d['polozky'] ?? null)], JSON_UNESCAPED_UNICODE));
 $existuje = nacist_json("objednavky/$vs.json");
 if ($existuje) {
   if (($existuje['otisk'] ?? '') === $otisk) konec(200, odpoved_ulozene($existuje));
@@ -425,7 +428,7 @@ $castka = $platba === 'prevod' ? $celkem : 0;
 $sestavitSouhrn = fn(string $adresa): string => implode("\n", array_merge($radky, [
   '',
   'Celkem: ' . kc($celkem) . ($bezCeny ? ' + položky s cenou na dotaz' : '') . ($rozvoz ? ' (doprava v ceně)' : ''),
-  $rozvoz ? "Dovoz až domů: $den dopoledne, $adresa" : "Osobní odběr: $den, " . PRODAVAJICI['adresa'],
+  $rozvoz ? "Dovoz až domů: $den dopoledne, $adresa" : "Osobní odběr: $den" . ($cas !== '' ? " kolem $cas" : '') . ', ' . PRODAVAJICI['adresa'],
   $platba === 'prevod' ? "Platba: převodem předem, VS $vs" : 'Platba: při převzetí',
 ], $skupina ? ["Skupina: {$skupina['nazev']} (zvýhodněné ceny)"] : []));
 $souhrn = $sestavitSouhrn($adresaDovozu);
@@ -440,7 +443,7 @@ elseif (!$posilat) zapsat_log("potvrzeni: $cislo – potvrzení neodesláno (cel
 $zaznam = [
   'cislo' => $cislo, 'vs' => $vs, 'castka' => $castka, 'email' => $email, 'jmeno' => $jmeno,
   'souhrn' => $souhrn, 'vytvoreno' => date('c'), 'zaplaceno' => 0, 'platby' => [],
-  'rozvoz' => $rozvoz, 'den' => $den, 'datum' => $datum, 'telefon' => $telefon,
+  'rozvoz' => $rozvoz, 'den' => $den, 'cas' => $cas, 'datum' => $datum, 'telefon' => $telefon,
   'adresa' => $adresa, 'psc' => $psc, 'mesto' => $mesto, 'zeme' => $zeme, 'ico' => $ico,
   'adresa_overena' => $adresaOverena, 'gps_overena' => $gps,
   'polozky' => $radky, 'celkem' => $celkem, 'platba' => $platba, 'poznamka' => $poznamka,
@@ -474,7 +477,7 @@ $varovani = array_merge($kontrola ? ['NESEDÍ CENA'] : [], $pozadovana && !$skup
   $poUzaverce ? ['PO UZÁVĚRCE'] : [], !$cenik ? ['CENY NEOVĚŘENY'] : [], $mimo ? ['MIMO NABÍDKU'] : []);
 $radkyFarma = [
   'Objednávka' => $cislo,
-  'Termín' => ($rozvoz ? 'Rozvoz' : 'Osobní odběr') . ' – ' . $den,
+  'Termín' => $rozvoz ? "Rozvoz – $den" : "Osobní odběr – $den" . ($cas !== '' ? ", příjezd kolem $cas" : ''),
   'Jméno' => $jmeno . ($ico !== '' ? " (IČO $ico)" : ''),
   'Telefon' => $telefon,
   'E-mail' => $email,
@@ -491,7 +494,7 @@ if (!$posilat) $radkyFarma['Potvrzení zákazníkovi'] = 'NEODESLÁNO – ' . ($
   ? 'za poslední hodinu už odešlo ' . POTVRZENI_ZA_HODINU . ' potvrzení (ochrana proti zneužití e-shopu)'
   : 'na tuto adresu už dnes odešlo ' . POTVRZENI_NA_ADRESU . ' potvrzení');
 $predmetFarma = ($varovani ? '⚠ ' . implode(', ', $varovani) . ' | ' : '')
-  . ($rozvoz ? 'ROZVOZ' : 'ODBĚR') . " $den | $cislo | $jmeno | " . kc($celkem) . ($skupina ? " | skupina {$skupina['nazev']}" : '');
+  . ($rozvoz ? 'ROZVOZ' : 'ODBĚR') . " $den" . ($cas !== '' ? " $cas" : '') . " | $cislo | $jmeno | " . kc($celkem) . ($skupina ? " | skupina {$skupina['nazev']}" : '');
 $textFarma = ''; $htmlFarma = '<table style="border-collapse:collapse;font-size:14px">';
 foreach ($radkyFarma as $k => $v) {
   $textFarma .= "$k: $v\n";
