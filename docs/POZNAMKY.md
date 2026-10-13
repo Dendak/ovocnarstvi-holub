@@ -49,6 +49,12 @@ v `src/data.js` + `katalog.js`, nasadit s novou sezónou moštů. Nic rozpracova
 - [ ] `react-verze/README.md` je šablona Vite. Případně nahradit odkazem na CLAUDE.md.
 
 ## Historie
+### 2026-10-13
+- E-shop: u osobního odběru zákazník povinně vyplní přibližný čas příjezdu (PR #4). Čas je v e-mailu farmě,
+  v předmětu, v potvrzení zákazníkovi a na kartě v `rozvoz.php` (odběry seřazené podle času).
+- Přehled objednávek na týden pro tátu (WhatsApp) sestaven z `rozvoz.php`. Kotrouš (OH-261006-1097, termín 7. 10.,
+  zaplaceno) se posílá poštou 13. 10. – po odeslání označit v přehledu „Doručeno“, jinak svítí jako nevyřízená.
+
 ### 2026-10-11 až 13
 - Tištěný ceník přepracovaný: záhlaví v barvě loga, mošty po cenových hladinách s kreslenými bag-in-boxy 5 l / 3 l,
   štítek „jen 5 l“, kalendář sezón (sklizeň plně / ze skladu světleji, čára „dnes“), „Právě nabízíme“, kontakt
