@@ -6,7 +6,10 @@ Web a e-shop ovocnářství (CZ + DE stránka pro rakouské pálenice). Produkce
 - Zdroj pravdy je GitHub (`Dendak/ovocnarstvi-holub`). Na začátku práce `git pull`, na konci commit + push.
 - Rozdělaná práce, rozhodnutí a další kroky se zapisují do [docs/POZNAMKY.md](docs/POZNAMKY.md). Na konci session je aktualizuj.
 - Repo **nedávat do OneDrive** (konflikty s `.git`). Lokálně: `C:\Users\holub\code\ovocnarstvi-holub`.
-- **Push na `main` = okamžité nasazení do produkce.** Větší nebo riskantní změny dělej ve větvi a přes PR.
+- **Push na `main` = okamžité nasazení do produkce** (`deploy-wedos.yml`). Každou hotovou změnu rovnou commitni a pushni na `main`,
+  bez větví a PR a bez ptaní. Předtím `git pull --rebase` a `npm run build` + `npm run lint` (v `react-verze/`); když selžou, nepushovat a ohlásit.
+  Po doběhnutí workflow ověřit, že se ovoce-holub.cz načte. Zastavit a ptát se jen při kolizi (konflikt, odmítnutý push,
+  cizí necommitnuté změny, force-push, neúspěšné nasazení).
 
 ## Struktura
 - `react-verze/` — **živý web**: React 19 + Vite 8 + Tailwind 4, plain JS/JSX, bez testů.
