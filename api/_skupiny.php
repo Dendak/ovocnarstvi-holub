@@ -45,7 +45,7 @@ function skupiny(): array {
         ['id' => 'hrusky5', 'nazev' => 'Bedýnka hrušek 5 kg', 'kg' => 5, 'cena' => 150, 'druhy' => ['hrusky'], 'volba' => 'odruda',
           'mix' => 'Mix odrůd půl na půl',
           'popis' => '5 kg hrušek – buď mix odrůd půl na půl, nebo celá bedýnka jedné odrůdy.'],
-        ['id' => 'jablka5', 'nazev' => 'Bedýnka jablek 5 kg', 'kg' => 5, 'cena' => 140, 'druhy' => ['jablka'], 'volba' => 'slozeni',
+        ['id' => 'jablka5', 'nazev' => 'Bedýnka jablek 5 kg', 'kg' => 5, 'cena' => 150, 'druhy' => ['jablka'], 'volba' => 'slozeni',
           'mix' => 'Mix aktuálních odrůd – výběr nechám na vás',
           'popis' => '5 kg jablek – navolte si odrůdy po kilech, nebo výběr nechte na nás.'],
       ],
