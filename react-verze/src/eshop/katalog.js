@@ -197,7 +197,8 @@ const produktyBedynka = (SKUPINA?.bedynky || []).flatMap(b => {
     dostupne: true,
     jednotka: 'ks',
     bedynka: {
-      kg: b.kg, cena: b.cena, volba: b.volba, mix: b.mix || null,
+      // „Mix odrůd“ jen když je z čeho míchat (s jedinou dostupnou odrůdou se nenabízí).
+      kg: b.kg, cena: b.cena, volba: b.volba, mix: slozky.length > 1 ? b.mix || null : null,
       slozky: slozky.map(p => ({ id: p.id, nazev: p.nazev, druhNazev: p.druhNazev })),
     },
     varianty: [],

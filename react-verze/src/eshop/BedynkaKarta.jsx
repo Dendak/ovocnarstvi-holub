@@ -13,7 +13,7 @@ export default function BedynkaKarta({ produkt }) {
   const poOdrudach = volba === 'odruda'
   const [slozeni, setSlozeni] = useState({})
   const [jeMix, setJeMix] = useState(!!mix)
-  const [odruda, setOdruda] = useState(null)
+  const [odruda, setOdruda] = useState(poOdrudach && slozky.length === 1 ? slozky[0].id : null)
   const [pridano, setPridano] = useState(false)
   const vybrano = Object.values(slozeni).reduce((s, n) => s + n, 0)
   const zbyva = kg - vybrano
