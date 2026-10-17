@@ -4,15 +4,17 @@ Deník práce na webu, aby šlo navázat z jakéhokoli zařízení. Nejnovějš�
 Na konci každé session: co je hotové, co je rozdělané, co dál.
 
 ## Rozdělané / další kroky
-**Další krok:** dokončit návrh cen moštů – čeká se na odpovědi uživatele (níže „Ceny moštů → chybí“). Pak nové ceny
-v `src/data.js` + `katalog.js`, nasadit s novou sezónou moštů. Nic rozpracovaného v kódu není, main = produkce je čistá.
+**Další krok:** další zdražení moštů (návrh níže) čeká na rozhodnutí táty a Lukáše – 17. 10.: „zatím jak chtěl Lukáš“.
+Nic rozpracovaného v kódu není, main = produkce je čistá.
 
-- [ ] **Ceny moštů** – průzkum 10. 10. 2026 (workflow s kritikem): Holub je nejlevnější z nalezených farem.
+- [ ] **Ceny moštů** – platí od 17. 10. 2026 podle Lukáše: jablko 160/110 · hruška-řepa-mrkev 170/120 · skořice-bez-
+  limetka(vyprodaná)-zázvor 180/125 · višeň-červený rybíz 190/130 · Vánoční mošt 240/170 · rakytník 250/175; černý rybíz
+  letos nebude (smazán). Můj návrh dalšího zdražení: 180/125 · 195/135 · 205/140 · 215/150 · Vánoční 240/170 · rakytník 260/185.
+  Průzkum 10. 10. 2026 (workflow s kritikem): Holub je nejlevnější z nalezených farem.
   Konkurence 5 l / 3 l: Lhenická ovocná šťáva (soused, ovocnastava.cz) jablko 200 / 110 za 2,5 l, skořice a zázvor 230,
   rakytník 270, višeň 200 · Moštárna Pacov 190 / 130 · Frydrych 190 / 120, ochucené 3 l 150 · Sady Nebílovy 199 / 145,
   směsi 239 · Úherce 210 / 150 · Zelený košík (ČB, BIO) 3 l 210. Levné: Steinocher 150 (2025, neověřeno), Katovice 135,
-  akce řetězců 139–150. Návrh (5 l / 3 l): jablko 180/125 · hruška-řepa-mrkev 195/135 · skořice…zázvor 205/140 ·
-  višeň-č. rybíz 215/150 · rakytník 260/185 · Vánoční mošt podle receptury. Ovoce: jablka nechat (farma 28, e-shop 40),
+  akce řetězců 139–150. Ovoce: jablka nechat (farma 28, e-shop 40),
   hrušky farma 32, e-shop 55. Lisujeme v moštárně, jsme plátci DPH (mošt 21 %, ovoce 12 %).
   Moštárna: 5 l za 75–78 Kč vč. obalu → marže 5 l při 160 Kč ≈ 54 Kč (132 bez DPH − 78), při 180 Kč ≈ 71 Kč, z toho
   jablka, dovoz, práce. Mošt se vyplatí jen z jablek II. jakosti / padaných (≈ 6–8 Kč/kg). Obaly BIB (Packshop):
