@@ -4,3 +4,9 @@ desktop.ini
 .claude/
 img/Fotky*/
 sort_photos.ps1
+
+# Lokální tajné údaje (vzor .env.example) a data stažená ze serveru (obsahují osobní údaje zákazníků)
+.env
+.env.*
+!.env.example
+zaloha-serveru/

@@ -19,6 +19,9 @@ Web a e-shop ovocnářství (CZ + DE stránka pro rakouské pálenice). Produkce
 - `api/` — PHP 8 backend (jen na Wedos): objednávky, stav, skupiny, adresy, kontakt, párování plateb, stránka rozvozu pro farmu (`rozvoz.php`), doklady, nastavení.
   - `_*.php` jsou sdílené soubory, ne endpointy. Konstanty (e-maily, účet, SMTP/IMAP) jsou v `_spolecne.php`.
   - Data jen na serveru v `api/data/` (objednávky JSON, `nastaveni.php` s hesly). V repu je jen `.htaccess`.
+    Přístup k nim: `bash scripts/data-serveru.sh seznam|zaloha|stahni|nahraj|smaz` přes samostatný FTP účet omezený na
+    `api/data` (údaje v lokálním `.env`, vzor `.env.example`, heslo nikdy nevypisovat). Před změnou skript sám zálohuje;
+    před mazáním nebo úpravou dat se zeptat. `zaloha-serveru/` je gitignorovaná a obsahuje osobní údaje – po práci smazat.
   - `api/mapa/` — mapa rozvozu do Rakouska jen pro přihlášené (e-mail + heslo, heslo si každý nastaví odkazem z e-mailu).
     Kdo smí: `MAPA_UCTY` (sha256 e-mailu). Samotnou mapu a excely nahrává soukromé repo `Dendak/mapa-rozvozu-ovoce`
     přes FTP do `api/data/mapa/`; účty a odkazy jsou v `api/data/mapa-ucty.json`, `mapa-odkazy.json`.
