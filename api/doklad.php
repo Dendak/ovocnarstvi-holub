@@ -7,8 +7,8 @@ header('X-Robots-Tag: noindex');
 header('Referrer-Policy: no-referrer');
 
 // ?nahled=1 (jen přihlášená farma, odkaz „Náhled účtenky“ v přehledu objednávek): účtenka tak, jak by vypadala
-// vystavená teď – s číslem, které by dostala. Nic se neuloží, zákazníkovi se nic neodešle a číslo se nepřidělí
-// (řada účtenek se nemění; když se mezitím vystaví jiná účtenka, skutečné číslo bude jiné).
+// vystavená – s číslem, jako by účtenku dostala každá objednávka (cislo_dokladu_nahled). Nic se neuloží,
+// zákazníkovi se nic neodešle a z řady se nic nepřidělí; skutečné číslo při vystavení může být jiné.
 $nahled = isset($_GET['nahled']) && prihlasen();
 $vs = preg_replace('/\D/', '', retezec($_GET['vs'] ?? ''));
 $o = $vs !== '' ? nacist_json("objednavky/$vs.json") : null;
@@ -20,7 +20,7 @@ if (!$o || (!$platnyOdkaz && !$nahled)) {
 }
 if ($nahled && empty($o['doklad'])) {
   $o['doklad'] = [
-    'cislo' => pristi_cislo_dokladu(),
+    'cislo' => cislo_dokladu_nahled($o),
     'vystaveno' => date('c'),
     'duzp' => duzp($o),
     'uhrada' => !empty($o['zaplaceno_hotove']) ? 'hotově / na místě' : 'bankovním převodem',

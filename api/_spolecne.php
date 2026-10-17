@@ -890,10 +890,20 @@ function odkaz_na_doklad(array $o): string {
 }
 
 function cislo_dokladu(string $rok, int $poradi): string { return sprintf('%s%s%04d', PREDPONA_DOKLADU, $rok, $poradi); }
-// Číslo, které by účtenka dostala, kdyby se vystavila teď (náhled) – jen čte řadu, nic nepřiděluje.
-function pristi_cislo_dokladu(): string {
-  $rok = date('Y');
-  return cislo_dokladu($rok, (int)(nacist_json('doklady.json', [])[$rok] ?? 0) + 1);
+// Číslo pro náhled účtenky: jako by účtenku dostala každá nestornovaná objednávka roku, postupně podle dne
+// předání (DUZP) a času objednávky. Jen čte objednávky, nic nepřiděluje ani neukládá.
+function cislo_dokladu_nahled(array $o): string {
+  $rok = substr(duzp($o), 0, 4);
+  $poradi = [];
+  foreach (glob(DATA . '/objednavky/*.json') ?: [] as $f) {
+    $x = json_decode((string)file_get_contents($f), true);
+    if (!is_array($x) || empty($x['vs']) || !empty($x['zruseno'])) continue;
+    $d = duzp($x);
+    if (substr($d, 0, 4) === $rok) $poradi[] = [$d, (string)($x['vytvoreno'] ?? ''), (string)$x['vs']];
+  }
+  sort($poradi);
+  $pozice = array_search((string)$o['vs'], array_column($poradi, 2), true);
+  return cislo_dokladu($rok, $pozice === false ? count($poradi) + 1 : $pozice + 1);
 }
 // „E20260001“ (i starší tvar bez předpony „20260001“) → ['2026', 1]; null u čísla v jiném tvaru.
 function rok_a_poradi_dokladu(string $cislo): ?array {

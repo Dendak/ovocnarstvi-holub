@@ -8,6 +8,11 @@ header('X-Robots-Tag: noindex');
 header('Referrer-Policy: strict-origin-when-cross-origin');
 
 const FARMA_GPS = [49.0826258, 14.1703712]; // statek – stejné souřadnice jako ve strukturovaných datech webu
+// Pravidelné zastávky bez objednávek z e-shopu (farma tam vozí zboží), přidají se do trasy, mapy a navigace
+// v uvedené dny (1 = pondělí … 7 = neděle), pokud je ten den rozvoz.
+const PRAVIDELNE_ZASTAVKY = [
+  ['nazev' => 'Nemocnice', 'gps' => [48.960054572978876, 14.466659035041417], 'dny' => [1, 3, 5]],
+];
 // Kontrolní součty (SRI) Leafletu 1.9.4 – soubory leaflet.js a leaflet.css z balíčku leaflet@1.9.4 (stejné jako na cdnjs).
 // Při změně verze Leafletu je nutné změnit i součty, jinak se mapa nenačte.
 const LEAFLET_JS_SRI = 'sha512-BwHfrr4c9kmRkLw6iXFdzcdWV/PGkVgiIyIWLLlTSXzWQzxuSg4DiQUCpauz/EWjgk5TYQqX/kvn9pG1NpYfqg==';
@@ -98,7 +103,7 @@ h1{font:normal 24px Georgia,serif;margin:0}h2{font:normal 21px Georgia,serif;mar
 .box{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:10px 0}
 .obj{position:relative;scroll-margin-top:76px}.obj:target{box-shadow:0 0 0 3px #d9b64a}
 .obj.hotovo{background:#f1f6ef;border-color:#b7cdb0}.obj.zrusena{background:#f2f1ee;border-style:dashed;border-color:#b9b4aa}.obj.zrusena ul{text-decoration:line-through}
-.cislo{display:inline-grid;place-items:center;min-width:28px;height:28px;padding:0 6px;border-radius:14px;background:var(--leaf);color:#fff;font-weight:bold;font-size:14px;margin-right:8px}.cislo.hotova{background:#6b6f66}
+.cislo{display:inline-grid;place-items:center;min-width:28px;height:28px;padding:0 6px;border-radius:14px;background:var(--leaf);color:#fff;font-weight:bold;font-size:14px;margin-right:8px}.cislo.hotova{background:#6b6f66}.cislo.pravidelna{background:var(--berry)}
 .jm{font-weight:bold;font-size:17px}.muted{color:var(--muted);font-size:14px}ul{margin:8px 0;padding-left:20px}
 .stitek{display:inline-block;font-size:13px;font-weight:bold;padding:3px 8px;border-radius:6px;margin:6px 6px 0 0}
 .ok{background:#e3efe0;color:var(--leaf)}.ceka{background:#f6e2df;color:var(--berry)}.hot{background:#f5ead2;color:var(--amber)}.zrus{background:#d9d6d0;color:var(--ink)}
@@ -624,6 +629,12 @@ foreach ($rozvoz as $o) {
   $zastavky[$k]['obj'][] = $o;
 }
 $zastavky = array_values($zastavky);
+if ($zastavky && preg_match('/^\d{4}-\d{2}-\d{2}$/', $vybrany)) {
+  $denTydne = (int)date('N', strtotime($vybrany));
+  foreach (PRAVIDELNE_ZASTAVKY as $p) if (in_array($denTydne, $p['dny'], true)) {
+    $zastavky[] = ['gps' => $p['gps'], 'adresa' => $p['gps'][0] . ',' . $p['gps'][1], 'nazev' => $p['nazev'], 'pravidelna' => true, 'obj' => []];
+  }
+}
 
 // Pořadí zastávek: nejdřív hrubě „vždy k nejbližší další“, pak nejkratší okruh po silnicích (OSRM).
 $vzd = fn($a, $b) => hypot(($a[0] - $b[0]) * 111, ($a[1] - $b[1]) * 111 * cos(deg2rad($a[0])));
@@ -668,11 +679,14 @@ if ($farma && $sGps) {
   }
 }
 // Čísla zastávek podle pořadí jízdy; ta se během dne nemění (doručené zastávky zůstávají na trase i na mapě).
+// Pravidelná zastávka (nemocnice) má místo čísla „N“, ať se čísla objednávek neposouvají.
 $rozvoz = [];
+$pocetZastavek = 0;
 foreach ($zastavky as $i => $z) {
-  $zastavky[$i]['n'] = $i + 1;
+  if (!empty($z['pravidelna'])) { $zastavky[$i]['n'] = 'N'; continue; }
+  $zastavky[$i]['n'] = ++$pocetZastavek;
   foreach ($z['obj'] as $j => $o) {
-    $zastavky[$i]['obj'][$j]['znacka'] = ($i + 1) . (count($z['obj']) > 1 ? ($j < 26 ? chr(97 + $j) : '.' . ($j + 1)) : '');
+    $zastavky[$i]['obj'][$j]['znacka'] = $pocetZastavek . (count($z['obj']) > 1 ? ($j < 26 ? chr(97 + $j) : '.' . ($j + 1)) : '');
     $rozvoz[] = $zastavky[$i]['obj'][$j];
   }
 }
@@ -929,8 +943,9 @@ if (!$dny) {
     $obsah .= '<h2>Rozvoz</h2>';
     $mapa = [];
     foreach ($zastavky as $z) if ($z['gps']) $mapa[] = [
-      'n' => $z['n'], 'gps' => $z['gps'], 'adr' => ($z['obj'][0]['adresa'] ?? '') ?: $z['adresa'],
-      'hotovo' => !array_filter($z['obj'], fn($o) => empty($o['doruceno'])),
+      'n' => $z['n'], 'gps' => $z['gps'], 'adr' => $z['nazev'] ?? (($z['obj'][0]['adresa'] ?? '') ?: $z['adresa']),
+      'p' => !empty($z['pravidelna']),
+      'hotovo' => empty($z['pravidelna']) && !array_filter($z['obj'], fn($o) => empty($o['doruceno'])),
       'obj' => array_map(fn($o) => [
         'z' => $o['znacka'], 'vs' => $o['vs'], 'jm' => $o['jmeno'], 'co' => $o['polozky'] ?? [], 'hotovo' => !empty($o['doruceno']),
         'vybrat' => $zaplaceno($o) ? 'zaplaceno' : ($prevodem($o) ? 'čeká na převod ' : 'vybrat ') . kc($cil($o) - (int)$o['zaplaceno']),
@@ -939,9 +954,17 @@ if (!$dny) {
     // Na počítači mapa s trasou vlevo (zůstává na místě) a karty vpravo; na telefonu pod sebou.
     $obsah .= '<div class="rozvoz' . ($mapa ? ' s-mapou' : '') . '"><div class="rozvoz-mapa">';
     if ($mapa) $obsah .= '<div id="mapa"></div>' . ($trasa ? '<p class="muted">Nejkratší okruh ze statku a zpět: <b>' . h(str_replace('.', ',', (string)$trasa['km'])) . ' km</b>, cca <b>' . h(intdiv($trasa['min'], 60) ? intdiv($trasa['min'], 60) . ' h ' . ($trasa['min'] % 60) . ' min' : $trasa['min'] . ' min') . '</b> jízdy. Čísla zastávek odpovídají pořadí jízdy.</p>' : '<p class="muted">Trasu po silnicích se teď nepodařilo spočítat – pořadí je podle vzdušné vzdálenosti.</p>');
-    if (count($zastavky) < count($rozvoz)) $obsah .= '<p class="muted">Objednávky na stejnou adresu (např. skupina) jsou jedna zastávka – na kartách s písmeny 3a, 3b…</p>';
+    if ($pocetZastavek < count($rozvoz)) $obsah .= '<p class="muted">Objednávky na stejnou adresu (např. skupina) jsou jedna zastávka – na kartách s písmeny 3a, 3b…</p>';
+    if (array_filter($zastavky, fn($z) => !empty($z['pravidelna']))) $obsah .= '<p class="muted">Na trase je i pravidelná zastávka <b>N</b> – '
+      . h(implode(', ', array_map(fn($z) => $z['nazev'], array_filter($zastavky, fn($z) => !empty($z['pravidelna']))))) . '.</p>';
     // Navigace jen přes nedoručené zastávky a od místa, kde telefon právě je (bez „origin“ začne Google Maps tam).
-    $zbyvajici = array_values(array_filter($zastavky, fn($z) => (bool)array_filter($z['obj'], fn($o) => empty($o['doruceno']))));
+    // Pravidelná zastávka nemá „doručeno“: bere se za projetou, jakmile je doručená některá zastávka za ní.
+    $zbyvajici = [];
+    foreach ($zastavky as $i => $z) {
+      $doruceno = fn($y) => (bool)array_filter($y['obj'], fn($o) => !empty($o['doruceno']));
+      if (!empty($z['pravidelna']) ? !array_filter(array_slice($zastavky, $i + 1), $doruceno)
+        : array_filter($z['obj'], fn($o) => empty($o['doruceno']))) $zbyvajici[] = $z;
+    }
     if (!$zbyvajici) {
       $obsah .= '<p class="box">✓ Všechny zastávky jsou doručené.</p>';
     } else {
@@ -966,8 +989,8 @@ if (!$dny) {
         . 'const e=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]));'
         . 'const pts=[];if(f){L.circleMarker(f,{radius:8,color:"#17241a",fillOpacity:1}).addTo(m).bindPopup("Statek – start a cíl");pts.push(f)}'
         // Jedna značka na zastávku (šedá = vše doručeno); v okénku všechny objednávky na tomto místě s odkazem na kartu.
-        . 'b.forEach(x=>{L.marker(x.gps,{icon:L.divIcon({className:"",html:`<span class="cislo${x.hotovo?" hotova":""}">${x.n}</span>`,iconSize:[28,28],iconAnchor:[14,14]})}).addTo(m)'
-        . '.bindPopup(`<b>${x.n}. ${e(x.adr)}</b>`+x.obj.map(o=>`<p><a href="#o${e(o.vs)}"><b>${e(o.z)} ${e(o.jm)}</b></a>${o.hotovo?" ✓ doručeno":""}<br>${o.co.map(e).join("<br>")}<br><b>${e(o.vybrat)}</b></p>`).join(""),{maxHeight:300});pts.push(x.gps)});'
+        . 'b.forEach(x=>{L.marker(x.gps,{icon:L.divIcon({className:"",html:`<span class="cislo${x.hotovo?" hotova":""}${x.p?" pravidelna":""}">${x.n}</span>`,iconSize:[28,28],iconAnchor:[14,14]})}).addTo(m)'
+        . '.bindPopup(`<b>${x.n}. ${e(x.adr)}</b>${x.p?"<p>Pravidelná zastávka</p>":""}`+x.obj.map(o=>`<p><a href="#o${e(o.vs)}"><b>${e(o.z)} ${e(o.jm)}</b></a>${o.hotovo?" ✓ doručeno":""}<br>${o.co.map(e).join("<br>")}<br><b>${e(o.vybrat)}</b></p>`).join(""),{maxHeight:300});pts.push(x.gps)});'
         . 'if(t){L.polyline(t,{color:"#2f5a33",weight:5,opacity:.75}).addTo(m)}else{L.polyline(pts,{color:"#2f5a33",weight:3,opacity:.6,dashArray:"6 6"}).addTo(m)}'
         . 'm.fitBounds(t||pts,{padding:[30,30]})}</script>';
     }
