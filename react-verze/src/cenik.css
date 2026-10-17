@@ -179,7 +179,7 @@ body {
 .legenda i { display: inline-block; width: 5.5mm; height: 2.4mm; border-radius: 1.2mm; }
 .legenda i.sklizen { background: var(--leaf); }
 .legenda i.sklad { background: color-mix(in srgb, var(--leaf) 32%, #fff); }
-.legenda i.dnes { width: 0; height: 3.6mm; border-radius: 0; border-left: 1.2pt solid var(--berry); }
+.legenda i.cara-dnes { width: 0; height: 3.6mm; border-radius: 0; border-left: 1.2pt solid var(--berry); }
 .sezona { display: grid; grid-template-columns: 29mm 1fr; border-top: 0.6pt solid var(--line); }
 .sezona > div:first-child { padding: 1.5mm 0; }
 .sezona .nazev { display: block; font-family: var(--serif); font-size: 13pt; line-height: 1.15; }

@@ -71,7 +71,7 @@ const radekSezony = (nazev, kdy, prodej, sklizen, barva) => `
   <div class="sezona"><div><span class="nazev">${esc(nazev)}</span><span class="kdy">${esc(kdy)}</span></div>
     <div class="draha"><div class="mrizka">${mrizka}</div>${pas(prodej, barva, 'sklad')}${pas(sklizen, barva, 'sklizen')}<span class="dnes" style="left:${dnesX}%"></span></div></div>`
 const kalendar = `
-  <div class="legenda"><span><i class="sklizen"></i>čerstvá sklizeň</span><span><i class="sklad"></i>ze skladu</span><span><i class="dnes"></i>dnes ${dnes}</span></div>
+  <div class="legenda"><span><i class="sklizen"></i>čerstvá sklizeň</span><span><i class="sklad"></i>ze skladu</span><span><i class="cara-dnes"></i>dnes ${dnes}</span></div>
   <div class="sezona hlava"><div></div><div class="draha"><div class="mesice">${MESICE.map(m => `<span>${m}</span>`).join('')}</div></div></div>
   ${OBSAH.ovoce.map(o => radekSezony(o.nazev, o.sezona, useky(o.sezonaOd, o.sezonaDo),
     o.sklizenOd ? useky(o.sklizenOd, o.sklizenDo) : useky(o.sezonaOd, o.sezonaDo), BARVY[o.barva] || '#2f5a33')).join('')}
