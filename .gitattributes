@@ -1,0 +1,2 @@
+# Shellové skripty vždy s LF (bash na Windows jinak hlásí $'': command not found)
+*.sh text eol=lf
