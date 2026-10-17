@@ -48,8 +48,9 @@ export default function Mosty() {
               <li key={i} className="grid grid-cols-[1fr_4.5rem_4.5rem] gap-x-4 py-3.5 border-t border-line items-baseline">
                 <span className="text-ink leading-snug">
                   {sk.polozky.map((p, j) => (
-                    <span key={p.nazev} className={p.dostupne === false ? 'text-muted line-through' : ''}>
-                      {bezEmoji(p.nazev)}{jenVelikost(p)}{j < sk.polozky.length - 1 ? ', ' : ''}
+                    <span key={p.nazev}>
+                      <span className={p.dostupne === false ? 'text-muted line-through' : ''}>{bezEmoji(p.nazev)}{jenVelikost(p)}</span>
+                      {j < sk.polozky.length - 1 ? ', ' : ''}
                     </span>
                   ))}
                 </span>
