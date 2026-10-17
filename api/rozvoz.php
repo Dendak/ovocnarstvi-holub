@@ -832,9 +832,13 @@ $karta = function (array $o) use ($platba, $tlacitko, $zaplaceno, $cil, $dorucen
       . '<p style="margin:8px 0 0"><b>' . h(kc($cil($o) - (int)$o['zaplaceno'])) . '</b> · VS ' . h($o['vs']) . '<br><span class="muted">' . h(UCET['cislo']) . '</span></p>'
       . '<p class="muted" style="margin:6px 0 0">Po připsání platby se objednávka označí jako zaplacená sama.</p></div></details>';
   }
+  // Náhled účtenky před vystavením (nová záložka): nic neuloží, neodešle ani nepřidělí číslo.
+  $nahled = !$zruseno && PRODAVAJICI['ico'] !== ''
+    ? '<a class="odk" href="' . h('doklad.php?' . http_build_query(['vs' => $o['vs'], 'nahled' => 1])) . '" target="_blank" rel="noopener">Náhled účtenky</a>' : '';
   if (!empty($o['doklad'])) $s .= '<div style="margin-top:8px"><a class="odk" href="' . h(odkaz_na_doklad($o)) . '">Účtenka č. ' . h($o['doklad']['cislo']) . '</a> <span class="muted">· ' . $zrusitDoklad($o) . '</span></div>';
-  elseif ($hotovo && !empty($o['chce_doklad'])) $s .= '<div class="muted" style="margin-top:8px">Účtenka se vystaví, jakmile bude objednávka zaplacená.</div>';
-  elseif ($hotovo) $s .= '<div class="muted" style="margin-top:8px">Bez účtenky.</div>';
+  elseif ($hotovo && !empty($o['chce_doklad'])) $s .= '<div class="muted" style="margin-top:8px">Účtenka se vystaví, jakmile bude objednávka zaplacená. ' . $nahled . '</div>';
+  elseif ($hotovo) $s .= '<div class="muted" style="margin-top:8px">Bez účtenky. ' . $nahled . '</div>';
+  elseif ($nahled) $s .= '<div style="margin-top:8px">' . $nahled . '</div>';
   if ($dovoz && !$zruseno && !$hotovo) {
     $kam = $o['plna_adresa'] ?? $o['adresa'];
     $waze = !empty($o['gps'])
