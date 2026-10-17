@@ -4,6 +4,7 @@
 # a curl je dostává přes stdin (-K -), ne v příkazové řádce.
 #
 # Použití (z kořene repa):
+#   bash scripts/data-serveru.sh nastavit           – zeptá se na server, login a heslo a uloží je do .env
 #   bash scripts/data-serveru.sh seznam [složka/]   – výpis souborů (např. objednavky/)
 #   bash scripts/data-serveru.sh zaloha             – stáhne celou api/data do zaloha-serveru/<datum-čas>/
 #   bash scripts/data-serveru.sh stahni <soubor>    – stáhne jeden soubor do zaloha-serveru/aktualni/<soubor>
@@ -14,7 +15,22 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-[ -f .env ] || { echo "Chybí .env (vzor je v .env.example)." >&2; exit 1; }
+# „nastavit“: zeptá se na údaje a zapíše je do .env (heslo se při psaní nezobrazuje), pak zkusí spojení.
+if [ "${1:-}" = nastavit ]; then
+  stary() { [ -f .env ] && sed -n "s/^$1=//p" .env | tr -d '\r' | head -n 1 || true; }
+  h=$(stary DATA_FTP_HOST); u=$(stary DATA_FTP_USER); t=$(stary DATA_FTP_TLS)
+  IFS= read -rp "FTP server [${h}]: " x; h=${x:-$h}
+  IFS= read -rp "Login [${u}]: " x; u=${x:-$u}
+  IFS= read -rsp "Heslo (při psaní se nezobrazuje): " p; echo
+  [ -n "$h" ] && [ -n "$u" ] && [ -n "$p" ] || { echo "Chybí server, login nebo heslo – nic jsem neuložil." >&2; exit 1; }
+  umask 077
+  printf '%s\n' '# Přístup k api/data na serveru (vzor a popis v .env.example).' \
+    "DATA_FTP_HOST=$h" "DATA_FTP_USER=$u" "DATA_FTP_HESLO=$p" "DATA_FTP_TLS=${t:-1}" > .env
+  echo "Uloženo do .env. Zkouším spojení (výpis souborů na serveru):"
+  exec bash "$0" seznam
+fi
+
+[ -f .env ] || { echo "Chybí .env (vzor je v .env.example, nebo: bash scripts/data-serveru.sh nastavit)." >&2; exit 1; }
 # .env se čte doslova (KLÍČ=hodnota do konce řádku), ne přes shell – heslo může obsahovat uvozovky, $ i mezery.
 while IFS= read -r radek || [ -n "$radek" ]; do
   radek=${radek%$'\r'}
