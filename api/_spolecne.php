@@ -889,6 +889,12 @@ function odkaz_na_doklad(array $o): string {
   return WEB . '/api/doklad.php?' . http_build_query(['vs' => $o['vs'], 'k' => $k]);
 }
 
+function cislo_dokladu(string $rok, int $poradi): string { return sprintf('%s%s%04d', PREDPONA_DOKLADU, $rok, $poradi); }
+// Číslo, které by účtenka dostala, kdyby se vystavila teď (náhled) – jen čte řadu, nic nepřiděluje.
+function pristi_cislo_dokladu(): string {
+  $rok = date('Y');
+  return cislo_dokladu($rok, (int)(nacist_json('doklady.json', [])[$rok] ?? 0) + 1);
+}
 // „E20260001“ (i starší tvar bez předpony „20260001“) → ['2026', 1]; null u čísla v jiném tvaru.
 function rok_a_poradi_dokladu(string $cislo): ?array {
   return preg_match('/^\D*(\d{4})(\d+)$/', $cislo, $m) ? [$m[1], (int)$m[2]] : null;
@@ -909,7 +915,7 @@ function vystavit_doklad(array $o): array {
   if (!$ulozeno) return $o; // číslo by se mohlo použít dvakrát – účtenka se vystaví při další akci
 
   $o['doklad'] = [
-    'cislo' => sprintf('%s%s%04d', PREDPONA_DOKLADU, $rok, $rada[$rok]),
+    'cislo' => cislo_dokladu($rok, $rada[$rok]),
     'vystaveno' => date('c'),
     'duzp' => duzp($o),
     'uhrada' => !empty($o['zaplaceno_hotove']) ? 'hotově / na místě' : 'bankovním převodem',

@@ -6,8 +6,9 @@ header('Content-Type: text/html; charset=utf-8');
 header('X-Robots-Tag: noindex');
 header('Referrer-Policy: no-referrer');
 
-// ?nahled=1 (jen přihlášená farma, odkaz „Náhled účtenky“ v přehledu objednávek): jak bude účtenka vypadat.
-// Nic se neuloží, zákazníkovi se nic neodešle a nepřidělí se číslo (řada účtenek se nemění).
+// ?nahled=1 (jen přihlášená farma, odkaz „Náhled účtenky“ v přehledu objednávek): účtenka tak, jak by vypadala
+// vystavená teď – s číslem, které by dostala. Nic se neuloží, zákazníkovi se nic neodešle a číslo se nepřidělí
+// (řada účtenek se nemění; když se mezitím vystaví jiná účtenka, skutečné číslo bude jiné).
 $nahled = isset($_GET['nahled']) && prihlasen();
 $vs = preg_replace('/\D/', '', retezec($_GET['vs'] ?? ''));
 $o = $vs !== '' ? nacist_json("objednavky/$vs.json") : null;
@@ -19,7 +20,7 @@ if (!$o || (!$platnyOdkaz && !$nahled)) {
 }
 if ($nahled && empty($o['doklad'])) {
   $o['doklad'] = [
-    'cislo' => '',
+    'cislo' => pristi_cislo_dokladu(),
     'vystaveno' => date('c'),
     'duzp' => duzp($o),
     'uhrada' => !empty($o['zaplaceno_hotove']) ? 'hotově / na místě' : 'bankovním převodem',
@@ -67,18 +68,14 @@ h1{font:normal 26px Georgia,serif;margin:0 0 4px}.muted{color:#6b6f66;font-size:
 .strany{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:20px 0}.strany b{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:#6b6f66;margin-bottom:4px}
 table{width:100%;border-collapse:collapse;margin-top:12px}td{padding:8px 0;border-bottom:1px solid #dfd7c9;vertical-align:top}td.r{text-align:right;white-space:nowrap}
 .celkem td{font-weight:bold;font-size:17px;border-bottom:0;padding-top:12px}
-.storno{border:2px solid #8c2f2b;color:#8c2f2b;border-radius:8px;padding:12px 16px;margin:0 0 16px;font-weight:bold}
-.nahled{border:2px dashed #7a4f00;color:#7a4f00;background:#fbf3e3;border-radius:8px;padding:12px 16px;margin:0 0 16px}
-.tisk{display:block;margin:0 auto 24px;font:inherit;padding:10px 16px;border-radius:8px;border:1px solid #2f5a33;background:#2f5a33;color:#fff;cursor:pointer}
+.storno{border:2px solid #8c2f2b;color:#8c2f2b;border-radius:8px;padding:12px 16px;margin:0 0 16px;font-weight:bold}.tisk{display:block;margin:0 auto 24px;font:inherit;padding:10px 16px;border-radius:8px;border:1px solid #2f5a33;background:#2f5a33;color:#fff;cursor:pointer}
 @media print{body{background:#fff}.list{border:0;margin:0;max-width:none}.tisk{display:none}}
 @media (max-width:520px){.strany{grid-template-columns:1fr}.list{margin:0;border-radius:0}}
 </style></head><body>
 <div class="list">
   <?php if ($storno): ?><p class="storno">STORNO – účtenka byla zrušena <?= h(date('j. n. Y', strtotime($d['storno']))) ?><?= !empty($d['storno_duvod']) ? ': ' . h($d['storno_duvod']) : '' ?></p><?php endif ?>
-  <?php if ($nahled): ?><p class="nahled"><b>NÁHLED – účtenka zatím není vystavená.</b><br>Číslo dostane až při vystavení.
-    Nic se neuložilo a zákazníkovi se nic neposlalo.</p><?php endif ?>
   <p class="muted" style="margin:0">Ovocnářství Holub</p>
-  <h1>Účtenka č. <?= $nahled ? '<span class="muted" style="font-size:18px">(přidělí se při vystavení)</span>' : h($d['cislo']) ?></h1>
+  <h1>Účtenka č. <?= h($d['cislo']) ?></h1>
   <p class="muted"><?= h($druh) ?> · objednávka <?= h($o['cislo']) ?></p>
   <div class="strany">
     <div><b>Prodávající</b><?= h($p['jmeno']) ?><br><?= h($p['adresa']) ?><br>IČO: <?= h($p['ico']) ?><?= $p['dic'] ? '<br>DIČ: ' . h($p['dic']) : '' ?><?= !empty($p['telefon']) ? '<br>Tel.: ' . h($p['telefon']) : '' ?>
@@ -87,7 +84,7 @@ table{width:100%;border-collapse:collapse;margin-top:12px}td{padding:8px 0;borde
       : (!empty($o['adresa']) ? '<br>' . h($o['adresa'] . ', ' . trim(($o['psc'] ?? '') . ' ' . (($o['mesto'] ?? '') ?: 'České Budějovice'))) : '') ?></div>
   </div>
   <p>Datum vystavení: <?= h($datum) ?><br><?= $p['platce_dph'] ? 'Datum uskutečnění zdanitelného plnění' : 'Datum prodeje' ?>: <?= h(date('j. n. Y', strtotime(duzp($o)))) ?><br>
-    Úhrada: <?= h($d['uhrada']) ?> – <?= !$nahled || je_zaplaceno($o) ? 'uhrazeno' : 'zatím neuhrazeno' ?></p>
+    Úhrada: <?= h($d['uhrada']) ?> – uhrazeno</p>
   <table>
     <?= $radky ?>
     <?php if (!empty($o['rozvoz'])): ?><tr><td>Doprava až domů</td><td class="r">v ceně</td></tr><?php endif ?>
