@@ -1,2 +1,2 @@
-# Shellové skripty vždy s LF (bash na Windows jinak hlásí $'': command not found)
+# Shellové skripty vždy s LF – s windowsovými konci řádků (CRLF) je bash nespustí.
 *.sh text eol=lf
