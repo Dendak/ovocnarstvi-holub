@@ -46,6 +46,8 @@ const POTVRZENI_PLATBY_ZAKAZNIKOVI = false;
 // od nejvyššího zbývajícího. Po skončení zkoušek přepnout na false: vystavenou účtenku pak nejde smazat,
 // farma ji může jen stornovat s poznámkou a čísla se už nikdy znovu nepoužijí.
 const ZKUSEBNI_PROVOZ = true;
+// Číslo účtenky z e-shopu: předpona (odliší řadu e-shopu od faktur vystavovaných ručně), rok a pořadí – E20260001.
+const PREDPONA_DOKLADU = 'E';
 // Zjednodušený daňový doklad jen do této částky včetně DPH (§ 30 ZDPH); nad ní plný daňový doklad.
 const LIMIT_ZJEDNODUSENY_DOKLAD = 10000;
 // Upozornění na platby se přijímají jen od České spořitelny (doména a její poddomény).
@@ -887,6 +889,11 @@ function odkaz_na_doklad(array $o): string {
   return WEB . '/api/doklad.php?' . http_build_query(['vs' => $o['vs'], 'k' => $k]);
 }
 
+// „E20260001“ (i starší tvar bez předpony „20260001“) → ['2026', 1]; null u čísla v jiném tvaru.
+function rok_a_poradi_dokladu(string $cislo): ?array {
+  return preg_match('/^\D*(\d{4})(\d+)$/', $cislo, $m) ? [$m[1], (int)$m[2]] : null;
+}
+
 // Vystaví účtenku, když o ni farma při doručení stála (chce_doklad) a objednávka je doručená i zaplacená.
 // Vrací upravenou objednávku. Číslo se bere pod zámkem a řada nikdy neklesá (mimo zkušební provoz).
 function vystavit_doklad(array $o): array {
@@ -902,7 +909,7 @@ function vystavit_doklad(array $o): array {
   if (!$ulozeno) return $o; // číslo by se mohlo použít dvakrát – účtenka se vystaví při další akci
 
   $o['doklad'] = [
-    'cislo' => sprintf('%s%04d', $rok, $rada[$rok]),
+    'cislo' => sprintf('%s%s%04d', PREDPONA_DOKLADU, $rok, $rada[$rok]),
     'vystaveno' => date('c'),
     'duzp' => duzp($o),
     'uhrada' => !empty($o['zaplaceno_hotove']) ? 'hotově / na místě' : 'bankovním převodem',

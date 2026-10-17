@@ -217,9 +217,9 @@ function smazat_doklad(string $vs): void {
     foreach (glob(DATA . '/objednavky/*.json') ?: [] as $f) {
       if (basename($f, '.json') === $vs) continue;
       $x = json_decode((string)file_get_contents($f), true);
-      if (empty($x['doklad']['cislo'])) continue;
-      $rok = substr($x['doklad']['cislo'], 0, 4);
-      $rada[$rok] = max($rada[$rok] ?? 0, (int)substr($x['doklad']['cislo'], 4));
+      $rp = rok_a_poradi_dokladu((string)($x['doklad']['cislo'] ?? ''));
+      if (!$rp) continue;
+      $rada[$rp[0]] = max($rada[$rp[0]] ?? 0, $rp[1]);
     }
     ulozit_json('doklady.json', $rada);
     flock($zamek, LOCK_UN);
@@ -442,7 +442,8 @@ if (isset($_GET['skupiny']) || $akce === 'odebrat-clena') {
 //   ?prodeje=csv&mesic=RRRR-MM – všechny doručené, nestornované objednávky podle dne předání (DUZP), s účtenkou i bez
 if (isset($_GET['uctenky']) || isset($_GET['prodeje'])) {
   $doklady = array_values(array_filter($vse, fn($o) => !empty($o['doklad'])));
-  usort($doklady, fn($a, $b) => strcmp($b['doklad']['cislo'], $a['doklad']['cislo']));
+  // Řazení podle roku a pořadí (bez předpony, ať se starší čísla bez „E“ zařadí správně).
+  usort($doklady, fn($a, $b) => strcmp(preg_replace('/^\D+/', '', $b['doklad']['cislo']), preg_replace('/^\D+/', '', $a['doklad']['cislo'])));
   $prodeje = array_values(array_filter($vse, fn($o) => !empty($o['doruceno']) && empty($o['zruseno'])));
   usort($prodeje, fn($a, $b) => [duzp($a), $a['cislo']] <=> [duzp($b), $b['cislo']]);
   $mesice = array_values(array_unique(array_merge(
