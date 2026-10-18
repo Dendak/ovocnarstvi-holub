@@ -10,10 +10,10 @@ const bezEmoji = s => s.replace(/\p{Extended_Pictographic}️?\s*/gu, '').trim()
 const bezPredvolby = tel => tel.replace(/^\+420\s*/, '')
 const ESHOP = 'https://ovoce-holub.cz/eshop/'
 
-// Záhlaví v barvě loga: logo jako znak, vedle nadpis strany.
+// Záhlaví v barvě webu: světlé logo, vedle nadpis strany.
 const zahlavi = (nadpis, podnadpis) => `
   <header class="pruh">
-    <img src="img/logo.png" alt="${esc(k.jmeno)}" class="logo">
+    <img src="img/logo/logo-svetle.svg" alt="${esc(k.jmeno)}" class="logo">
     <div><h1>${esc(nadpis)}</h1><p>${esc(podnadpis)}</p></div>
   </header>`
 

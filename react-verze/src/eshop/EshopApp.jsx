@@ -103,7 +103,7 @@ function Hlavicka({ onKosik, kosikRef, inert }) {
     <nav className="fixed top-0 left-0 right-0 z-40 bg-forest" aria-label="E-shop" inert={inert}>
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-3">
         <a href={`${BASE}index.html`} className="flex items-center gap-3 shrink-0">
-          <img src={`${BASE}img/logo.png`} alt="Ovocnářství Holub" className="h-12 w-auto" width="88" height="48" />
+          <img src={`${BASE}img/logo/logo-svetle.svg`} alt="Ovocnářství Holub" className="h-12 w-auto" width="165" height="48" />
           <span className="hidden sm:block text-white/90 font-serif text-lg">E-shop</span>
         </a>
         <div className="flex items-center gap-3 sm:gap-5 min-w-0">

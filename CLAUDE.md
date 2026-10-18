@@ -27,6 +27,7 @@ Web a e-shop ovocnářství (CZ + DE stránka pro rakouské pálenice). Produkce
     Kdo smí: `MAPA_UCTY` (sha256 e-mailu). Samotnou mapu a excely nahrává soukromé repo `Dendak/mapa-rozvozu-ovoce`
     přes FTP do `api/data/mapa/`; účty a odkazy jsou v `api/data/mapa-ucty.json`, `mapa-odkazy.json`.
 - `img/` — fotky + povinné náhledy `_w480/`, `_w960/` (WebP). Surové fotky `img/Fotky*/` jsou gitignorované.
+  Logo jen jako SVG v `img/logo/` (na tmavém pozadí `logo-svetle.svg`), favicony v `react-verze/public/`, zdroj a pravidla v `docs/logo/`.
 - `supabase/schema.sql` — tabulka `objednavky` + RLS (spouští se ručně v SQL editoru). Účty zákazníků + přihlášení přes Seznam.
 - Root `robots.txt`, `sitemap.xml`, `CNAME` se kopírují do buildu ve workflow.
 

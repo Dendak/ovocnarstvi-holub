@@ -10,3 +10,8 @@ sort_photos.ps1
 .env.*
 !.env.example
 zaloha-serveru/
+
+# Zdroj loga (docs/logo): balíčky a vygenerované soubory
+docs/logo/node_modules/
+docs/logo/package-lock.json
+docs/logo/vystup/

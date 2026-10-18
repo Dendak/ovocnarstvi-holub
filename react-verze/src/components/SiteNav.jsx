@@ -53,10 +53,7 @@ export default function SiteNav({ links, cta, lang, logoAlt, skipLabel = 'Přesk
         className={`fixed top-0 left-0 right-0 z-50 bg-forest text-white transition-transform duration-300 ${hidden && !open ? '-translate-y-full' : 'translate-y-0'}`}>
         <div className="container-page h-16 flex items-center justify-between gap-6">
           <a href="#" className="shrink-0">
-            <picture>
-              <source srcSet={`${BASE}img/_w480/logo.webp`} type="image/webp" />
-              <img src={`${BASE}img/logo.png`} alt={logoAlt} className="h-11 w-auto" width="81" height="44" />
-            </picture>
+            <img src={`${BASE}img/logo/logo-svetle.svg`} alt={logoAlt} className="h-11 w-auto" width="152" height="44" />
           </a>
 
           <div className="hidden md:flex items-center gap-7">

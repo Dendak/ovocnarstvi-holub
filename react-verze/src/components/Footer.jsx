@@ -26,10 +26,7 @@ export default function Footer({
       <footer className="bg-forest text-white/75">
         <div className="container-page py-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr]">
           <div>
-            <picture>
-              <source srcSet={`${BASE}img/_w480/logo.webp`} type="image/webp" />
-              <img src={`${BASE}img/logo.png`} alt={jmeno} className="h-12 w-auto mb-4" width="88" height="48" loading="lazy" />
-            </picture>
+            <img src={`${BASE}img/logo/logo-svetle.svg`} alt={jmeno} className="h-12 w-auto mb-4" width="165" height="48" loading="lazy" />
             <p className="max-w-xs leading-relaxed">{tagline}</p>
           </div>
           <div>

@@ -32,7 +32,8 @@ Nic rozpracovaného v kódu není, main = produkce je čistá.
   (`katalog.js` DORUCENI, obchodní podmínky). Rozhodne uživatel.
 - [ ] **Meruňky a Broskve**: data na webu (1. 7.–31. 8., 1. 8.–30. 9.) jsou obecný odhad, uživatel neví. Zeptat se Pavla
   na skutečné termíny, nebo je z tištěného ceníku vynechat (ve starém PDF nebyly).
-- [ ] **Tištěný ceník A3**: logo `img/logo.png` má jen 264×144 px, na A3 je rozmazané. Případně dodat větší logo.
+- [ ] **Nové logo – zbývá:** německý popisek „OBSTBAU“ (`docs/logo/logo-de-navrh.svg`) čeká na rozhodnutí, DE stránka
+  zatím má české logo. Před tiskem štítků / bedýnek nátisk a CMYK s tiskárnou (pravidla v `docs/logo/specifikace.png`).
 - [ ] **Jonaprince** je v nabídce (zpráva farmy ho uváděla „na uskladnění“ i mezi zmrzlými) – potvrdit u Pavla.
 - [ ] **Párování plateb z `pavel@` běží od 10. 10.** (heslo zadané, `platby.php` vrací `{"ok":true}`).
   První kontrola prošla jen posledních 7 dní (od ~3. 10.). Platby z 1.–2. 10. zkontrolovat a spárovat ručně.
@@ -51,6 +52,12 @@ Nic rozpracovaného v kódu není, main = produkce je čistá.
 - [ ] `react-verze/README.md` je šablona Vite. Případně nahradit odkazem na CLAUDE.md.
 
 ## Historie
+### 2026-10-18
+- Nové logo „H-jablko“ (červené jablko, drážky tvoří H, vedle „OVOCNÁŘSTVÍ / Holub“ v Newsreader). Vybrané z 5 konceptů
+  (porota 3 pohledů, 3 finalisté). Vektor v `img/logo/` (světlé, tmavé, na výšku, kompaktní, jednobarevné, znak),
+  favicony a `logo-512.png` (JSON-LD) v `react-verze/public/`. Lišta, patička, e-shop a ceník mají `logo-svetle.svg`.
+  Staré `img/logo.png` / `logo.svg` smazané. Zdroj a návod na úpravu: `docs/logo/` (README, `build.mjs`).
+
 ### 2026-10-13
 - E-shop: u osobního odběru zákazník povinně vyplní přibližný čas příjezdu (PR #4). Čas je v e-mailu farmě,
   v předmětu, v potvrzení zákazníkovi a na kartě v `rozvoz.php` (odběry seřazené podle času).

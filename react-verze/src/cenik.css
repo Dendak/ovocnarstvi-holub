@@ -117,7 +117,7 @@ body {
   background: var(--forest);
   color: var(--cream);
 }
-.pruh .logo { display: block; height: 19mm; width: auto; border-radius: 1.6mm; }
+.pruh .logo { display: block; height: 15mm; width: auto; }
 .pruh h1 {
   margin: 0;
   font-family: var(--serif);
