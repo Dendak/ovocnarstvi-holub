@@ -62,7 +62,7 @@ function zkontrolovatSoubory() {
   }
   // Stránky webu (odkazuje na ně patička a e-shop) a ikony / obrázek pro sdílení z hlaviček stránek.
   for (const s of Object.values(STRANKY)) if (!existsSync(resolve(__dirname, s))) chyby.push(`chybí stránka react-verze/${s}`)
-  for (const s of ['public/favicon.svg', 'public/favicon-32.png', 'public/apple-touch-icon.png', '../img/og-ovoce-holub.jpg']) {
+  for (const s of ['public/favicon.svg', 'public/favicon-32.png', 'public/apple-touch-icon.png', 'public/logo-512.png', '../img/og-ovoce-holub.jpg']) {
     if (!existsSync(resolve(__dirname, s))) chyby.push(`chybí ${kratce(resolve(__dirname, s))}`)
   }
   // Fotky: ke každé jpg/jpeg/png v img/ patří zmenšeniny _w480/<jméno>.webp a _w960/<jméno>.webp (srcset).
@@ -106,8 +106,8 @@ function phpApi() {
       } catch (e) {
         throw new Error(`Ceník pro server (api/_cenik.php) se nepodařilo vytvořit: ${e.message}`, { cause: e })
       }
-      // Ikony z public/ (při sestavení se public/ nekopíruje, CI přidává jen favicon.svg).
-      for (const f of ['favicon-32.png', 'apple-touch-icon.png']) {
+      // Ikony a logo pro JSON-LD z public/ (při sestavení se public/ nekopíruje, CI přidává jen favicon.svg).
+      for (const f of ['favicon-32.png', 'apple-touch-icon.png', 'logo-512.png']) {
         if (existsSync(resolve(__dirname, 'public', f))) cpSync(resolve(__dirname, 'public', f), resolve(outDir, f))
       }
     },
