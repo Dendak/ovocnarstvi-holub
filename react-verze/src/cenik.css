@@ -33,6 +33,7 @@
   --forest: #17241a;
   --cream: #f3eee2;
   --berry: #8c2f2b;
+  --sloupec: #f2ede3; /* podbarvení sloupců cen a měsíců – tmavší než --paper, ať se vytiskne i na levné tiskárně */
   --serif: "Newsreader", Georgia, "Times New Roman", serif;
   --sans: "Source Sans 3", system-ui, -apple-system, "Segoe UI", sans-serif;
 }
@@ -95,7 +96,7 @@ body {
   overflow: hidden;
 }
 /* Obsah mezi záhlavím a patičkou vycentrovaný na výšku – volné místo se rozdělí nahoru i dolů. */
-.obsah { flex: 1; display: flex; flex-direction: column; justify-content: safe center; padding: 4mm 0; }
+.obsah { flex: 1; display: flex; flex-direction: column; justify-content: safe center; padding: 1mm 0; }
 
 .stitek {
   margin: 0;
@@ -106,18 +107,19 @@ body {
   color: var(--leaf);
 }
 
-/* ---------- záhlaví: pruh v barvě loga ---------- */
+/* ---------- záhlaví: pruh v barvě loga ----------
+   Nadpis i podnadpis mají na obou stranách po jednom řádku, takže jsou obě záhlaví stejně vysoká. */
 .pruh {
   display: grid;
   grid-template-columns: auto 1fr;
-  gap: 5mm;
+  gap: 4mm;
   align-items: center;
-  padding: 4.5mm 6mm;
+  padding: 3.8mm 5mm;
   border-radius: 3mm;
   background: var(--forest);
   color: var(--cream);
 }
-.pruh .logo { display: block; height: 15mm; width: auto; }
+.pruh .logo { display: block; height: 13.6mm; width: auto; }
 .pruh h1 {
   margin: 0;
   font-family: var(--serif);
@@ -129,69 +131,112 @@ body {
 }
 .pruh p { margin: 1.6mm 0 0; font-size: 9pt; line-height: 1.35; color: color-mix(in srgb, var(--cream) 72%, var(--forest)); }
 
-/* ---------- strana 1: mošty po cenových hladinách ---------- */
-.mosty { padding: 0 3mm; }
-.hladina {
-  display: grid;
-  grid-template-columns: 1fr 16mm 16mm;
-  column-gap: 2mm;
-  align-items: baseline;
-  padding: 3mm 0;
-  border-top: 0.6pt solid var(--line);
+/* ---------- strana 1: mošty – jeden řádek na mošt ---------- */
+/* Řádek: název … tečky … cena 5 l, cena 3 l. Mošty se stejnou cenou (hladina) jsou blok, bloky dělí tenká čára.
+   Nad cenami zelené štítky „5 l“ / „3 l“ a pod nimi až dolů lehce podbarvené sloupce – oko z ceny dojde ke štítku. */
+.mosty {
+  --cena: 21mm; /* šířka sloupce ceny */
+  --mezera: 1.2mm;
+  padding: 0 2mm;
 }
-.hladina.hlava { align-items: end; padding: 0 0 1.8mm; border-top: 0; }
-.hladina.ciste { border-top: 1.2pt solid var(--ink); }
-.prichute { margin: 0; font-family: var(--serif); font-size: 16pt; line-height: 1.38; text-wrap: pretty; }
-.prichute > span, .prichute > s { white-space: nowrap; }
-.prichute i { font-style: normal; color: var(--leaf); }
-.prichute s { color: var(--muted); text-decoration-thickness: 1pt; }
-.prichute small {
-  margin-left: 1mm;
-  padding: 0.2mm 1.4mm;
-  border: 0.7pt solid currentColor;
-  border-radius: 2mm;
-  font-family: var(--sans);
-  font-size: 7.5pt;
-  font-weight: 600;
+.most, .sloupce { display: grid; grid-template-columns: 1fr var(--cena) var(--cena); column-gap: var(--mezera); }
+.most { align-items: last baseline; padding: 0.2mm 0; line-height: 1.15; }
+/* podbarvené sloupce cen: navazují na štítky, dole zaoblené jako štítky nahoře */
+.radky { position: relative; isolation: isolate; padding-bottom: 1mm; }
+.radky::before, .radky::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: var(--cena);
+  border-radius: 0 0 2mm 2mm;
+  background: var(--sloupec);
+}
+.radky::before { right: calc(var(--cena) + var(--mezera)); }
+.hladina { padding: 0.6mm 0; border-top: 0.6pt solid color-mix(in srgb, var(--line) 70%, var(--muted)); }
+.hladina:first-child { border-top: 0; }
+.most .nazev { display: flex; align-items: last baseline; min-width: 0; font-family: var(--serif); font-size: 17pt; }
+/* Název se nezalamuje – druhý řádek by vzal místo celému dalšímu moštu. Dlouhý název cenik.js zmenší, ať se vejde
+   do řádku i s tečkami (nejvýš na 12 pt); teprve delší se zalomí a ceny i tečky pak sedí na jeho posledním řádku. */
+.most .nazev > span { min-width: 0; white-space: nowrap; }
+.most .nazev > span.zalomit { white-space: normal; text-wrap: balance; }
+.most .nazev b { font-weight: 600; }
+/* „+“ tučným bezpatkovým písmem, ať spojka „Jablko + …“ vydrží i z dálky */
+.most .nazev i { font-family: var(--sans); font-style: normal; font-weight: 700; color: var(--leaf); }
+/* tečky vedou oko od názvu k cenám */
+.most .nazev::after { content: ''; flex: 1; min-width: 4mm; margin: 0 2mm 0 2.5mm; border-bottom: 1.5pt dotted color-mix(in srgb, var(--ink) 45%, #fff); }
+.cena { font-size: 18.5pt; font-weight: 700; text-align: center; font-variant-numeric: tabular-nums; white-space: nowrap; }
+/* „,–“ menší a tlumeně, ať vynikne číslo */
+.cena small { font-size: 0.72em; font-weight: 600; color: var(--muted); }
+/* čisté jablko (základní mošt) otevírá tabulku větším písmem */
+.most.ciste .nazev, .most.ciste .cena { font-size: 20pt; }
+
+/* vyprodaná jedna velikost: tučně vínově místo ceny */
+.vyprodano { font-size: 11pt; font-weight: 700; letter-spacing: 0; color: var(--berry); }
+/* vyprodaný celý mošt: šedý přeškrtnutý název a značka přes oba sloupce */
+.most.pryc .nazev > span { color: var(--muted); text-decoration: line-through; text-decoration-thickness: 1.2pt; }
+.most.pryc .nazev i { color: inherit; }
+.most.pryc .nazev::after { border-bottom-color: var(--line); }
+.most.pryc .cena { grid-column: span 2; }
+.most.pryc .vyprodano {
+  display: inline-block;
+  padding: 0.3mm 2.4mm 0.4mm;
+  border: 1pt solid currentColor;
+  border-radius: 2.5mm;
+  background: #fff;
+  font-size: 11pt;
+  line-height: 1.2;
   letter-spacing: 0.03em;
-  color: var(--berry);
-  vertical-align: 0.25em;
+  vertical-align: 0.15em;
 }
-.hladina.ciste .prichute { font-size: 20pt; }
-.cena { font-size: 17pt; font-weight: 600; text-align: center; font-variant-numeric: tabular-nums; }
-.hladina.ciste .cena { font-size: 20pt; }
-.cena.pryc { font-weight: 400; color: var(--muted); text-decoration: line-through; text-decoration-thickness: 1pt; }
-/* záhlaví sloupců: kreslené bag-in-boxy 5 l a 3 l */
-.krabice { display: flex; flex-direction: column; align-items: center; gap: 0.8mm; color: var(--leaf); font-size: 9pt; font-weight: 600; }
-.krabice svg { display: block; width: 8mm; height: auto; stroke: var(--leaf); stroke-width: 1.1; stroke-linejoin: round; }
-.krabice .cela { fill: #fff; }
-.krabice .vrch { fill: color-mix(in srgb, var(--leaf) 16%, #fff); }
-.krabice .bok { fill: color-mix(in srgb, var(--leaf) 34%, #fff); }
-.krabice .uchyt, .krabice .kohout { fill: var(--leaf); stroke: none; }
-.mosty > .stitek { margin: 3.2mm 0 0.6mm; }
 
-.pozn { margin: 3mm 3mm 0; font-size: 8.5pt; color: var(--muted); }
+/* hlavička: vlevo co cena znamená, nad cenami zelené štítky s kreslenou krabicí (bag-in-box) */
+.sloupce { align-items: end; border-bottom: 1.6pt solid var(--forest); }
+.pozn { margin: 0; padding-bottom: 1.3mm; font-size: 8.5pt; line-height: 1.35; color: var(--muted); }
+.pozn .stitek { display: block; margin-bottom: 0.2mm; }
+.velikost {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.6mm;
+  height: 9mm;
+  border-radius: 2mm 2mm 0 0;
+  background: var(--leaf);
+  color: #fff;
+  font-size: 15pt;
+  font-weight: 700;
+  line-height: 1;
+}
+.krabice { display: block; width: 5.6mm; height: auto; stroke: currentColor; stroke-width: 1.3; stroke-linejoin: round; }
+.krabice .cela { fill: var(--leaf); }
+.krabice .vrch { fill: color-mix(in srgb, #fff 30%, var(--leaf)); }
+.krabice .bok { fill: color-mix(in srgb, #fff 55%, var(--leaf)); }
+.krabice .uchyt, .krabice .kohout { fill: currentColor; stroke: none; }
 
-/* ---------- strana 2: kalendář sezón ---------- */
+/* ---------- strana 2: kalendář sezón ----------
+   Stejně jako u moštů: tmavá čára pod hlavičkou a podbarvené sloupce (každý druhý měsíc). */
 .kalendar { padding: 0 1mm; }
-.legenda { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 1mm 4.5mm; margin-bottom: 2.5mm; font-size: 8pt; color: var(--muted); }
+.legenda { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 1mm 4.5mm; margin-bottom: 2.5mm; font-size: 8.5pt; color: var(--muted); }
 .legenda span { display: inline-flex; align-items: center; gap: 1.4mm; }
 .legenda i { display: inline-block; width: 5.5mm; height: 2.4mm; border-radius: 1.2mm; }
 .legenda i.sklizen { background: var(--leaf); }
 .legenda i.sklad { background: color-mix(in srgb, var(--leaf) 32%, #fff); }
 .legenda i.cara-dnes { width: 0; height: 3.6mm; border-radius: 0; border-left: 1.2pt solid var(--berry); }
 .sezona { display: grid; grid-template-columns: 29mm 1fr; border-top: 0.6pt solid var(--line); }
-.sezona > div:first-child { padding: 1.5mm 0; }
-.sezona .nazev { display: block; font-family: var(--serif); font-size: 13pt; line-height: 1.15; }
-.sezona .kdy { display: block; font-size: 7.5pt; color: var(--muted); }
+.sezona > div:first-child { padding: 1.3mm 0; }
+.sezona .nazev { display: block; font-family: var(--serif); font-size: 14pt; line-height: 1.15; }
+.sezona .kdy { display: block; font-size: 8.5pt; line-height: 1.25; color: var(--muted); }
 .draha { position: relative; }
 .mrizka, .mesice { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(12, 1fr); }
-.mrizka span:nth-child(odd) { background: var(--paper); }
+.mrizka span:nth-child(odd) { background: var(--sloupec); }
 .pas { position: absolute; top: 50%; height: 3.8mm; margin-top: -1.9mm; border-radius: 1.9mm; background: var(--barva); }
 .pas.sklad { background: color-mix(in srgb, var(--barva) 32%, #fff); }
 .dnes { position: absolute; top: 0; bottom: 0; width: 0; border-left: 1.2pt solid var(--berry); }
-.sezona.hlava { height: 5mm; border-top: 0; }
-.mesice span { align-self: end; padding-bottom: 1mm; text-align: center; font-size: 7.5pt; letter-spacing: 0.04em; color: var(--muted); }
+.sezona.hlava { height: 5.5mm; border-top: 0; border-bottom: 1.6pt solid var(--forest); }
+.sezona.hlava + .sezona { border-top: 0; }
+.mesice span { align-self: end; padding-bottom: 1mm; text-align: center; font-size: 8.5pt; font-weight: 600; letter-spacing: 0.02em; color: var(--ink); }
 .kalendar .sezona:last-child { border-bottom: 0.6pt solid var(--line); }
 
 .nabidka { margin: 4.5mm 1mm 0; padding: 3mm 4mm; border-radius: 2mm; background: var(--paper); font-size: 10pt; line-height: 1.45; }

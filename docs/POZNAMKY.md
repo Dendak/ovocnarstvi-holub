@@ -52,6 +52,17 @@ Nic rozpracovaného v kódu není, main = produkce je čistá.
 - [ ] `react-verze/README.md` je šablona Vite. Případně nahradit odkazem na CLAUDE.md.
 
 ## Historie
+### 2026-10-21
+- Tištěný ceník (`cenik.html`): mošty zase po jednom na řádek („Jablko + Hruška …… 170,– 120,–“). Důvod: zákaznice
+  četla „Hruška · Červená řepa · Mrkev“ jako jeden míchaný mošt; bratr: minulý ceník byl přehlednější.
+  Vybráno ze 4 konceptů (porota zákazník / grafik / provoz, 3 dopracované varianty, uživatel zvolil „Řádky s tečkami“).
+  Zelené štítky 5 l / 3 l s podbarvenými sloupci, větší písmo (17/18,5 pt), vyprodaná velikost „vyprodáno“ ve sloupci,
+  dlouhé názvy se zmenší místo zalomení (`vejitNazvy`), datum platnosti z `OBSAH.mosty.platnostOd`.
+  Strana 2 (kalendář) jen sladěná písmem a podbarvením. A5 i A4 = 2 strany bez zmenšení.
+- Kotrouš (OH-261006-1097): upozornění „dvojí platba 1 650 Kč vrátit“ je planý poplach – první platbu 1 300 Kč
+  uživatel vrátil sám, systém vrácení neeviduje (na stránce rozvozu kliknout „Vyřízeno“). Případně přidat
+  tlačítko „Vráceno X Kč“ do `rozvoz.php`.
+
 ### 2026-10-18
 - Nové logo „H-jablko“ (červené jablko, drážky tvoří H, vedle „OVOCNÁŘSTVÍ / Holub“ v Newsreader). Vybrané z 5 konceptů
   (porota 3 pohledů, 3 finalisté). Vektor v `img/logo/` (světlé, tmavé, na výšku, kompaktní, jednobarevné, znak),

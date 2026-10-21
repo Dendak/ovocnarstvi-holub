@@ -18,38 +18,49 @@ const zahlavi = (nadpis, podnadpis) => `
   </header>`
 
 // ---------- strana 1: mošty ----------
-// Ceny jsou po hladinách (data.js: skupiny) – každá cena je jednou a vedle ní příchutě, které ji mají.
+// Každý mošt má vlastní řádek „Jablko + Hruška … 170,– 120,–“. Příchutě se stejnou cenou v jednom řádku
+// („Hruška · Červená řepa · Mrkev“) lidé četli jako jeden míchaný mošt. Cenové hladiny (data.js: skupiny)
+// odděluje jen mezera a tenká čára.
 const VELIKOSTI = [['5l', 'cena5l', '5 l', 20], ['3l', 'cena3l', '3 l', 13]]
 // Bag-in-box: krabice zpředu a trochu shora, s úchytem a kohoutkem; přední stěna 5 l je vyšší než 3 l.
-const krabice = (popis, h) => {
+const krabice = h => {
   const y = 6, dno = y + h
-  return `<span class="krabice"><svg viewBox="0 0 30 ${dno + 3}" aria-hidden="true">
+  return `<svg class="krabice" viewBox="0 0 30 ${dno + 3}" aria-hidden="true">
   <path d="M2 ${y}l6-5h20l-6 5z" class="vrch"/><path d="M22 ${y}l6-5v${h}l-6 5z" class="bok"/>
   <rect x="2" y="${y}" width="20" height="${h}" class="cela"/>
   <rect x="8" y="${y + 2}" width="8" height="2" rx="1" class="uchyt"/>
   <circle cx="12" cy="${dno - 3.2}" r="1.9" class="kohout"/><rect x="11.2" y="${dno - 2}" width="1.6" height="4" class="kohout"/>
-</svg>${popis}</span>`
+</svg>`
 }
-const nazevPrichute = p => bezEmoji(p.nazev).replace(/^čisté jablko$/i, 'Jablko')
-// „Mrkev (jen 5 l)“, když je vyprodaná jedna velikost; vyprodaná příchuť přeškrtnutá.
-const prichut = p => {
-  if (p.dostupne === false) return `<s>${esc(nazevPrichute(p))}</s>`
-  const zbyva = VELIKOSTI.filter(([v]) => !p.vyprodano?.includes(v))
-  return `<span>${esc(nazevPrichute(p))}${zbyva.length === 1 ? ` <small>jen ${zbyva[0][2]}</small>` : ''}</span>`
+// „Čisté jablko“ → „Jablko“, „Hruška“ → „Jablko + Hruška“, „Vánoční mošt“ zůstane (je to celý název).
+// Tučně je to, čím se mošty liší; „Jablko +“ je obyčejným písmem.
+const jeCisteJablko = p => /^čisté jablko$/i.test(bezEmoji(p.nazev))
+const nazevMostu = p => {
+  const n = bezEmoji(p.nazev)
+  if (jeCisteJablko(p)) return '<b>Jablko</b>'
+  return /mošt/i.test(n) ? `<b>${esc(n)}</b>` : `Jablko <i>+</i> <b>${esc(n)}</b>`
 }
-// Cena hladiny je přeškrtnutá, jen když danou velikost nemá žádná příchuť.
-const ceny = sk => VELIKOSTI.map(([v, klic]) => {
-  const nikdo = sk.polozky.every(p => p.dostupne === false || p.vyprodano?.includes(v))
-  return `<span class="cena${nikdo ? ' pryc' : ''}">${sk[klic]}</span>`
-}).join('')
-const hladina = (sk, trida = '') => `
-  <div class="hladina${trida}"><p class="prichute">${sk.polozky.map(prichut).join('<i> · </i>')}</p>${ceny(sk)}</div>`
-const [ciste, ...ochucene] = OBSAH.mosty.skupiny
+// Vyprodaný mošt (i když má vyprodané všechny velikosti): název přeškrtnutý a přes oba sloupce „vyprodáno“.
+// Vyprodaná jedna velikost: „vyprodáno“ místo její ceny.
+const VYPRODANO = '<span class="vyprodano">vyprodáno</span>'
+const radekMostu = (sk, p) => {
+  const pryc = p.dostupne === false || VELIKOSTI.every(([v]) => p.vyprodano?.includes(v))
+  const ceny = pryc ? `<span class="cena">${VYPRODANO}</span>`
+    : VELIKOSTI.map(([v, klic]) => `<span class="cena">${p.vyprodano?.includes(v) ? VYPRODANO : `${sk[klic]}<small>,–</small>`}</span>`).join('')
+  const trida = (jeCisteJablko(p) ? ' ciste' : '') + (pryc ? ' pryc' : '')
+  return `<div class="most${trida}"><span class="nazev"><span>${nazevMostu(p)}</span></span>${ceny}</div>`
+}
+// Hlavička: vlevo co cena znamená, nad sloupci cen zelené štítky s krabicí „5 l“ / „3 l“.
+// Pod štítky jsou sloupce cen až dolů lehce podbarvené (cenik.css), ať je i u posledního moštu jasné, která cena je která.
+const platnost = OBSAH.mosty.platnostOd ? `platí od ${esc(OBSAH.mosty.platnostOd)}` : `ceník ze dne ${dnes}`
 const mosty = `
-  <div class="hladina hlava"><p></p>${VELIKOSTI.map(([, , popis, v]) => krabice(popis, v)).join('')}</div>
-  ${hladina(ciste, ' ciste')}
-  <p class="stitek">Jablko + příchuť</p>
-  ${ochucene.map(sk => hladina(sk)).join('')}`
+  <div class="sloupce">
+    <p class="pozn"><span class="stitek">Cena v Kč za balení</span>bag-in-box vč. obalu a DPH · ${platnost}</p>
+    ${VELIKOSTI.map(([, , popis, v]) => `<span class="velikost">${krabice(v)}${popis}</span>`).join('')}
+  </div>
+  <div class="radky">${OBSAH.mosty.skupiny.map(sk => `
+    <div class="hladina">${sk.polozky.map(p => radekMostu(sk, p)).join('')}</div>`).join('')}
+  </div>`
 
 // ---------- strana 2: kalendář sezón ----------
 // Plná barva = čerstvá sklizeň (sklizenOd/sklizenDo), světlejší = prodej ze skladu (zbytek sezóny).
@@ -98,10 +109,9 @@ const kontakt = `
 
 document.getElementById('cenik').innerHTML = `
   <section class="strana">
-    ${zahlavi('Domácí mošty', 'Z jablek z našeho sadu, bez přidaného cukru a konzervantů')}
+    ${zahlavi('Domácí mošty', 'Z našich jablek, bez přidaného cukru a konzervantů')}
     <div class="obsah">
       <div class="mosty">${mosty}</div>
-      <p class="pozn">Ceny v Kč za balení bag-in-box včetně obalu a DPH · ceník ze dne ${dnes}</p>
     </div>
     ${kontakt}
   </section>
@@ -131,11 +141,28 @@ let ulozeny = null
 try { ulozeny = localStorage.getItem('cenik-format') } catch { /* soukromý režim */ }
 nastavitFormat(new URLSearchParams(location.search).get('format')?.toUpperCase() || ulozeny || 'A5')
 
+// Dlouhý název moštu se nezalamuje (cenik.css) – druhý řádek by vzal místo celému dalšímu moštu. Když se nevejde
+// do řádku, zmenší se jen jeho písmo, nejvýš na 12 pt z 17 pt („Jablko + Černý bez s citronovou trávou“ má asi 12 pt).
+// Až kdyby nestačilo ani to, zalomí se. Zmenšuje se v em, takže to platí pro A5 i zvětšené A4/A3.
+const NEJMENSI_NAZEV = 12 / 17
+const vejitNazvy = () => document.querySelectorAll('.most .nazev > span').forEach(el => {
+  if (el.scrollWidth <= el.clientWidth) return
+  const pomer = Math.floor(el.clientWidth / el.scrollWidth * 100) / 100
+  el.style.fontSize = `${Math.max(pomer, NEJMENSI_NAZEV).toFixed(2)}em`
+  if (pomer < NEJMENSI_NAZEV) el.classList.add('zalomit')
+})
+
 // Kdyby přibyly příchutě nebo ovoce a strana přetekla, obsah se mírně zmenší (nejvýš na 80 %).
-document.fonts.ready.then(() => document.querySelectorAll('.strana').forEach(s => {
-  const obsah = s.querySelector('.obsah')
-  for (let z = 1; s.scrollHeight > s.clientHeight && z > 0.8;) obsah.style.zoom = (z -= 0.02).toFixed(2)
-}))
+// Měří se na výšce strany při tisku (209 mm, viz @media print v cenik.css), ať nepřeteče ani na papíře.
+document.fonts.ready.then(() => {
+  vejitNazvy()
+  document.querySelectorAll('.strana').forEach(s => {
+    const obsah = s.querySelector('.obsah')
+    s.style.height = '209mm'
+    for (let z = 1; s.scrollHeight > s.clientHeight && z > 0.8;) obsah.style.zoom = (z -= 0.02).toFixed(2)
+    s.style.height = ''
+  })
+})
 
 // QR kód se načte až v prohlížeči (stejná knihovna jako QR platba v e-shopu); bez něj zůstane jen popisek.
 import('qrcode')
