@@ -4,7 +4,6 @@ Deník práce na webu, aby šlo navázat z jakéhokoli zařízení. Nejnovějš�
 Na konci každé session: co je hotové, co je rozdělané, co dál.
 
 ## Rozdělané / další kroky
-- [ ] **Úklid serveru (čeká na OK):** veřejné `/info.php` (phpinfo, z 21. 1.) a stará složka `/www/` (deploy z 27. 3., i se sync-state) – smazat. Pak `kontrola-serveru.yml` znovu.
 **Další krok:** další zdražení moštů (návrh níže) čeká na rozhodnutí táty a Lukáše – 17. 10.: „zatím jak chtěl Lukáš“.
 Nic rozpracovaného v kódu není, main = produkce je čistá.
 
@@ -54,7 +53,7 @@ Nic rozpracovaného v kódu není, main = produkce je čistá.
 
 ## Historie
 ### 2026-10-21
-- PHP2Shell (CVE-2026-109618/109619): server běží na PHP 8.5.12 fpm-fcgi = záplatováno (ověřeno sondou). npm aktualizace (audit 0), verze PHP v `nastaveni.php?diagnostika`, nový ruční workflow `kontrola-serveru.yml` (FTPS funguje, obsah 50 souborů shodný, žádné webshelly, api/data čisté).
+- PHP2Shell (CVE-2026-109618/109619): server běží na PHP 8.5.12 fpm-fcgi = záplatováno (ověřeno sondou). npm aktualizace (audit 0), verze PHP v `nastaveni.php?diagnostika`, nový ruční workflow `kontrola-serveru.yml` (FTPS funguje, obsah 50 souborů shodný, žádné webshelly, api/data čisté). Smazáno veřejné `/info.php` a stará složka `/www/` (workflow `uklid-serveru.yml`); druhá kontrola celá OK. Wedos e-mailem potvrdil záplatu na všech serverech.
 
 ### 2026-10-21
 - Tištěný ceník (`cenik.html`): mošty zase po jednom na řádek („Jablko + Hruška …… 170,– 120,–“). Důvod: zákaznice
