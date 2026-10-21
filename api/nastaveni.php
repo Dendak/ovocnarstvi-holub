@@ -103,6 +103,24 @@ function diagnostika_ip(): string {
   return $s . 'POZOR: server vidí místo návštěvníka adresu CDN (' . $ra . '). Limity proti zneužití pak platí pro všechny návštěvníky dohromady.'
     . ' Rozsah adres CDN patří do DUVERYHODNE_PROXY v api/_spolecne.php – dejte vědět správci webu.';
 }
+
+// PHP2Shell (CVE-2026-109618, CVE-2026-109619): chyba v samotném PHP, opravená 21. 10. 2026 v těchto verzích.
+// Opravit ji může jen hosting (Wedos aktualizuje PHP, větev se volí v administraci webhostingu); kód webu ne.
+// Starší větve (8.1 a dřív) opravu nedostaly. Verze PHP se ukazuje jen přihlášené farmě – veřejně nikdy.
+const PHP2SHELL_OPRAVENO = ['8.5' => '8.5.12', '8.4' => '8.4.27', '8.3' => '8.3.36', '8.2' => '8.2.35'];
+
+function stav_php2shell(): string {
+  $vetev = PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION;
+  $oprava = PHP2SHELL_OPRAVENO[$vetev] ?? null;
+  if ($oprava !== null) {
+    return version_compare(PHP_VERSION, $oprava, '>=') ? "opraveno (oprava je od $oprava)"
+      : "NEOPRAVENO – potřeba aspoň PHP $oprava; dokud ji Wedos nenasadí, dejte vědět správci webu";
+  }
+  if (version_compare($vetev, '8.2', '<')) {
+    return "NEOPRAVENO – větev $vetev opravu nedostala; v administraci Wedosu přepněte na PHP 8.4 nebo 8.5";
+  }
+  return "nelze určit (větev $vetev v seznamu opravených není) – ověřte u Wedosu";
+}
 ?><!doctype html>
 <html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><title>Nastavení e-shopu</title>
@@ -147,6 +165,8 @@ a{color:#2f5a33}
 <?php endif ?>
 <?php if ($plna && isset($_GET['diagnostika'])): ?>
 <div class="box"><p><b>Diagnostika spojení z hostingu</b></p><pre class="muted" style="margin:0;white-space:pre-wrap"><?php
+  // Verze PHP jen pro přihlášenou farmu (při úplně prvním nastavení je stránka veřejná).
+  if ($prihlasen) echo h('PHP ' . PHP_VERSION . ' (' . php_sapi_name() . ') – PHP2Shell (CVE-2026-109618/109619): ' . stav_php2shell()) . "\n\n";
   foreach (array_merge([IMAP_SERVER], SMTP_SERVERY) as $srv) {
     $t = microtime(true); $c = @stream_socket_client($srv, $en, $es, 6);
     echo h($srv) . ': ' . ($c ? 'OK' : 'NELZE (' . h((string)$es) . ')') . ' ' . round((microtime(true) - $t) * 1000) . " ms

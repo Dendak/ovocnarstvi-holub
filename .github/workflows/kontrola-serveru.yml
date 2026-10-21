@@ -1,0 +1,207 @@
+name: Kontrola serveru (ruční)
+
+# Ruční kontrola produkce na Wedosu (spouští se jen z Actions → „Run workflow“):
+#  - jestli se soubory na serveru shodují s tím, co by nasadil deploy-wedos.yml (soubory navíc, chybějící,
+#    otisky SHA-256 u .php/.htaccess/.html/.js/…), a jestli v nich nejsou nové stopy webshellu,
+#  - jestli v api/data (data zákazníků) není nic spustitelného – tam se nic nestahuje a jména se nevypisují,
+#  - jakou verzi PHP server skutečně používá (sonda pod náhodným jménem, hned se smaže) a jestli je
+#    záplatovaná proti PHP2Shell (CVE-2026-109618/-109619: 8.5.12, 8.4.27, 8.3.36, 8.2.35).
+# Repo i logy jsou veřejné: obsah souborů, data zákazníků ani přístupové údaje se do logu nevypisují.
+# Na serveru se nic nemění kromě sondy. Skripty: scripts/kontrola-serveru/ (samotest: test.sh).
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Stejná skupina jako deploy-wedos.yml, aby kontrola neběžela souběžně s nasazováním.
+# (deploy-wedos má cancel-in-progress: true – nové nasazení běžící kontrolu zruší; úklid sondy proběhne i tak.)
+concurrency:
+  group: wedos
+  cancel-in-progress: false
+
+jobs:
+  kontrola:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      WEB: https://ovoce-holub.cz
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Přístupové údaje
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        run: |
+          if [ -z "$FTP_SERVER" ] || [ -z "$FTP_USERNAME" ] || [ -z "$FTP_PASSWORD" ]; then
+            echo "::error::Chybí secrets FTP_SERVER / FTP_USERNAME / FTP_PASSWORD."
+            exit 1
+          fi
+          PRACOVNI="$RUNNER_TEMP/kontrola"
+          mkdir -p "$PRACOVNI"
+          echo "PRACOVNI=$PRACOVNI" >> "$GITHUB_ENV"
+          echo "VYSLEDKY=$PRACOVNI/vysledky.tsv" >> "$GITHUB_ENV"
+          : > "$PRACOVNI/vysledky.tsv"
+
+      # --- 1. Očekávaný stav: sestavení přesně jako v deploy-wedos.yml
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: react-verze/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: react-verze
+
+      - name: Build for Wedos
+        run: npm run build
+        working-directory: react-verze
+        env:
+          DEPLOY_TARGET: wedos
+
+      - name: Copy images and static files into dist
+        run: |
+          cp -r img react-verze/dist/
+          cp robots.txt sitemap.xml react-verze/dist/
+          cp react-verze/public/favicon.svg react-verze/dist/
+
+      - name: Add .htaccess
+        id: dist
+        run: |
+          printf 'DirectoryIndex index.html\nRewriteEngine On\nRewriteCond %%{HTTPS} off\nRewriteRule ^(.*)$ https://%%{HTTP_HOST}%%{REQUEST_URI} [L,R=301]\n' > react-verze/dist/.htaccess
+
+      - name: Instalace lftp
+        id: lftp
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq lftp > /dev/null
+          lftp --version | head -n 1
+
+      - name: Samotest porovnání (umělý server, bez spojení)
+        id: samotest
+        run: bash scripts/kontrola-serveru/test.sh react-verze/dist
+
+      # --- 2. Spojení: FTPS, když to jde, jinak FTP s varováním
+      # Spojení a verze PHP běží i tehdy, když selže samotest – jen porovnání souborů ne.
+      - name: Spojení
+        id: spojeni
+        if: ${{ !cancelled() && steps.lftp.outcome == 'success' }}
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        run: |
+          bash scripts/kontrola-serveru/lftp.sh zjistit
+          rezim="$(cat "$PRACOVNI/rezim-nazev.txt")"
+          echo "rezim=$rezim" >> "$GITHUB_OUTPUT"
+          case "$rezim" in
+            "FTP BEZ ŠIFROVÁNÍ")
+              echo "::warning::FTPS na tomto serveru nefunguje – kontrola běží přes NEŠIFROVANÉ FTP (heslo jde sítí čitelně). Nasazení zatím na FTPS nepřepínat."
+              printf 'UPOZORNĚNÍ\tSpojení FTP\tFTPS nefunguje, použito nešifrované FTP\n' >> "$VYSLEDKY" ;;
+            *NEOVĚŘEN*)
+              echo "::warning::FTPS funguje, ale certifikát serveru se nepodařilo ověřit (jiné jméno / neznámá autorita) – šifrováno, ale bez ochrany proti podvrženému serveru."
+              printf 'UPOZORNĚNÍ\tSpojení FTP\tFTPS funguje: ano (%s)\n' "$rezim" >> "$VYSLEDKY" ;;
+            *)
+              printf 'OK\tSpojení FTP\tFTPS funguje: ano (%s)\n' "$rezim" >> "$VYSLEDKY" ;;
+          esac
+          echo "FTPS funguje: $([ "$rezim" = "FTP BEZ ŠIFROVÁNÍ" ] && echo NE || echo ANO) – režim: $rezim"
+
+      # --- 3.–6. Výpis serveru, stažení kontrolovaných souborů (mimo api/data), porovnání s dist
+      - name: Výpis serveru
+        id: vypis
+        if: ${{ !cancelled() && steps.spojeni.outcome == 'success' }}
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        run: bash scripts/kontrola-serveru/lftp.sh vypis "$PRACOVNI/vypis.txt"
+
+      - name: Stažení souborů ke kontrole (mimo api/data)
+        id: stazeni
+        if: ${{ !cancelled() && steps.vypis.outcome == 'success' && steps.dist.outcome == 'success' && steps.samotest.outcome == 'success' }}
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        run: |
+          node scripts/kontrola-serveru/porovnat.mjs plan --dist react-verze/dist --vypis "$PRACOVNI/vypis.txt" \
+            --povolene scripts/kontrola-serveru/povolene.txt --seznam "$PRACOVNI/ke-stazeni.txt"
+          bash scripts/kontrola-serveru/lftp.sh stahnout "$PRACOVNI/ke-stazeni.txt" "$PRACOVNI/stazeno"
+
+      - name: Porovnání s dist a hledání webshellu
+        if: ${{ !cancelled() && steps.stazeni.outcome == 'success' }}
+        run: |
+          node scripts/kontrola-serveru/porovnat.mjs vyhodnotit --dist react-verze/dist --vypis "$PRACOVNI/vypis.txt" \
+            --povolene scripts/kontrola-serveru/povolene.txt --stazeno "$PRACOVNI/stazeno" --vysledky "$VYSLEDKY"
+          # Stažené soubory (mohou obsahovat i hesla z kódu) hned pryč, výpis serveru taky.
+          rm -rf "$PRACOVNI/stazeno" "$PRACOVNI/vypis.txt" "$PRACOVNI/ke-stazeni.txt"
+
+      - name: Ochrana api/data z webu
+        if: ${{ !cancelled() && env.VYSLEDKY != '' }}
+        run: |
+          # Bez .htaccess by api/data šla číst z webu. Tělo odpovědi se nikam neukládá, jen kód.
+          spatne=""
+          for cesta in api/data/log.txt api/data/objednavky/ api/data/stav.json; do
+            kod="$(curl -sS -o /dev/null -w '%{http_code}' --max-time 30 -H 'Cache-Control: no-cache' "$WEB/$cesta?nocache=$(openssl rand -hex 8)")" || kod=000
+            echo "  $cesta → HTTP $kod"
+            [ "$kod" = 403 ] || spatne="$spatne $cesta=$kod"
+          done
+          if [ -z "$spatne" ]; then printf 'OK\tOchrana api/data z webu\tvše HTTP 403\n' >> "$VYSLEDKY"
+          else printf 'PODEZŘELÉ\tOchrana api/data z webu\tčekáno HTTP 403:%s\n' "$spatne" >> "$VYSLEDKY"; fi
+
+      # --- 7. Skutečná verze PHP (sonda pod náhodným jménem, pak se smaže – i při chybě nebo zrušení)
+      - name: Příprava sondy PHP
+        id: sonda
+        if: ${{ !cancelled() && steps.spojeni.outcome == 'success' }}
+        run: |
+          nazev="kontrola-$(openssl rand -hex 16).php"
+          echo "::add-mask::$nazev"
+          echo "nazev=$nazev" >> "$GITHUB_OUTPUT"
+
+      - name: Verze PHP
+        if: ${{ !cancelled() && steps.sonda.outcome == 'success' }}
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          NAZEV: ${{ steps.sonda.outputs.nazev }}
+        run: |
+          bash scripts/kontrola-serveru/lftp.sh nahrat scripts/kontrola-serveru/sonda.php "/api/$NAZEV"
+          kod="$(curl -sS -o "$PRACOVNI/sonda.txt" -w '%{http_code}' --max-time 30 -H 'Cache-Control: no-cache' \
+            "$WEB/api/$NAZEV?nocache=$(openssl rand -hex 16)")" || kod=000
+          node scripts/kontrola-serveru/verze-php.mjs "$PRACOVNI/sonda.txt" "$kod" "$VYSLEDKY"
+          rm -f "$PRACOVNI/sonda.txt"
+
+      - name: Smazání sondy PHP
+        if: always() && steps.sonda.outputs.nazev != ''
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          NAZEV: ${{ steps.sonda.outputs.nazev }}
+        run: |
+          for pokus in 1 2 3; do
+            if bash scripts/kontrola-serveru/lftp.sh smazat "/api/$NAZEV"; then
+              echo "Sonda smazána (pokus $pokus)."
+              printf 'OK\tÚklid sondy\tsonda smazána\n' >> "$VYSLEDKY"
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "::error::Sondu se nepodařilo smazat – smažte ručně přes FTP soubor api/kontrola-*.php"
+          printf 'CHYBA\tÚklid sondy\tsonda zůstala na serveru – smažte ručně api/kontrola-*.php\n' >> "$VYSLEDKY"
+          exit 1
+
+      # --- 8. Souhrn (OK / PODEZŘELÉ za každý bod); job selže, když je cokoli podezřelé nebo neproběhlo
+      - name: Souhrn
+        if: always()
+        env:
+          REZIM: ${{ steps.spojeni.outputs.rezim }}
+        run: |
+          [ -n "${PRACOVNI:-}" ] && rm -f "$PRACOVNI"/lftp.* "$PRACOVNI/rezim.lftp"
+          bash scripts/kontrola-serveru/souhrn.sh "${VYSLEDKY:-/dev/null}" "$REZIM"

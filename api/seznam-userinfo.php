@@ -5,6 +5,7 @@
 // Chybové hlášky PHP nikdy do odpovědi (prozradily by cestu na hostingu), jen do logu serveru.
 ini_set('display_errors', '0');
 ini_set('log_errors', '1');
+header_remove('X-Powered-By'); // verze PHP nepatří do odpovědí (jako v _spolecne.php)
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
 header('X-Content-Type-Options: nosniff');

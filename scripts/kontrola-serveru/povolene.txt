@@ -1,0 +1,6 @@
+# Soubory, které na serveru (mimo api/data) smějí být, i když nejsou v sestaveném dist/.
+# Jeden vzor na řádek, cesty od kořene webu: * = cokoli kromě „/“, ** = cokoli. Řádky s # jsou komentáře.
+# Přidávat jen to, co je opravdu známé a neškodné (obsah souborů se spustitelnou příponou se i tak prohledá).
+
+# Stav nasazení FTP-Deploy-Action (deploy-wedos.yml)
+.ftp-deploy-sync-state.json

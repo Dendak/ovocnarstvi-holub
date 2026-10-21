@@ -5,6 +5,8 @@ if (basename($_SERVER['SCRIPT_FILENAME'] ?? '') === basename(__FILE__)) { http_r
 ini_set('display_errors', '0');
 ini_set('display_startup_errors', '0');
 ini_set('log_errors', '1');
+// Verze PHP nepatří do odpovědí (expose_php nastavuje hosting) – ukazuje se jen farmě v nastaveni.php?diagnostika.
+header_remove('X-Powered-By');
 // Wedos CDN jinak odpovědi skriptů cachuje na 10 minut.
 header('Cache-Control: no-store, max-age=0');
 // Bezpečnostní hlavičky pro všechny skripty (stránka může Referrer-Policy přepsat vlastní hodnotou).

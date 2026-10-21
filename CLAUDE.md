@@ -48,6 +48,7 @@ Web a e-shop ovocnářství (CZ + DE stránka pro rakouské pálenice). Produkce
 ## Nasazení (.github/workflows)
 - `deploy-wedos.yml` — **produkce**: build + kopie `img`, robots, sitemap, `.htaccess` → FTP na Wedos. Secrets: `FTP_SERVER`, `FTP_USERNAME`, `FTP_PASSWORD`.
 - Běží při každém pushi na `main` (a ručně přes workflow_dispatch). GitHub Pages se už nenasazuje.
+- `kontrola-serveru.yml` — jen ručně: porovná soubory na serveru s buildem (cizí/změněné soubory, webshelly), zjistí verzi PHP. Logy jsou veřejné – nevypisuje obsah ani data.
 
 ## Konvence
 - Identifikátory a komentáře česky (`kosik`, `objednavka`, `skupina`, `terminy`). Commit zprávy krátce, anglicky nebo česky.
