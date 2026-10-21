@@ -6,6 +6,7 @@
 #   lftp.sh stahnout SEZNAM CIL stáhne soubory ze SEZNAMU (cesty od kořene) do složky CIL
 #   lftp.sh nahrat MISTNI CESTA nahraje jeden soubor (sonda PHP)
 #   lftp.sh smazat CESTA        smaže jeden soubor a ověří, že zmizel
+#   lftp.sh smazat-slozku CESTA smaže celou složku (jen pro uklid-serveru.yml) a ověří, že zmizela
 #
 # Heslo jde do lftp jen přes proměnnou LFTP_PASSWORD (open --env-password): není na příkazové řádce
 # ani v žádném souboru. Jméno a server jsou jen v dočasném skriptu v $PRACOVNI (smaže se). Žádné set -x.
@@ -135,6 +136,17 @@ $TLS12" "set ftp:ssl-allow no")
     if grep -qF "$jmeno" "$PRACOVNI/kontrola-smazani.txt"; then rm -f "$PRACOVNI/kontrola-smazani.txt"; exit 1; fi
     rm -f "$PRACOVNI/kontrola-smazani.txt"
     ;;
+  smazat-slozku)
+    nastaveni="$(rezim)"
+    [[ "$2" =~ ^/[A-Za-z0-9._-]+$ ]] || { echo "::error::Neplatná složka"; exit 1; }
+    printf "set cmd:fail-exit no
+rm -r \"%s\"
+" "$2" | spustit "$nastaveni" || true
+    printf "cls -1a / > \"%s\"
+" "$PRACOVNI/kontrola-smazani.txt" | spustit "$nastaveni"
+    if grep -qxF "$(basename "$2")/" "$PRACOVNI/kontrola-smazani.txt" || grep -qxF "$(basename "$2")" "$PRACOVNI/kontrola-smazani.txt"; then rm -f "$PRACOVNI/kontrola-smazani.txt"; exit 1; fi
+    rm -f "$PRACOVNI/kontrola-smazani.txt"
+    ;;
   *)
-    echo "použití: lftp.sh zjistit|vypis|stahnout|nahrat|smazat …" >&2; exit 2 ;;
+    echo "použití: lftp.sh zjistit|vypis|stahnout|nahrat|smazat|smazat-slozku …" >&2; exit 2 ;;
 esac

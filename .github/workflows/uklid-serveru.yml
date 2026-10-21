@@ -1,0 +1,48 @@
+name: Úklid serveru (ruční)
+
+# Jednorázový úklid souborů, které na serveru nemají být (schváleno 21. 10. 2026):
+#  - /info.php  – veřejný phpinfo() z doby založení hostingu,
+#  - /www/      – stará kopie webu z nasazení 27. 3. 2026 (i se sync-state).
+# Jiné cesty smazat nejde (pevný seznam). Spouští se jen z Actions → „Run workflow“ s potvrzením SMAZAT.
+on:
+  workflow_dispatch:
+    inputs:
+      potvrzeni:
+        description: 'Napište SMAZAT'
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wedos
+  cancel-in-progress: false
+
+jobs:
+  uklid:
+    if: ${{ inputs.potvrzeni == 'SMAZAT' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      FTP_SERVER: ${{ secrets.FTP_SERVER }}
+      FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+      FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Instalace lftp
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq lftp > /dev/null
+      - name: Smazání
+        run: |
+          export PRACOVNI="$RUNNER_TEMP/uklid"
+          bash scripts/kontrola-serveru/lftp.sh zjistit
+          bash scripts/kontrola-serveru/lftp.sh smazat /info.php && echo "Smazáno: /info.php"
+          bash scripts/kontrola-serveru/lftp.sh smazat-slozku /www && echo "Smazáno: /www/"
+          rm -f "$PRACOVNI"/lftp.* "$PRACOVNI/rezim.lftp"
+      - name: Ověření z webu
+        run: |
+          for u in /info.php /www/index.html; do
+            kod=$(curl -s -o /dev/null -w '%{http_code}' "https://ovoce-holub.cz$u?nocache=$RANDOM")
+            echo "$u → HTTP $kod"; [ "$kod" = 404 ] || exit 1
+          done

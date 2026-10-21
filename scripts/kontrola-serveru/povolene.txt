@@ -4,3 +4,7 @@
 
 # Stav nasazení FTP-Deploy-Action (deploy-wedos.yml)
 .ftp-deploy-sync-state.json
+
+# Prázdné složky ze struktury hostingu Wedos (domény a subdomény)
+domains/.gitkeep
+subdom/.gitkeep
