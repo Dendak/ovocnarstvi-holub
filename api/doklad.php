@@ -50,13 +50,15 @@ foreach ($o['polozky'] ?? [] as $r) {
     $podrobne = '<br><span class="muted">' . ($mn ? h(str_replace('.', ',', (string)$mn[0]) . ' ' . $mn[1] . ' × ' . $kc2($zaklad / $mn[0]) . ' bez DPH · ') : '')
       . 'základ ' . h($kc2($zaklad)) . ' · DPH ' . $sazba . ' % ' . h($kc2($cena - $zaklad)) . '</span>';
   }
-  $radky .= '<tr><td>' . h($popis) . ($p['platce_dph'] && !$plny ? ' <span class="muted">· DPH ' . $sazba . ' %</span>' : '') . $podrobne . '</td><td class="r">' . ($cena !== null ? h(kc($cena)) : '') . '</td></tr>';
+  $radky .= '<tr><td>' . h($popis) . ($p['platce_dph'] && !$plny ? ' <span class="muted nw">· DPH ' . $sazba . "\u{00A0}%</span>" : '') . $podrobne . '</td><td class="r">' . ($cena !== null ? h(kc($cena)) : '') . '</td></tr>';
 }
 if ($radky === '') $radky = '<tr><td colspan="2" style="white-space:pre-line">' . h($o['souhrn']) . '</td></tr>';
 $celkem = cil_platby($o);
 // Ceny v e-shopu jsou konečné (včetně DPH) – základ a daň se dopočítají.
 $rozpis = rozpis_dph($o);
-$datum = date('j. n. Y', strtotime($d['vystaveno']));
+// Data s nezlomitelnými mezerami – na telefonu se „23. 10. 2026“ nerozdělí na dva řádky.
+$den = fn(string $x): string => date("j.\u{00A0}n.\u{00A0}Y", strtotime($x));
+$datum = $den($d['vystaveno']);
 $druh = !$p['platce_dph'] ? 'Doklad o prodeji' : ($plny ? 'Daňový doklad' : 'Zjednodušený daňový doklad');
 ?><!doctype html>
 <html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -70,20 +72,21 @@ table{width:100%;border-collapse:collapse;margin-top:12px}td{padding:8px 0;borde
 .celkem td{font-weight:bold;font-size:17px;border-bottom:0;padding-top:12px}
 .storno{border:2px solid #8c2f2b;color:#8c2f2b;border-radius:8px;padding:12px 16px;margin:0 0 16px;font-weight:bold}.tisk{display:block;margin:0 auto 24px;font:inherit;padding:10px 16px;border-radius:8px;border:1px solid #2f5a33;background:#2f5a33;color:#fff;cursor:pointer}
 @media print{body{background:#fff}.list{border:0;margin:0;max-width:none}.tisk{display:none}}
-@media (max-width:520px){.strany{grid-template-columns:1fr}.list{margin:0;border-radius:0}}
+.nw{white-space:nowrap}
+@media (max-width:520px){.strany{grid-template-columns:1fr}.list{margin:0 0 16px;border-radius:0}}
 </style></head><body>
 <div class="list">
-  <?php if ($storno): ?><p class="storno">STORNO – účtenka byla zrušena <?= h(date('j. n. Y', strtotime($d['storno']))) ?><?= !empty($d['storno_duvod']) ? ': ' . h($d['storno_duvod']) : '' ?></p><?php endif ?>
+  <?php if ($storno): ?><p class="storno">STORNO – účtenka byla zrušena <?= h($den($d['storno'])) ?><?= !empty($d['storno_duvod']) ? ': ' . h($d['storno_duvod']) : '' ?></p><?php endif ?>
   <p class="muted" style="margin:0">Ovocnářství Holub</p>
   <h1>Účtenka č. <?= h($d['cislo']) ?></h1>
-  <p class="muted"><?= h($druh) ?> · objednávka <?= h($o['cislo']) ?></p>
+  <p class="muted"><?= h($druh) ?> · objednávka <span class="nw"><?= h($o['cislo']) ?></span></p>
   <div class="strany">
     <div><b>Prodávající</b><?= h($p['jmeno']) ?><br><?= h($p['adresa']) ?><br>IČO: <?= h($p['ico']) ?><?= $p['dic'] ? '<br>DIČ: ' . h($p['dic']) : '' ?><?= !empty($p['telefon']) ? '<br>Tel.: ' . h($p['telefon']) : '' ?>
       <?= $p['zapis'] ? '<br><span class="muted">' . h($p['zapis']) . '</span>' : '' ?></div>
     <div><b>Kupující</b><?= h($o['jmeno']) ?><?= !empty($o['ico']) ? '<br>IČO: ' . h($o['ico']) : '' ?><?= !empty($o['adresa_overena']) ? '<br>' . h($o['adresa_overena'])
       : (!empty($o['adresa']) ? '<br>' . h($o['adresa'] . ', ' . trim(($o['psc'] ?? '') . ' ' . (($o['mesto'] ?? '') ?: 'České Budějovice'))) : '') ?></div>
   </div>
-  <p>Datum vystavení: <?= h($datum) ?><br><?= $p['platce_dph'] ? 'Datum uskutečnění zdanitelného plnění' : 'Datum prodeje' ?>: <?= h(date('j. n. Y', strtotime(duzp($o)))) ?><br>
+  <p>Datum vystavení: <?= h($datum) ?><br><?= $p['platce_dph'] ? 'Datum uskutečnění zdanitelného plnění' : 'Datum prodeje' ?>: <?= h($den(duzp($o))) ?><br>
     Úhrada: <?= h($d['uhrada']) ?> – uhrazeno</p>
   <table>
     <?= $radky ?>

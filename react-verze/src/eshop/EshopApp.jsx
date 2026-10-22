@@ -175,8 +175,9 @@ function KosikPanel({ open, onClose, onPokladna, kosikRef }) {
   return (
     <div className={`fixed inset-0 z-50 ${open ? '' : 'pointer-events-none'}`} inert={!open}>
       <div className={`absolute inset-0 bg-black/40 transition-opacity ${open ? 'opacity-100' : 'opacity-0'}`} onClick={onClose} />
+      {/* Stín jen u otevřeného košíku – u zavřeného by prosvítal u pravého okraje stránky. */}
       <aside ref={panel} role="dialog" aria-modal="true" aria-labelledby="kosik-nadpis"
-        className={`absolute right-0 top-0 bottom-0 w-full sm:w-[26rem] bg-white shadow-2xl flex flex-col transition-transform duration-300 ${open ? 'translate-x-0' : 'translate-x-full'}`}>
+        className={`absolute right-0 top-0 bottom-0 w-full sm:w-[26rem] bg-white flex flex-col transition-[translate,box-shadow] duration-300 ${open ? 'translate-x-0 shadow-2xl' : 'translate-x-full shadow-none'}`}>
         <div className="flex items-center justify-between pl-5 pr-2 h-16 border-b border-line">
           <h2 id="kosik-nadpis" className="font-serif text-xl font-semibold text-ink">Košík</h2>
           <button ref={zavritRef} onClick={onClose} aria-label="Zavřít košík" className="w-11 h-11 text-muted hover:text-ink text-3xl leading-none cursor-pointer">&times;</button>
@@ -279,6 +280,8 @@ function Katalog() {
   }, [kategorie, jenDostupne, dotaz])
 
   const pocty = useMemo(() => Object.fromEntries(KATEGORIE.map(k => [k.id, PRODUKTY.filter(p => (k.skupina ? jeProSkupinu(p) : p.druh === k.id) && p.dostupne).length])), [])
+  // S „Jen dostupné“ jen druhy, které teď máme (zvolený druh zůstane) – na telefonu jeden řádek místo tří.
+  const nabidkaKategorii = [{ id: 'vse', nazev: 'Vše' }, ...KATEGORIE.filter(k => !jenDostupne || pocty[k.id] > 0 || k.id === kategorie)]
 
   return (
     <>
@@ -323,7 +326,7 @@ function Katalog() {
       <section id="nabidka" className="container-page py-10 sm:py-12 scroll-mt-16" aria-label="Nabídka">
         <div className="flex flex-col lg:flex-row lg:items-center gap-4 mb-8">
           <div className="flex flex-wrap gap-2 flex-1" role="group" aria-label="Druh">
-            {[{ id: 'vse', nazev: 'Vše' }, ...KATEGORIE].map(k => (
+            {nabidkaKategorii.map(k => (
               <button key={k.id} onClick={() => setKategorie(k.id)} aria-pressed={kategorie === k.id}
                 className={`text-sm px-3.5 py-2 rounded-md border transition cursor-pointer ${
                   kategorie === k.id ? 'bg-leaf border-leaf text-white' : k.skupina ? 'bg-leaf/10 border-leaf text-leaf font-semibold hover:bg-leaf/20' : 'bg-white border-line text-ink-soft hover:border-leaf'

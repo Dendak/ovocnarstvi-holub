@@ -90,12 +90,10 @@ function stranka(string $titulek, string $obsah, string $hlava = ''): void {
   // a odkaz pro přihlášení z e-mailu (otevře se v Safari) by ji nikdy nepřihlásil.
   echo '<!doctype html><html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
     . '<meta name="robots" content="noindex"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><meta name="theme-color" content="#17241a">'
-    . '<title>' . h($titulek) . '</title>' . $hlava . '<style>
+    . '<title>' . h($titulek) . '</title>' . $hlava . '<style>' . CSS_HLAVICKY_FARMY . '
 :root{--paper:#f8f5ef;--line:#dfd7c9;--ink:#1d231c;--muted:#6b6f66;--leaf:#2f5a33;--berry:#8c2f2b;--amber:#7a4f00}
 *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.45 Arial,Helvetica,sans-serif}
-header{background:#17241a;color:#fff;padding:0 6px 0 16px;display:flex;justify-content:space-between;align-items:center;gap:8px;position:sticky;top:0;z-index:1000}
-header h1{font:normal 19px Georgia,serif;white-space:nowrap}header nav{display:flex;flex-wrap:wrap;justify-content:flex-end}
-header nav a{display:inline-block;padding:11px 7px;line-height:22px;color:#cfe0c9;font-size:15px}main{max-width:760px;margin:0 auto;padding:16px}
+main{max-width:760px;margin:0 auto;padding:16px}
 h1{font:normal 24px Georgia,serif;margin:0}h2{font:normal 21px Georgia,serif;margin:24px 0 10px}h3{font-size:16px;margin:14px 0 2px}
 .dny{position:relative;display:flex;gap:8px;overflow-x:auto;padding-bottom:6px}.dny a{flex:none;padding:10px 14px;line-height:22px;border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--ink);text-decoration:none;font-size:15px}
 .dny a.akt{background:var(--leaf);border-color:var(--leaf);color:#fff}.dny small{display:inline-block;min-width:22px;margin-left:4px;padding:0 6px;border-radius:11px;background:#efe9dd;color:var(--ink);font-size:13px;text-align:center}.dny a.akt small{background:#fff;color:var(--leaf)}.dny a.pozor{border:2px solid var(--berry);color:var(--berry);font-weight:bold;padding:9px 13px}
@@ -122,13 +120,16 @@ details.storno{display:inline}details.storno summary{display:inline-block;paddin
 details.storno form{display:flex;gap:6px;margin-top:6px}details.storno input{flex:1;min-width:0;padding:10px;border:1px solid var(--line);border-radius:8px;font:inherit;font-size:16px}
 .pozor{border-color:var(--berry);background:#fbeeec}.pozor p{margin:0 0 6px}.nevyrizene .btn{margin:8px 8px 0 0;border-color:var(--berry);color:var(--berry);font-weight:bold}
 .pata{margin-top:32px;padding-top:12px;border-top:1px solid var(--line)}.pata .btn{margin-top:4px}
-@media (max-width:370px){header{padding-left:10px}header h1{font-size:17px!important}header nav a{padding:11px 5px;font-size:14px}}
-@media (min-width:1100px){main.siroky{max-width:1240px}main.siroky>.box{max-width:760px}
+.nw{white-space:nowrap}.clenove td:first-child{overflow-wrap:anywhere}
+@media (min-width:1100px){main.siroky{max-width:1240px}main.siroky>.box{max-width:760px}:root:has(main.siroky){--sirka:1240px}
+.lista{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;margin:4px 0 8px}.lista .dny{flex:0 1 auto;min-width:0}
+.lista .jiny-den{margin:0 0 6px}.lista .kontrola{order:1;margin:0 0 6px auto}
+.pripravit.dva .sloupce{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 28px}
 .karty{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;align-items:start}.karty .obj{margin:0;overflow-wrap:anywhere}
 main.siroky>.karty,.rozvoz:not(.s-mapou) .karty{grid-template-columns:repeat(2,minmax(0,1fr))}
 .rozvoz.s-mapou{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:24px;align-items:start}
-.rozvoz.s-mapou .rozvoz-mapa{position:sticky;top:56px;display:flex;flex-direction:column;max-height:calc(100vh - 68px)}
-.rozvoz.s-mapou #mapa{flex:1 1 300px;height:auto;min-height:260px;margin-top:0}}
+.rozvoz.s-mapou .rozvoz-mapa{position:sticky;top:56px;display:flex;flex-direction:column;height:calc(100vh - 68px);min-height:620px}
+.rozvoz.s-mapou #mapa{flex:1 1 auto;height:auto;min-height:300px;margin-top:0}}
 </style></head><body>' . $obsah
     // Dvojí ťuknutí na tlačítko odešle formulář jen jednou (hodnota tlačítka se přitom zachová);
     // po 8 s jde odeslat znovu, kdyby se na slabém signálu nic nestalo.
@@ -138,12 +139,6 @@ main.siroky>.karty,.rozvoz:not(.s-mapou) .karty{grid-template-columns:repeat(2,m
   exit;
 }
 
-// Záhlaví přehledu: nadpis a odkazy (dost velké na ťuknutí). Odhlášení je až v patičce, ať se netrefí omylem.
-function hlavicka(string $nadpis, array $odkazy): string {
-  $s = '<header><h1 style="font-size:19px">' . h($nadpis) . '</h1><nav>';
-  foreach ($odkazy as $adresa => $text) $s .= '<a href="' . h($adresa) . '">' . h($text) . '</a>';
-  return $s . '</nav></header>';
-}
 function paticka(): string {
   return '<footer class="pata"><p class="muted">Tento telefon zůstává přihlášený – přihlášení se při každém otevření prodlouží o rok, odhlašovat se nemusíte.</p>'
     . '<form method="post" action="rozvoz.php" onsubmit="return confirm(' . h(json_encode('Opravdu odhlásit tento telefon? Pro nové přihlášení si pak budete muset nechat poslat odkaz e-mailem.', JSON_UNESCAPED_UNICODE)) . ')">'
@@ -424,7 +419,7 @@ if (isset($_GET['skupiny']) || $akce === 'odebrat-clena') {
     header('Location: rozvoz.php?skupiny=1'); exit;
   }
   $clenove = clenove_vse();
-  $obsah = hlavicka('Skupiny', ['rozvoz.php' => 'Objednávky', 'rozvoz.php?uctenky=1' => 'Účtenky']) . '<main>'
+  $obsah = hlavicka_farmy('Skupiny') . '<main>'
     . '<p class="muted">Zákazníci se zvýhodněnými cenami podle kódu skupiny. Místo se uvolní, když zákazník kód zruší nebo ho tady odeberete.</p>';
   foreach (skupiny() as $sk) {
     $seznam = $clenove[$sk['id']] ?? [];
@@ -432,7 +427,7 @@ if (isset($_GET['skupiny']) || $akce === 'odebrat-clena') {
     $obsah .= '<h2>' . h($sk['nazev']) . ' <span class="muted">' . count($seznam) . ($max ? " z $max účtů" : ' účtů') . '</span></h2>'
       . '<p class="muted">' . h($sk['adresa'] ?? '') . '</p>';
     if (!$seznam) { $obsah .= '<p class="box">Kód zatím nikdo nepoužil.</p>'; continue; }
-    $obsah .= '<div class="box"><table>';
+    $obsah .= '<div class="box"><table class="clenove">';
     foreach ($seznam as $c) {
       $obsah .= '<tr><td>' . h($c['email']) . '<br><span class="muted">od ' . h(date('j. n. Y', strtotime($c['cas']))) . '</span></td><td class="r">'
         . '<form method="post" onsubmit="return confirm(' . h(json_encode("Odebrat {$c['email']} ze skupiny {$sk['nazev']}?", JSON_UNESCAPED_UNICODE)) . ')">'
@@ -507,7 +502,7 @@ if (isset($_GET['uctenky']) || isset($_GET['prodeje'])) {
     }
     $csv("prodeje-$mesic.csv", array_merge(['DUZP', 'Objednávka', 'Zákazník', 'IČO', 'Úhrada', 'Účtenka'], $sloupceDph, ['Celkem']), $radky);
   }
-  $obsah = hlavicka('Účtenky', ['rozvoz.php' => 'Objednávky', 'rozvoz.php?skupiny=1' => 'Skupiny']) . '<main>' . $hlaseniHtml;
+  $obsah = hlavicka_farmy('Účtenky') . '<main>' . $hlaseniHtml;
   if (PRODAVAJICI['ico'] === '') $obsah .= '<p class="box">Účtenky se začnou vystavovat po doplnění IČO.</p>';
   $obsah .= '<p class="muted">Účtenka se vystaví, když ji při označení „Doručeno“ zvolíte a objednávka je zaplacená. Zákazník dostane odkaz e-mailem.</p>';
   if (!$mesice) {
@@ -531,7 +526,7 @@ if (isset($_GET['uctenky']) || isset($_GET['prodeje'])) {
           }
         }
         $obsah .= '<tr><td><a href="' . h(odkaz_na_doklad($o)) . '">' . h($o['doklad']['cislo']) . '</a><br><span class="muted">' . h(date('j. n.', strtotime($o['doklad']['vystaveno']))) . ' · ' . h($o['doklad']['uhrada']) . ' · ' . $zrusitDoklad($o, true) . '</span></td>'
-          . '<td>' . h($o['jmeno']) . '<br><span class="muted">' . h($o['cislo']) . '</span></td><td class="r"' . ($storno ? ' style="text-decoration:line-through"' : '') . '>' . h(kc($c)) . '</td></tr>';
+          . '<td>' . h($o['jmeno']) . '<br><span class="muted nw">' . h($o['cislo']) . '</span></td><td class="r"' . ($storno ? ' style="text-decoration:line-through"' : '') . '>' . h(kc($c)) . '</td></tr>';
       }
       ksort($poSazbach);
       $obsah .= '</table><p style="margin:12px 0 0"><b>Celkem za měsíc: ' . h($f2($celkem)) . '</b>' . ($celkem && count(array_filter($vMesici, fn($o) => !empty($o['doklad']['storno']))) ? ' <span class="muted">(bez stornovaných)</span>' : '');
@@ -878,10 +873,10 @@ $karta = function (array $o) use ($platba, $tlacitko, $zaplaceno, $cil, $dorucen
 };
 
 // main.siroky: na počítači širší stránka (mapa vedle karet, karty ve dvou sloupcích); na telefonu beze změny.
-$obsah = hlavicka('Objednávky', ['?uctenky=1' => 'Účtenky', '?skupiny=1' => 'Skupiny', 'nastaveni.php' => 'Nastavení']) . '<main class="siroky">' . $hlaseniHtml;
+$obsah = hlavicka_farmy('Objednávky') . '<main class="siroky">' . $hlaseniHtml;
 // Ruční kontrola plateb (jinak ji spouští cron a návštěvy e-shopu, nejvýš jednou za 3 minuty). Po spárování se stránka obnoví.
 $kontrola = (int)(nacist_json('stav.json', [])['kontrola'] ?? 0);
-$obsah .= '<p><button type="button" class="btn" id="platby">Zkontrolovat platby</button> <span class="muted" id="platby-stav" role="status">'
+$kontrolaPlateb = '<p class="kontrola"><button type="button" class="btn" id="platby">Zkontrolovat platby</button> <span class="muted" id="platby-stav" role="status">'
   . ($kontrola ? 'Poslední kontrola ' . h(date('j. n. H:i', $kontrola)) : '') . '</span></p>'
   . '<script>document.getElementById("platby").onclick=async e=>{const b=e.currentTarget,s=document.getElementById("platby-stav");b.disabled=true;s.textContent="Kontroluji…";'
   . 'try{const r=await(await fetch("platby.php?ted=1",{cache:"no-store"})).json();'
@@ -890,8 +885,10 @@ $obsah .= '<p><button type="button" class="btn" id="platby">Zkontrolovat platby<
   . 'else{s.textContent="Hotovo – upozornění z banky: "+(r.z_banky||0)+", spárováno: "+(r.sparovano||0)+".";if(r.sparovano)setTimeout(()=>location.reload(),1500)}'
   . '}catch{s.textContent="Kontrola se nepovedla (spojení)."}b.disabled=false}</script>';
 if (!$dny) {
-  $obsah .= '<p class="box">Zatím žádné objednávky z e-shopu.</p>';
+  $obsah .= $kontrolaPlateb . '<p class="box">Zatím žádné objednávky z e-shopu.</p>';
 } else {
+  // Lišta: kontrola plateb, proužek dnů a výběr jiného dne – na počítači v jednom řádku (kontrola plateb vpravo).
+  $obsah .= '<div class="lista">' . $kontrolaPlateb;
   // Proužek dnů: od dneška nejvýš 7 dnů s objednávkami (a zvolený den); ostatní dny jsou ve výběru „Jiný den“.
   $prouzek = array_slice(array_values(array_filter($datovane, fn($d) => $d >= $dnes)), 0, 7);
   if ($vybrany !== 'bez-terminu' && !in_array($vybrany, $prouzek, true)) { $prouzek[] = $vybrany; sort($prouzek); }
@@ -915,6 +912,7 @@ if (!$dny) {
       . ($starsi ? '<optgroup label="Starší">' . implode('', array_map($moznost, $starsi)) . '</optgroup>' : '')
       . '</select><noscript><button class="btn">Zobrazit</button></noscript></form>';
   }
+  $obsah .= '</div>';
   // Minulé dny s nedoručenými / nezaplacenými objednávkami nebo s upozorněním k platbě – ať nezapadnou.
   $zpozdene = array_values(array_filter(array_reverse($datovane), fn($d) => $minuly($d) && $dny[$d]['otevrene'] > 0 && $d !== $vybrany));
   if ($zpozdene) {
@@ -935,10 +933,11 @@ if (!$dny) {
   $naRozvoz = $pripravit($rozvoz);
   $naOdber = $pripravit($odber);
   if ($naRozvoz || $naOdber) {
-    $obsah .= '<div class="box"><b>Co připravit</b>'
-      . ($naRozvoz ? '<h3>Na rozvoz (' . count($rozvoz) . '×)</h3>' . $tabulkaPripravit($naRozvoz) : '')
-      . ($naOdber ? '<h3>Na osobní odběr (' . count($odber) . '×)</h3>' . $tabulkaPripravit($naOdber) : '')
-      . '</div>';
+    // Na počítači rozvoz a osobní odběr vedle sebe.
+    $obsah .= '<div class="box pripravit' . ($naRozvoz && $naOdber ? ' dva' : '') . '"><b>Co připravit</b><div class="sloupce">'
+      . ($naRozvoz ? '<div><h3>Na rozvoz (' . count($rozvoz) . '×)</h3>' . $tabulkaPripravit($naRozvoz) . '</div>' : '')
+      . ($naOdber ? '<div><h3>Na osobní odběr (' . count($odber) . '×)</h3>' . $tabulkaPripravit($naOdber) . '</div>' : '')
+      . '</div></div>';
   }
 
   if ($rozvoz) {

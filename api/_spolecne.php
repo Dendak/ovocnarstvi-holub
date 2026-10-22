@@ -221,6 +221,26 @@ function odhlasit_vsechna_zarizeni(): void {
   });
 }
 
+// Záhlaví stránek farmy (objednávky, účtenky, skupiny, nastavení): nadpis a odkazy na ostatní stránky, všude stejné.
+// Odkazy jsou dost velké na ťuknutí; odhlášení je až v patičce, ať se netrefí omylem. Nadpis a odkazy jsou
+// zarovnané s obsahem stránky – stránka nastaví šířku svého obsahu v --sirka (výchozí 760 px, okraje 16 px).
+const STRANKY_FARMY = ['Objednávky' => 'rozvoz.php', 'Účtenky' => 'rozvoz.php?uctenky=1', 'Skupiny' => 'rozvoz.php?skupiny=1', 'Nastavení' => 'nastaveni.php'];
+const CSS_HLAVICKY_FARMY = 'header{background:#17241a;color:#fff;display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:44px;position:sticky;top:0;z-index:1000;'
+  . 'padding:0 6px 0 16px;padding:0 max(6px,calc(50% - var(--sirka,760px)/2 + 9px)) 0 max(16px,calc(50% - var(--sirka,760px)/2 + 16px))}'
+  . 'header h1{font:normal 19px Georgia,serif;margin:0;white-space:nowrap}header nav{display:flex;flex-wrap:wrap;justify-content:flex-end}'
+  . 'header nav a{display:inline-block;padding:11px 7px;line-height:22px;color:#cfe0c9;font-size:15px}header nav a:hover{color:#fff}'
+  . '@media (max-width:370px){header{padding-left:10px}header h1{font-size:17px}header nav a{padding:11px 5px;font-size:14px}}';
+
+function hlavicka_farmy(string $nadpis, bool $odkazy = true): string {
+  $s = '<header><h1>' . h($nadpis) . '</h1>';
+  if ($odkazy) {
+    $s .= '<nav aria-label="Stránky farmy">';
+    foreach (STRANKY_FARMY as $text => $adresa) if ($text !== $nadpis) $s .= '<a href="' . h($adresa) . '">' . h($text) . '</a>';
+    $s .= '</nav>';
+  }
+  return $s . '</header>';
+}
+
 // Leží IP adresa v rozsahu ('203.0.113.0/24', '2001:db8::/32' nebo jedna adresa)?
 function ip_v_rozsahu(string $ip, string $rozsah): bool {
   [$sit, $bity] = array_pad(explode('/', $rozsah, 2), 2, null);

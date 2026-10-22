@@ -134,23 +134,23 @@ function stav_php2shell(): string {
 ?><!doctype html>
 <html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><title>Nastavení e-shopu</title>
-<style>
-body{margin:0;background:#f8f5ef;color:#1d231c;font:16px/1.5 Arial,Helvetica,sans-serif}
-main{max-width:520px;margin:0 auto;padding:40px 16px}
-h1{font:normal 30px Georgia,serif;margin:0 0 8px}h2{font:normal 21px Georgia,serif;margin:0 0 8px}
-.box{background:#fff;border:1px solid #dfd7c9;border-radius:8px;padding:20px;margin:20px 0}
+<style><?= CSS_HLAVICKY_FARMY ?>
+:root{--sirka:552px}body{margin:0;background:#f8f5ef;color:#1d231c;font:16px/1.5 Arial,Helvetica,sans-serif}
+main{box-sizing:border-box;max-width:552px;margin:0 auto;padding:24px 16px 40px}
+h2{font:normal 21px Georgia,serif;margin:0 0 8px}
+.box{background:#fff;border:1px solid #dfd7c9;border-radius:8px;padding:20px;margin:20px 0}.box>p:first-child{margin-top:0}.box>:last-child{margin-bottom:0}
+.formulare{margin-top:20px}.formulare>.box{margin:0 0 20px}
 label{display:block;font-size:14px;margin-bottom:6px}
 input{width:100%;box-sizing:border-box;padding:12px;border:1px solid #dfd7c9;border-radius:6px;font-size:16px}
 button{margin-top:12px;background:#2f5a33;color:#fff;border:0;border-radius:6px;padding:12px 18px;font-size:16px;cursor:pointer}
 button.cervene{background:#8c2f2b}
 .ok{color:#2f5a33;font-weight:bold}.err{color:#8c2f2b;font-weight:bold}.muted{color:#6b6f66;font-size:14px}
 a{color:#2f5a33}
-/* Na počítači dva sloupce: vlevo stav a log, vpravo formuláře (jen když je levý sloupec vyplněný). */
-@media (min-width:1000px){main:has(.sloupce>div:first-child>.box){max-width:1040px}
-.sloupce:has(>div:first-child>.box){display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 28px;align-items:start}}
-</style></head><body><main>
-<?php if ($prihlasen): ?><p class="muted"><a href="rozvoz.php">← Zpět na objednávky</a></p><?php endif ?>
-<h1>Nastavení</h1>
+/* Na počítači (přihlášená farma): stav nahoře, formuláře ve dvou sloupcích, log odeslaných e-mailů dole. */
+@media (min-width:1000px){main.siroka{max-width:1072px}:root:has(main.siroka){--sirka:1072px}.siroka .formulare{columns:2;column-gap:24px}.formulare>.box{break-inside:avoid}}
+</style></head><body>
+<?= hlavicka_farmy('Nastavení', $prihlasen) ?>
+<main<?= $prihlasen ? ' class="siroka"' : '' ?>>
 <?php if ($poskozeno): ?>
 <p class="box err">Soubor s nastavením na hostingu je poškozený a nepodařilo se ho obnovit ze zálohy. Nic tu teď neměňte
   (klíče odkazů na účtenky by se ztratily) a ozvěte se prosím správci webu.</p>
@@ -163,7 +163,6 @@ a{color:#2f5a33}
   Připíšou se jen upozornění, která opravdu poslala banka (s jejím platným elektronickým podpisem).</p>
 <?php endif ?>
 <?php if ($zprava): ?><p class="<?= $chyba ? 'err' : 'ok' ?>" role="<?= $chyba ? 'alert' : 'status' ?>"><?= h($zprava) ?></p><?php endif ?>
-<div class="sloupce"><div>
 <?php if ($plna): ?>
 <div class="box">
   <p>Párování plateb: <?= empty($n['heslo_platby']) ? '<span class="err">nenastaveno</span> – chybí heslo ke schránce ' . h(SCHRANKA_PLATEB) : '<span class="ok">zapnuto</span> (' . h(SCHRANKA_PLATEB) . ')' ?></p>
@@ -186,14 +185,7 @@ a{color:#2f5a33}
   echo "\n" . h(diagnostika_ip());
 ?></pre></div>
 <?php endif ?>
-<?php
-// Log je jen pro přihlášené: druh e-mailu, číslo objednávky a zkrácená adresa (starší řádky se maskují při zobrazení).
-$log = $prihlasen ? array_slice(@file(DATA . '/log.txt', FILE_IGNORE_NEW_LINES) ?: [], -15) : [];
-if ($log): ?>
-<div class="box"><p><b>Poslední odeslané e-maily</b></p>
-<pre class="muted" style="white-space:pre-wrap;margin:0"><?= h(implode("\n", array_map('maskovat_radek_logu', array_reverse($log)))) ?></pre></div>
-<?php endif ?>
-</div><div>
+<div class="formulare">
 <?php if ($ochrana && $prihlasen && !$poskozeno): ?>
 <form method="post" class="box" autocomplete="off">
   <input type="hidden" name="akce" value="heslo-platby">
@@ -208,6 +200,8 @@ if ($log): ?>
 <?php if ($ochrana && !$poskozeno): ?>
 <form method="post" class="box" autocomplete="off">
   <input type="hidden" name="akce" value="heslo">
+  <?php if ($plna): ?><h2>Odesílání e-mailů</h2>
+  <p class="muted">Z této schránky chodí e-maily zákazníkům (potvrzení objednávek, účtenky) i odkazy pro přihlášení.</p><?php endif ?>
   <label for="heslo">Heslo ke schránce <?= h(ODESILATEL) ?></label>
   <input id="heslo" name="heslo" type="password" required>
   <button type="submit"><?= empty($n['heslo']) ? 'Uložit heslo' : ($plna ? 'Změnit heslo' : 'Uložit heslo a přihlásit') ?></button>
@@ -247,5 +241,12 @@ if ($log): ?>
   <button type="submit" class="cervene">Odhlásit všechna zařízení</button>
 </form>
 <?php endif ?>
-</div></div>
+</div>
+<?php
+// Log je jen pro přihlášené: druh e-mailu, číslo objednávky a zkrácená adresa (starší řádky se maskují při zobrazení).
+$log = $prihlasen ? array_slice(@file(DATA . '/log.txt', FILE_IGNORE_NEW_LINES) ?: [], -15) : [];
+if ($log): ?>
+<div class="box"><p><b>Poslední odeslané e-maily</b></p>
+<pre class="muted" style="white-space:pre-wrap;margin:0"><?= h(implode("\n", array_map('maskovat_radek_logu', array_reverse($log)))) ?></pre></div>
+<?php endif ?>
 </main></body></html>
