@@ -57,9 +57,10 @@ Nic rozpracovaného v kódu není, main = produkce je čistá.
 ## Historie
 ### 2026-10-22
 - Telefon i počítač (audit screenshoty 390 / 1366 px): stránky farmy mají stejné záhlaví (Objednávky, Účtenky, Skupiny,
-  Nastavení – `hlavicka_farmy()` v `_spolecne.php`, zarovnané s obsahem přes `--sirka`). Na počítači lišta dnů + kontrola
-  plateb v jednom řádku, „Co připravit“ ve dvou sloupcích, mapa rozvozu na výšku okna, nastavení ve dvou sloupcích (log dole).
-  Telefon: u skupin už nepřetéká „Odebrat“, účtenka nedělí data a čísla na dva řádky. E-shop: stín zavřeného košíku
+  Nastavení – `hlavicka_farmy()` v `_spolecne.php`, zarovnané s obsahem přes `--sirka`). Na počítači je přehled objednávek
+  přes celou šířku (nejvýš 2400 px): mapa rozvozu 40 % a na výšku okna, karty v tolika sloupcích, kolik se vejde (min. 380 px);
+  lišta dnů + kontrola plateb v jednom řádku, „Co připravit“ ve dvou sloupcích, nastavení ve dvou sloupcích (log dole).
+  Telefon: u skupin už nepřetéká „Odebrat“, tlačítka mapy nepřekrývají záhlaví, účtenka nedělí data a čísla. E-shop: stín zavřeného košíku
   už neprosvítá u pravého okraje, s „Jen dostupné“ jen druhy, které jsou (filtry na telefonu v jednom řádku).
 - Mošt Jablko + Limetka zase dostupný (`data.js`: `dostupne: true`) – web, e-shop i tištěný ceník.
 - Přihlášení farmy přes Microsoft: Entra adresář účtu `info@ovoce-holub.cz` (tenant f691f4a4-…), nová aplikace

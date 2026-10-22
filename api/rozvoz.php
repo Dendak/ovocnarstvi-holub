@@ -109,7 +109,7 @@ h1{font:normal 24px Georgia,serif;margin:0}h2{font:normal 21px Georgia,serif;mar
 .btn.hl,.akce .hl{background:var(--leaf);border-color:var(--leaf);color:#fff}form{display:inline}
 a.tel,a.adr,a.odk{display:inline-block;padding:11px 0;line-height:22px}
 table{width:100%;border-collapse:collapse;font-size:15px}td{padding:6px 0;border-bottom:1px solid var(--line);vertical-align:top}td.r{text-align:right;font-weight:bold;white-space:nowrap;padding-left:10px}tr.soucet td{border-bottom:0;color:var(--muted)}
-#mapa{height:340px;border-radius:10px;border:1px solid var(--line);margin:10px 0}.leaflet-popup-content p{margin:8px 0 0}
+#mapa{height:340px;border-radius:10px;border:1px solid var(--line);margin:10px 0;isolation:isolate}.leaflet-popup-content p{margin:8px 0 0}
 input[type=password]{width:100%;padding:12px;border:1px solid var(--line);border-radius:8px;font-size:16px}
 .err{color:var(--berry);font-weight:bold}
 .akce a.waze{background:#33ccff;border-color:#33ccff;color:#0b2530;font-weight:bold}
@@ -121,13 +121,13 @@ details.storno form{display:flex;gap:6px;margin-top:6px}details.storno input{fle
 .pozor{border-color:var(--berry);background:#fbeeec}.pozor p{margin:0 0 6px}.nevyrizene .btn{margin:8px 8px 0 0;border-color:var(--berry);color:var(--berry);font-weight:bold}
 .pata{margin-top:32px;padding-top:12px;border-top:1px solid var(--line)}.pata .btn{margin-top:4px}
 .nw{white-space:nowrap}.clenove td:first-child{overflow-wrap:anywhere}
-@media (min-width:1100px){main.siroky{max-width:1240px}main.siroky>.box{max-width:760px}:root:has(main.siroky){--sirka:1240px}
+@media (min-width:1100px){main.siroky{max-width:2400px}main.siroky>.box{max-width:760px}:root:has(main.siroky){--sirka:2400px}
 .lista{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;margin:4px 0 8px}.lista .dny{flex:0 1 auto;min-width:0}
 .lista .jiny-den{margin:0 0 6px}.lista .kontrola{order:1;margin:0 0 6px auto}
-.pripravit.dva .sloupce{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 28px}
-.karty{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;align-items:start}.karty .obj{margin:0;overflow-wrap:anywhere}
-main.siroky>.karty,.rozvoz:not(.s-mapou) .karty{grid-template-columns:repeat(2,minmax(0,1fr))}
-.rozvoz.s-mapou{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:24px;align-items:start}
+main.siroky>.box.pripravit{width:fit-content;min-width:min(100%,420px);max-width:100%}
+.pripravit.dva .sloupce{display:grid;grid-template-columns:repeat(2,minmax(300px,1fr));gap:0 40px}
+.karty{display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:12px;align-items:start}.karty .obj{margin:0;overflow-wrap:anywhere}
+.rozvoz.s-mapou{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,3fr);gap:24px;align-items:start}
 .rozvoz.s-mapou .rozvoz-mapa{position:sticky;top:56px;display:flex;flex-direction:column;height:calc(100vh - 68px);min-height:620px}
 .rozvoz.s-mapou #mapa{flex:1 1 auto;height:auto;min-height:300px;margin-top:0}}
 </style></head><body>' . $obsah
@@ -872,7 +872,7 @@ $karta = function (array $o) use ($platba, $tlacitko, $zaplaceno, $cil, $dorucen
   return $s;
 };
 
-// main.siroky: na počítači širší stránka (mapa vedle karet, karty ve dvou sloupcích); na telefonu beze změny.
+// main.siroky: na počítači přes celou šířku (mapa vedle karet, karty v tolika sloupcích, kolik se vejde); na telefonu beze změny.
 $obsah = hlavicka_farmy('Objednávky') . '<main class="siroky">' . $hlaseniHtml;
 // Ruční kontrola plateb (jinak ji spouští cron a návštěvy e-shopu, nejvýš jednou za 3 minuty). Po spárování se stránka obnoví.
 $kontrola = (int)(nacist_json('stav.json', [])['kontrola'] ?? 0);
