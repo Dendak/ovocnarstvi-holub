@@ -50,8 +50,7 @@ Nic rozpracovaného v kódu není, main = produkce je čistá.
 - [ ] GitHub Pages je v nastavení repa pořád zapnuté (stará verze, CNAME ovoce-holub.cz). Případně vypnout v Settings → Pages.
 - [ ] Větev `origin/eshop` — zjistit, jestli je ještě potřeba.
 - [ ] `react-verze/README.md` je šablona Vite. Případně nahradit odkazem na CLAUDE.md.
-- [ ] **Přihlášení přes Microsoft** (`api/microsoft.php`) je zapnuté (tajný klíč v nastavení), ale celé přihlášení
-  `info@ovoce-holub.cz` zatím nikdo nevyzkoušel. Tajný klíč Entra aplikace „Ovocnářství Holub – objednávky (farma)“
+- [ ] **Přihlášení přes Microsoft** (`api/microsoft.php`) funguje (ověřeno 22. 10.). Tajný klíč Entra aplikace „Ovocnářství Holub – objednávky (farma)“
   vyprší **v říjnu 2028** – pak v Entra vytvořit nový a vložit v nastaveni.php.
 - [ ] Tátovi nastavit „Heslo k objednávkám“ a ikonu přehledu na plochu telefonu i PC (návod v chatu 22. 10.).
 
