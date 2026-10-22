@@ -183,6 +183,12 @@ function klic(string $nazev): string {
 // ---------------------------------------------------------------------------
 const COOKIE_FARMA = 'oh_rozvoz';
 const PLATNOST_PRIHLASENI = 365 * 86400;
+// Přihlášení farmy přes Microsoft (api/microsoft.php): Entra adresář „Default Directory“ účtu info@ovoce-holub.cz,
+// aplikace „Ovocnářství Holub – objednávky (farma)“. ID nejsou tajná; tajný klíč aplikace se zadává v nastaveni.php.
+const MICROSOFT_TENANT = 'f691f4a4-540b-4d95-b7f0-44b751a44f59';
+const MICROSOFT_CLIENT_ID = '79bf5af5-e039-4e6a-877f-ba1e75b8b78c';
+// Kdo se tak smí přihlásit: sha256 e-mailu malými písmeny (info@ovoce-holub.cz).
+const MICROSOFT_UCTY = ['d14c3b84e084f77e8b28bc3557461c9dfe6f258d35c4148d2be03c41a426bc70'];
 
 function podpis_prihlaseni(int $exp): string { return hash_hmac('sha256', "rozvoz|$exp", klic('klic_prihlaseni')); }
 

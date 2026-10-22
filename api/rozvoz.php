@@ -167,7 +167,9 @@ if (!prihlasen()) {
   $formular = isset($potvrdit)
     ? '<form method="post" class="box" style="display:block"><input type="hidden" name="akce" value="potvrdit"><input type="hidden" name="t" value="' . h($potvrdit) . '">'
       . '<p>Přihlásit tento telefon / počítač k přehledu objednávek?</p><button class="btn hl" style="width:100%">Přihlásit</button></form>'
-    : (!empty($n['heslo_farmy'])
+    : (!empty($n['microsoft_tajny'])
+      ? '<a class="btn hl" href="microsoft.php" style="display:block;margin:10px 0">Přihlásit přes Microsoft</a>' : '')
+    . (!empty($n['heslo_farmy'])
       ? '<form method="post" class="box" style="display:block"><input type="hidden" name="akce" value="prihlasit-heslem">'
         . '<label for="heslo" class="muted">Heslo</label>'
         . '<input type="password" id="heslo" name="heslo" autocomplete="current-password" required autofocus style="width:100%;padding:12px;border:1px solid var(--line);border-radius:8px;font-size:16px;margin-top:6px">'

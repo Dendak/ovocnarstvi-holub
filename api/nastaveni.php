@@ -29,6 +29,16 @@ $zprava = '';
 $chyba = false;
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$poskozeno) {
   $akce = retezec($_POST['akce'] ?? 'heslo');
+  if ($akce === 'microsoft-tajny' && $prihlasen) {
+    // Tajný klíč aplikace v Microsoft Entra pro tlačítko „Přihlásit přes Microsoft“ (api/microsoft.php).
+    $tajny = trim(retezec($_POST['tajny'] ?? ''));
+    if (strlen($tajny) < 20) { $zprava = 'Tohle nevypadá jako tajný klíč – vložte „Hodnotu“ (Value), ne „ID tajného kódu“.'; $chyba = true; }
+    else {
+      zmenit_nastaveni(function (array &$n) use ($tajny) { $n['microsoft_tajny'] = $tajny; $n['microsoft_tajny_ulozeno'] = date('c'); });
+      $n = nastaveni();
+      $zprava = 'Hotovo – na přihlašovací stránce přehledu objednávek je teď tlačítko „Přihlásit přes Microsoft“.';
+    }
+  }
   if ($akce === 'heslo-farmy' && $prihlasen) {
     // Heslo pro přihlášení k přehledu objednávek (místo odkazu z e-mailu). Ukládá se jen jeho otisk.
     $nove = retezec($_POST['nove'] ?? ''); $znovu = retezec($_POST['znovu'] ?? '');
@@ -216,6 +226,16 @@ if ($log): ?>
   <label for="znovu">Heslo znovu</label>
   <input id="znovu" name="znovu" type="password" autocomplete="new-password" minlength="8" required>
   <button type="submit"><?= empty($n['heslo_farmy']) ? 'Nastavit heslo' : 'Změnit heslo' ?></button>
+</form>
+<form method="post" class="box" autocomplete="off">
+  <input type="hidden" name="akce" value="microsoft-tajny">
+  <h2>Přihlášení přes Microsoft</h2>
+  <p class="muted"><?= empty($n['microsoft_tajny'])
+    ? 'Vypnuto. Zapne se vložením tajného klíče aplikace „Ovocnářství Holub – objednávky (farma)“ z Microsoft Entra (Certifikáty a tajné kódy → Hodnota).'
+    : 'Zapnuto (klíč uložen ' . h(date('j. n. Y', strtotime($n['microsoft_tajny_ulozeno'] ?? 'now'))) . '). Klíč má omezenou platnost – po vypršení vytvořte v Entra nový a vložte ho sem.' ?></p>
+  <label for="tajny">Tajný klíč (Value)</label>
+  <input id="tajny" name="tajny" type="password" autocomplete="off" required>
+  <button type="submit"><?= empty($n['microsoft_tajny']) ? 'Zapnout' : 'Změnit klíč' ?></button>
 </form>
 <?php endif ?>
 <?php if ($prihlasen): ?>
