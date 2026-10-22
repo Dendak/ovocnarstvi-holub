@@ -50,10 +50,25 @@ Nic rozpracovaného v kódu není, main = produkce je čistá.
 - [ ] GitHub Pages je v nastavení repa pořád zapnuté (stará verze, CNAME ovoce-holub.cz). Případně vypnout v Settings → Pages.
 - [ ] Větev `origin/eshop` — zjistit, jestli je ještě potřeba.
 - [ ] `react-verze/README.md` je šablona Vite. Případně nahradit odkazem na CLAUDE.md.
+- [ ] **Přihlášení přes Microsoft** (`api/microsoft.php`) je zapnuté (tajný klíč v nastavení), ale celé přihlášení
+  `info@ovoce-holub.cz` zatím nikdo nevyzkoušel. Tajný klíč Entra aplikace „Ovocnářství Holub – objednávky (farma)“
+  vyprší **v říjnu 2028** – pak v Entra vytvořit nový a vložit v nastaveni.php.
+- [ ] Tátovi nastavit „Heslo k objednávkám“ a ikonu přehledu na plochu telefonu i PC (návod v chatu 22. 10.).
 
 ## Historie
 ### 2026-10-22
 - Mošt Jablko + Limetka zase dostupný (`data.js`: `dostupne: true`) – web, e-shop i tištěný ceník.
+- Přihlášení farmy přes Microsoft: Entra adresář účtu `info@ovoce-holub.cz` (tenant f691f4a4-…), nová aplikace
+  „Ovocnářství Holub – objednávky (farma)“ (client 79bf5af5-…, jen moje organizace, redirect `/api/microsoft.php`).
+  Stará aplikace „Ovocnářství Holub“ (30. 9.) je Microsoft přihlášení zákazníků e-shopu přes Supabase – nesahat.
+  Pustí jen `MICROSOFT_UCTY` (sha256 e-mailu) v `_spolecne.php`; heslo a odkaz z e-mailu zůstávají.
+
+### 2026-10-17 až 21
+- Náhled účtenky (bez uložení, číslo jako by účtenku dostala každá objednávka), účtenky s předponou E (E20260001),
+  zkušební účtenka 20260001 smazána, řada prázdná. Nemocnice (po, st, pá) jako pravidelná zastávka N v mapě rozvozu.
+- Přístup k datům na serveru: FTP účet `w395099_data` (kořen `/www/api/data`), `scripts/data-serveru.sh`
+  (přenosy PHP/FTPS), údaje v lokálním `.env`. Statistika 2.–16. 10.: 14 objednávek, 13 705 Kč, 326 kg ovoce, 45 l moštů.
+- Ceny moštů podle Lukáše (17. 10.), PDF ceníku vygenerované přes Edge (headless). Od 15. 10. do 21. 10. žádná objednávka.
 
 ### 2026-10-21
 - PHP2Shell (CVE-2026-109618/109619): server běží na PHP 8.5.12 fpm-fcgi = záplatováno (ověřeno sondou). npm aktualizace (audit 0), verze PHP v `nastaveni.php?diagnostika`, nový ruční workflow `kontrola-serveru.yml` (FTPS funguje, obsah 50 souborů shodný, žádné webshelly, api/data čisté). Smazáno veřejné `/info.php` a stará složka `/www/` (workflow `uklid-serveru.yml`); druhá kontrola celá OK. Wedos e-mailem potvrdil záplatu na všech serverech.
