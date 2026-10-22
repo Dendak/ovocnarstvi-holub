@@ -52,6 +52,9 @@ Nic rozpracovaného v kódu není, main = produkce je čistá.
 - [ ] `react-verze/README.md` je šablona Vite. Případně nahradit odkazem na CLAUDE.md.
 
 ## Historie
+### 2026-10-22
+- Mošt Jablko + Limetka zase dostupný (`data.js`: `dostupne: true`) – web, e-shop i tištěný ceník.
+
 ### 2026-10-21
 - PHP2Shell (CVE-2026-109618/109619): server běží na PHP 8.5.12 fpm-fcgi = záplatováno (ověřeno sondou). npm aktualizace (audit 0), verze PHP v `nastaveni.php?diagnostika`, nový ruční workflow `kontrola-serveru.yml` (FTPS funguje, obsah 50 souborů shodný, žádné webshelly, api/data čisté). Smazáno veřejné `/info.php` a stará složka `/www/` (workflow `uklid-serveru.yml`); druhá kontrola celá OK. Wedos e-mailem potvrdil záplatu na všech serverech.
 
