@@ -1,0 +1,63 @@
+name: Smazání objednávek zákazníka (ruční)
+
+# Smaže na serveru objednávky jednoho zákazníka i s účtenkou (např. testovací). Zákazník se zadává otiskem
+# SHA-256 jeho e-mailu (malými písmeny), ne e-mailem – logy jsou veřejné. Nejdřív spusťte „vypis“, pak „smazat“.
+# Na server se na pár sekund nahraje scripts/sprava-dat/smazat-objednavky.php pod náhodným jménem a hned se smaže.
+on:
+  workflow_dispatch:
+    inputs:
+      otisk:
+        description: 'SHA-256 e-mailu zákazníka (malými písmeny)'
+        required: true
+      rezim:
+        description: 'vypis = jen ukázat, smazat = smazat'
+        required: true
+        default: vypis
+        type: choice
+        options: [vypis, smazat]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wedos
+  cancel-in-progress: false
+
+jobs:
+  smazat:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      FTP_SERVER: ${{ secrets.FTP_SERVER }}
+      FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+      FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+      PRACOVNI: /tmp/sprava
+      OTISK: ${{ inputs.otisk }}
+      REZIM: ${{ inputs.rezim }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Instalace lftp
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq lftp > /dev/null
+      - name: Spojení a nahrání skriptu
+        run: |
+          [[ "$OTISK" =~ ^[0-9a-f]{64}$ ]] || { echo "::error::Otisk musí být 64 znaků 0-9a-f"; exit 1; }
+          NAZEV="sprava-$(openssl rand -hex 16).php"
+          echo "::add-mask::$NAZEV"
+          echo "NAZEV=$NAZEV" >> "$GITHUB_ENV"
+          bash scripts/kontrola-serveru/lftp.sh zjistit
+          bash scripts/kontrola-serveru/lftp.sh nahrat scripts/sprava-dat/smazat-objednavky.php "/api/$NAZEV"
+      - name: Výpis / smazání
+        run: |
+          parametr="h=$OTISK"; [ "$REZIM" = smazat ] && parametr="$parametr&smazat=1"
+          curl -sS --max-time 60 "https://ovoce-holub.cz/api/$NAZEV?$parametr&nocache=$(openssl rand -hex 8)"
+      - name: Smazání skriptu ze serveru
+        if: always()
+        run: |
+          [ -n "${NAZEV:-}" ] || exit 0
+          for pokus in 1 2 3; do
+            if bash scripts/kontrola-serveru/lftp.sh smazat "/api/$NAZEV"; then echo "Skript smazán."; exit 0; fi
+            sleep 3
+          done
+          echo "::error::Skript zůstal na serveru – smažte ručně api/sprava-*.php"; exit 1
