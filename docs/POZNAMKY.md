@@ -56,6 +56,9 @@ Nic rozpracovaného v kódu není, main = produkce je čistá.
 - [ ] Tátovi nastavit „Heslo k objednávkám“ a ikonu přehledu na plochu telefonu i PC (návod v chatu 22. 10.).
 
 ## Historie
+### 2026-10-25 (2)
+- Nové ceny moštů od 25. 10. 2026 (5 l / 3 l): jablko 180/125 · hruška-řepa-mrkev 195/135 · skořice-bez-limetka-zázvor 205/140 · višeň-červený rybíz 215/150 · Vánoční 240/170 · rakytník 260/185. Web, e-shop, `_cenik.php` i tištěný ceník z `data.js`.
+
 ### 2026-10-25
 - Upozornění na telefon (Web Push) pro farmu: nová objednávka, platby (zaplaceno / neúplná / k vyřízení / nespárovaná / neověřená), večer po 18:05 přehled na zítra (`upozorneni.php`, volá `platby.yml`). Bez knihoven: `api/_push.php` (RFC 8291 + VAPID, ověřeno testovacím vektorem RFC a Node), `push.php`, `sw.js`, `manifest.json`. Zapíná se v Nastavení → „Upozornění na telefonu“, na iPhonu jen v aplikaci z plochy (přihlásit heslem). „Odhlásit všechna zařízení“ smaže i odběry. Odběry v `api/data/push.json`, klíč VAPID v nastavení.
 
