@@ -17,7 +17,6 @@ function chyba(string $text): void {
     . '<p style="font:16px/1.5 Arial,sans-serif;padding:40px 16px;max-width:480px;margin:0 auto">' . h($text)
     . '<br><br><a href="rozvoz.php" style="color:#2f5a33">← Zpět na přihlášení</a></p>');
 }
-function b64url(string $s): string { return rtrim(strtr(base64_encode($s), '+/', '-_'), '='); }
 
 $tajny = (string)(nastaveni()['microsoft_tajny'] ?? '');
 if ($tajny === '') chyba('Přihlášení přes Microsoft ještě není nastavené (chybí tajný klíč na stránce Nastavení).');
