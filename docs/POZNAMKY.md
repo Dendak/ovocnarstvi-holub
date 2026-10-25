@@ -4,6 +4,7 @@ Deník práce na webu, aby šlo navázat z jakéhokoli zařízení. Nejnovějš�
 Na konci každé session: co je hotové, co je rozdělané, co dál.
 
 ## Rozdělané / další kroky
+- [ ] **Upozornění na telefonu:** na tátově iPhonu (aplikace z plochy) přihlásit heslem, Nastavení → Zapnout upozornění → Poslat zkušební. Ověřit, že dorazí.
 **Další krok:** další zdražení moštů (návrh níže) čeká na rozhodnutí táty a Lukáše – 17. 10.: „zatím jak chtěl Lukáš“.
 Nic rozpracovaného v kódu není, main = produkce je čistá.
 
@@ -55,6 +56,9 @@ Nic rozpracovaného v kódu není, main = produkce je čistá.
 - [ ] Tátovi nastavit „Heslo k objednávkám“ a ikonu přehledu na plochu telefonu i PC (návod v chatu 22. 10.).
 
 ## Historie
+### 2026-10-25
+- Upozornění na telefon (Web Push) pro farmu: nová objednávka, platby (zaplaceno / neúplná / k vyřízení / nespárovaná / neověřená), večer po 18:05 přehled na zítra (`upozorneni.php`, volá `platby.yml`). Bez knihoven: `api/_push.php` (RFC 8291 + VAPID, ověřeno testovacím vektorem RFC a Node), `push.php`, `sw.js`, `manifest.json`. Zapíná se v Nastavení → „Upozornění na telefonu“, na iPhonu jen v aplikaci z plochy (přihlásit heslem). „Odhlásit všechna zařízení“ smaže i odběry. Odběry v `api/data/push.json`, klíč VAPID v nastavení.
+
 ### 2026-10-22
 - Telefon i počítač (audit screenshoty 390 / 1366 px): stránky farmy mají stejné záhlaví (Objednávky, Účtenky, Skupiny,
   Nastavení – `hlavicka_farmy()` v `_spolecne.php`, zarovnané s obsahem přes `--sirka`). Na počítači je přehled objednávek

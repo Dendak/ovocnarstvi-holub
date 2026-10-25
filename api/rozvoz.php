@@ -86,10 +86,10 @@ if ($akce === 'odhlasit' && $_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 function stranka(string $titulek, string $obsah, string $hlava = ''): void {
-  // Bez „apple-mobile-web-app-capable“: ikona na ploše iPhonu by běžela jako samostatná aplikace s vlastními cookies
-  // a odkaz pro přihlášení z e-mailu (otevře se v Safari) by ji nikdy nepřihlásil.
+  // Manifest: ikona na ploše = samostatná aplikace (na iPhonu podmínka upozornění Web Push). Má vlastní přihlášení –
+  // odkaz z e-mailu se otevře v Safari a aplikaci nepřihlásí, v aplikaci se přihlašuje heslem (nebo přes Microsoft).
   echo '<!doctype html><html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
-    . '<meta name="robots" content="noindex"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><meta name="theme-color" content="#17241a">'
+    . '<meta name="robots" content="noindex"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#17241a">'
     . '<title>' . h($titulek) . '</title>' . $hlava . '<style>' . CSS_HLAVICKY_FARMY . '
 :root{--paper:#f8f5ef;--line:#dfd7c9;--ink:#1d231c;--muted:#6b6f66;--leaf:#2f5a33;--berry:#8c2f2b;--amber:#7a4f00}
 *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.45 Arial,Helvetica,sans-serif}
@@ -692,35 +692,7 @@ foreach ($zastavky as $i => $z) {
 // „5 kg Topaz (Jablka) – 200 Kč“ → Topaz (Jablka) 5 kg; „2× 5 l Mošt Jablko (Mošty) – 320 Kč“ → 5 l Mošt Jablko (Mošty) 2×;
 // „2× Bedýnka 3 kg: 2 kg Bohemia (Jablka) + 1 kg Novembra (Hrušky) – 200 Kč“ → počet bedýnek + kila jednotlivých odrůd;
 // „1× Bedýnka 3 kg: Mix jablek a hrušek – výběr nechám na vás – 100 Kč“ → počet bedýnek a kila, odrůdy vybírá farma.
-$pripravit = function (array $objednavky): array {
-  $t = [];
-  $pridat = function (string $klic, string $nazev, float $mn, string $jed, int $poradi, int $kg = 0, string $pozn = '') use (&$t): void {
-    $t[$klic] ??= ['nazev' => $nazev, 'mn' => 0, 'jed' => $jed, 'poradi' => $poradi, 'kg' => 0, 'pozn' => $pozn];
-    $t[$klic]['mn'] += $mn;
-    $t[$klic]['kg'] += $kg;
-  };
-  foreach ($objednavky as $o) foreach ($o['polozky'] ?? [] as $r) {
-    $r = preg_replace('/\s+–\s+(?:[\d\s]+Kč|cena na dotaz)\s*$/u', '', trim((string)$r));
-    if (preg_match('/^(\d+)×\s*(Bedýnka[^:]*):\s*(.+)$/u', $r, $m)) {
-      $n = (int)$m[1];
-      $casti = array_map(fn($c) => preg_match('/^(\d+)\s*kg\s+(.+)$/u', trim($c), $x) ? $x : null, explode(' + ', $m[3]));
-      if (!in_array(null, $casti, true)) {
-        $pridat("b|{$m[2]}", "{$m[2]} – podle složení", $n, '×', 0);
-        foreach ($casti as $c) $pridat("kg|{$c[2]}", $c[2], (int)$c[1] * $n, 'kg', 1);
-      } else {
-        $kg = preg_match('/(\d+)\s*kg/u', $m[2], $x) ? (int)$x[1] * $n : 0;
-        $pridat("m|{$m[2]}", "{$m[2]} – mix, výběr na nás", $n, '×', 0, $kg, explode(' – ', $m[3])[0]);
-      }
-    } elseif (preg_match('/^(\d+(?:[.,]\d+)?)\s*(kg|ks|×|x)?\s*(.+)$/u', $r, $m)) {
-      $jed = in_array($m[2], ['kg', 'ks'], true) ? $m[2] : ($m[2] === '' ? 'ks' : '×');
-      $pridat("$jed|{$m[3]}", $m[3], (float)str_replace(',', '.', $m[1]), $jed, $jed === 'kg' ? 1 : 2);
-    } else $pridat("?|$r", $r, 1, '×', 3);
-  }
-  // Bedýnky, pak ovoce na váhu podle druhu (Hrušky, Jablka…), pak mošty a ostatní.
-  $druh = fn(string $n): string => preg_match('/\(([^()]*)\)\s*$/u', $n, $m) ? $m[1] : '';
-  uasort($t, fn($a, $b) => [$a['poradi'], $druh($a['nazev']), $a['nazev']] <=> [$b['poradi'], $druh($b['nazev']), $b['nazev']]);
-  return $t;
-};
+$pripravit = 'pripravit_polozky'; // _spolecne.php (používá i večerní upozornění)
 $cislo = fn(float $x): string => rtrim(rtrim(number_format($x, 1, ',', ' '), '0'), ',');
 $tabulkaPripravit = function (array $t) use ($cislo): string {
   $s = '<table>'; $kg = 0;

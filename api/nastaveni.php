@@ -133,7 +133,7 @@ function stav_php2shell(): string {
 }
 ?><!doctype html>
 <html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="robots" content="noindex"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><title>Nastavení e-shopu</title>
+<meta name="robots" content="noindex"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="apple-touch-icon" href="/apple-touch-icon.png"><link rel="manifest" href="manifest.json"><title>Nastavení e-shopu</title>
 <style><?= CSS_HLAVICKY_FARMY ?>
 :root{--sirka:552px}body{margin:0;background:#f8f5ef;color:#1d231c;font:16px/1.5 Arial,Helvetica,sans-serif}
 main{box-sizing:border-box;max-width:552px;margin:0 auto;padding:24px 16px 40px}
@@ -233,10 +233,58 @@ a{color:#2f5a33}
 </form>
 <?php endif ?>
 <?php if ($prihlasen): ?>
+<div class="box" id="upozorneni">
+  <h2>Upozornění na telefonu</h2>
+  <p class="muted">Nová objednávka, přijatá nebo problémová platba a večer v 18:05 přehled na zítra. Zapíná se zvlášť na každém telefonu.
+    Na iPhonu jen v aplikaci z plochy (Sdílet → Přidat na plochu → otevírat jako webovou aplikaci), ne v Safari.</p>
+  <p id="push-stav" class="muted">Zjišťuji…</p>
+  <button type="button" id="push-zapnout" hidden>Zapnout upozornění</button>
+  <button type="button" id="push-zkouska" hidden>Poslat zkušební</button>
+  <button type="button" id="push-vypnout" class="cervene" hidden>Vypnout na tomto telefonu</button>
+</div>
+<script>
+(() => {
+  const $ = id => document.getElementById(id), stav = t => { $('push-stav').textContent = t }
+  const ukaz = (zap, vyp) => { $('push-zapnout').hidden = !zap; $('push-vypnout').hidden = !vyp; $('push-zkouska').hidden = !vyp }
+  const poslat = d => fetch('push.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(d) }).then(r => r.json())
+  const bajty = s => Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/') + '==='.slice((s.length + 3) % 4)), c => c.charCodeAt(0))
+  if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) {
+    stav(/iPhone|iPad/.test(navigator.userAgent) ? 'Tady upozornění nejdou – otevřete přehled z ikony na ploše (aplikace), ne v Safari.' : 'Tento prohlížeč upozornění neumí.'); return
+  }
+  let reg
+  navigator.serviceWorker.register('sw.js').then(async r => {
+    reg = r; await navigator.serviceWorker.ready
+    const sub = await reg.pushManager.getSubscription()
+    if (Notification.permission === 'denied') { stav('Upozornění jsou v nastavení telefonu zakázaná – povolte je tam pro tuto aplikaci.'); return }
+    stav(sub ? 'Na tomto telefonu jsou upozornění zapnutá.' : 'Na tomto telefonu jsou upozornění vypnutá.'); ukaz(!sub, !!sub)
+  }).catch(() => stav('Upozornění se nepodařilo připravit.'))
+  $('push-zapnout').onclick = async () => {
+    try {
+      if (await Notification.requestPermission() !== 'granted') { stav('Upozornění nejsou povolená.'); return }
+      const { klic } = await fetch('push.php').then(r => r.json())
+      const sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: bajty(klic) })
+      const v = await poslat({ akce: 'zapnout', odber: sub.toJSON() })
+      if (!v.ok) throw 0
+      stav('Hotovo – upozornění jsou zapnutá. Zkuste „Poslat zkušební“.'); ukaz(false, true)
+    } catch { stav('Zapnutí se nepovedlo. Zkuste to znovu, případně stránku obnovte.') }
+  }
+  $('push-vypnout').onclick = async () => {
+    const sub = await reg.pushManager.getSubscription()
+    if (sub) { await poslat({ akce: 'vypnout', endpoint: sub.endpoint }).catch(() => {}); await sub.unsubscribe() }
+    stav('Upozornění jsou na tomto telefonu vypnutá.'); ukaz(true, false)
+  }
+  $('push-zkouska').onclick = async () => {
+    const v = await poslat({ akce: 'zkouska' }).catch(() => ({}))
+    stav(v.ok ? 'Zkušební upozornění odesláno (' + v.odeslano + ' zař.).' : 'Odeslat se nepodařilo.')
+  }
+})()
+</script>
+<?php endif ?>
+<?php if ($prihlasen): ?>
 <form method="post" class="box" onsubmit="return confirm('Odhlásit všechny ostatní telefony a počítače? Tady zůstanete přihlášení.')">
   <input type="hidden" name="akce" value="odhlasit-vse">
   <h2>Ztracený telefon?</h2>
-  <p class="muted">Tlačítko odhlásí z přehledu objednávek všechna ostatní zařízení. Na nich se pak dá znovu přihlásit jen odkazem z e-mailu @ovoce-holub.cz (nebo heslem ke schránce na této stránce).
+  <p class="muted">Tlačítko odhlásí z přehledu objednávek všechna ostatní zařízení. Na nich se pak dá znovu přihlásit jen odkazem z e-mailu @ovoce-holub.cz (nebo heslem ke schránce na této stránce). Vypnou se i všechna upozornění na telefonech.
     Odkazy na účtenky u zákazníků fungují dál.</p>
   <button type="submit" class="cervene">Odhlásit všechna zařízení</button>
 </form>

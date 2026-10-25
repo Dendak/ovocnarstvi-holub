@@ -510,6 +510,9 @@ zmenit_objednavku($vs, function (array &$o) use ($farma) { $o['email_farma'] = $
 odpovedet_predem(['ok' => true, 'ulozeno' => true, 'farma' => $farma, 'potvrzeni' => $posilat,
   'cislo' => $cislo, 'vs' => $vs, 'celkem' => $celkem, 'castka' => $castka, 'souhrn' => $souhrn, 'polozky' => $radky,
   'zmena_ceny' => zmena_ceny($zaznam)]);
+// Upozornění na telefon farmy (po odpovědi prohlížeči, chyba nic nezastaví).
+poslat_push('Nová objednávka ' . kc($celkem), push_jmeno(['jmeno' => $jmeno]) . ' · ' . ($rozvoz ? 'rozvoz' : 'odběr') . " $den" . ($cas !== '' ? " $cas" : '') . " · $cislo",
+  'rozvoz.php?den=' . rawurlencode($datum ?: 'bez-terminu'), 'obj-' . $cislo);
 if (!$posilat) exit;
 @set_time_limit(120);
 

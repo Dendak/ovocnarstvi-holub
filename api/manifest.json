@@ -1,0 +1,14 @@
+{
+  "name": "Objednávky – Ovocnářství Holub",
+  "short_name": "Objednávky",
+  "start_url": "/api/rozvoz.php",
+  "scope": "/api/",
+  "display": "standalone",
+  "background_color": "#f8f5ef",
+  "theme_color": "#17241a",
+  "lang": "cs",
+  "icons": [
+    { "src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" },
+    { "src": "/logo-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}

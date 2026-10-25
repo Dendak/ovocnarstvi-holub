@@ -219,6 +219,8 @@ function odhlasit_vsechna_zarizeni(): void {
     $n['klic_prihlaseni'] = bin2hex(random_bytes(32));
     $n['odhlaseno_vse'] = date('c');
   });
+  // I upozornění: ztracený telefon nesmí dál dostávat jména a částky. Kdo chce, zapne si je znovu.
+  push_zmenit_odbery(function (array &$o) { $o = []; });
 }
 
 // Záhlaví stránek farmy (objednávky, účtenky, skupiny, nastavení): nadpis a odkazy na ostatní stránky, všude stejné.
@@ -807,6 +809,7 @@ function zpracovat_zpravu_banky(string $raw, array &$stav, array &$vysledek): vo
       . "Platba NEBYLA připsána k žádné objednávce. Zkontrolujte ji v internetovém bankovnictví.\n",
       email_html('Neověřené upozornění na platbu', '<p>Do schránky přišla zpráva, která vypadá jako upozornění České spořitelny na platbu <b>' . h($castka) . '</b> (VS ' . h($p['vs']) . '), ale nepřišla přímo od banky (' . h($duvod) . ').</p>'
         . '<p><b>Platba nebyla připsána k žádné objednávce.</b> Zkontrolujte ji v internetovém bankovnictví.</p>'), null, false);
+    poslat_push("⚠ Neověřená platba $castka", "Nepřišla přímo od banky – nepřipsáno, zkontrolujte v bankovnictví.", 'rozvoz.php');
     return;
   }
   $vysledek['z_banky'] = ($vysledek['z_banky'] ?? 0) + 1;
@@ -828,6 +831,7 @@ function zpracovat_zpravu_banky(string $raw, array &$stav, array &$vysledek): vo
         . "Protiúčet: {$p['protiucet']}\nZpráva: {$p['zprava']}\nDatum: {$p['datum']}\n",
         email_html('Nespárovaná platba', '<p>Přišla platba <b>' . h($castka) . '</b> s VS <b>' . h($p['vs']) . '</b>, ale žádná objednávka s tímto VS není uložená.</p>'
           . '<p>Protiúčet: ' . h($p['protiucet']) . '<br>Zpráva: ' . h($p['zprava']) . '<br>Datum: ' . h($p['datum']) . '</p>'), null, false);
+      poslat_push("⚠ Nespárovaná platba $castka", "VS {$p['vs']} – žádná objednávka s tímto VS.", 'rozvoz.php');
     } elseif ($p['vs'] === '' && count($kandidati = objednavky_s_castkou($p['castka'])) === 1) {
       // Platba bez VS, ale částka přesně sedí na jedinou nezaplacenou objednávku: nepřipsat, jen upozornit.
       poslat_email(ODESILATEL, "MOŽNÁ PLATBA ZA {$kandidati[0]} | $castka bez VS",
@@ -835,6 +839,7 @@ function zpracovat_zpravu_banky(string $raw, array &$stav, array &$vysledek): vo
         . "Zkontrolujte ji prosím – automaticky připsaná není.\nProtiúčet: {$p['protiucet']}\nZpráva: {$p['zprava']}\nDatum: {$p['datum']}\n",
         email_html('Možná platba za ' . $kandidati[0], '<p>Přišla platba <b>' . h($castka) . '</b> bez variabilního symbolu. Částkou odpovídá nezaplacené objednávce <b>' . h($kandidati[0]) . '</b>.</p>'
           . '<p>Zkontrolujte ji prosím – automaticky připsaná není.<br>Protiúčet: ' . h($p['protiucet']) . '<br>Zpráva: ' . h($p['zprava']) . '<br>Datum: ' . h($p['datum']) . '</p>'), null, false);
+      poslat_push("Možná platba za {$kandidati[0]}", "$castka bez VS – zkontrolujte, automaticky připsaná není.", 'rozvoz.php');
     }
     return;
   }
@@ -859,6 +864,7 @@ function zpracovat_zpravu_banky(string $raw, array &$stav, array &$vysledek): vo
   $celkem = kc((int)round($o['zaplaceno']));
   $ma = kc($cil);
   $uctenkaText = platny_doklad($o) ? "\nÚčtenka: " . odkaz_na_doklad($o) . "\n" : '';
+  $odkaz = 'rozvoz.php?den=' . rawurlencode(($o['datum'] ?? '') ?: 'bez-terminu');
   $uctenkaHtml = platny_doklad($o) ? '<p><a href="' . h(odkaz_na_doklad($o)) . '" style="color:#2f5a33">Zobrazit účtenku č. ' . h($o['doklad']['cislo']) . '</a></p>' : '';
 
   if ($upozorneni) {
@@ -869,6 +875,7 @@ function zpracovat_zpravu_banky(string $raw, array &$stav, array &$vysledek): vo
       email_html('Platba k vyřízení', '<p>K objednávce <b>' . h($o['cislo']) . '</b> přišla platba <b>' . h($castka) . '</b>.</p>'
         . '<p style="color:#8c2f2b"><b>' . implode('<br>', array_map('h', $upozorneni)) . '</b></p>'
         . '<p>Převodem celkem: ' . h($celkem) . ', cena objednávky: ' . h($ma) . '<br>Zákazník: ' . h($o['jmeno']) . ', ' . h($o['email']) . '<br>Protiúčet: ' . h($p['protiucet']) . '</p>'), null, false);
+    poslat_push("⚠ Platba {$o['cislo']}", push_jmeno($o) . " · " . $upozorneni[0], $odkaz, 'platba-' . $o['cislo']);
   }
   $zaplacenoTed = $o['zaplaceno'] + 0.001 >= $cil && $bylo + 0.001 < $cil && empty($o['zruseno']) && empty($o['zaplaceno_hotove']);
   if ($zaplacenoTed) {
@@ -881,10 +888,12 @@ function zpracovat_zpravu_banky(string $raw, array &$stav, array &$vysledek): vo
       "Objednávka {$o['cislo']} je zaplacená ($celkem z $ma).\n" . (POTVRZENI_PLATBY_ZAKAZNIKOVI ? "Zákazník dostal potvrzení o přijetí platby.\n" : '') . "\n{$o['souhrn']}\n",
       email_html("Zaplaceno {$o['cislo']}", '<p>Objednávka je zaplacená: <b>' . h($celkem) . '</b> z ' . h($ma) . '.' . (POTVRZENI_PLATBY_ZAKAZNIKOVI ? ' Zákazník dostal potvrzení.' : '') . '</p>'
         . '<div style="font-size:14px">' . nl2br(h($o['souhrn'])) . '</div>'), null, false);
+    poslat_push("Zaplaceno $celkem", push_jmeno($o) . " · {$o['cislo']}", $odkaz, 'platba-' . $o['cislo']);
   } elseif (!$upozorneni && $o['zaplaceno'] + 0.001 < $cil) {
     poslat_email(ODESILATEL, "NEÚPLNÁ PLATBA {$o['cislo']} | $celkem z $ma | {$o['jmeno']}",
       "K objednávce {$o['cislo']} zatím přišlo $celkem z $ma.\nZákazník: {$o['jmeno']}, {$o['email']}\n",
       email_html('Neúplná platba', '<p>K objednávce <b>' . h($o['cislo']) . '</b> zatím přišlo ' . h($celkem) . ' z ' . h($ma) . '.<br>Zákazník: ' . h($o['jmeno']) . ', ' . h($o['email']) . '</p>'), null, false);
+    poslat_push("Neúplná platba {$o['cislo']}", push_jmeno($o) . " · zatím $celkem z $ma", $odkaz, 'platba-' . $o['cislo']);
   }
 }
 
@@ -996,3 +1005,36 @@ function rozpis_dph(array $o): array {
   }
   return $out;
 }
+
+// Co připravit: položky objednávek sečtené podle druhu (bedýnky, ovoce na váhu, mošty). Pro rozvoz.php i upozornění.
+function pripravit_polozky(array $objednavky): array {
+  $t = [];
+  $pridat = function (string $klic, string $nazev, float $mn, string $jed, int $poradi, int $kg = 0, string $pozn = '') use (&$t): void {
+    $t[$klic] ??= ['nazev' => $nazev, 'mn' => 0, 'jed' => $jed, 'poradi' => $poradi, 'kg' => 0, 'pozn' => $pozn];
+    $t[$klic]['mn'] += $mn;
+    $t[$klic]['kg'] += $kg;
+  };
+  foreach ($objednavky as $o) foreach ($o['polozky'] ?? [] as $r) {
+    $r = preg_replace('/\s+–\s+(?:[\d\s]+Kč|cena na dotaz)\s*$/u', '', trim((string)$r));
+    if (preg_match('/^(\d+)×\s*(Bedýnka[^:]*):\s*(.+)$/u', $r, $m)) {
+      $n = (int)$m[1];
+      $casti = array_map(fn($c) => preg_match('/^(\d+)\s*kg\s+(.+)$/u', trim($c), $x) ? $x : null, explode(' + ', $m[3]));
+      if (!in_array(null, $casti, true)) {
+        $pridat("b|{$m[2]}", "{$m[2]} – podle složení", $n, '×', 0);
+        foreach ($casti as $c) $pridat("kg|{$c[2]}", $c[2], (int)$c[1] * $n, 'kg', 1);
+      } else {
+        $kg = preg_match('/(\d+)\s*kg/u', $m[2], $x) ? (int)$x[1] * $n : 0;
+        $pridat("m|{$m[2]}", "{$m[2]} – mix, výběr na nás", $n, '×', 0, $kg, explode(' – ', $m[3])[0]);
+      }
+    } elseif (preg_match('/^(\d+(?:[.,]\d+)?)\s*(kg|ks|×|x)?\s*(.+)$/u', $r, $m)) {
+      $jed = in_array($m[2], ['kg', 'ks'], true) ? $m[2] : ($m[2] === '' ? 'ks' : '×');
+      $pridat("$jed|{$m[3]}", $m[3], (float)str_replace(',', '.', $m[1]), $jed, $jed === 'kg' ? 1 : 2);
+    } else $pridat("?|$r", $r, 1, '×', 3);
+  }
+  // Bedýnky, pak ovoce na váhu podle druhu (Hrušky, Jablka…), pak mošty a ostatní.
+  $druh = fn(string $n): string => preg_match('/\(([^()]*)\)\s*$/u', $n, $m) ? $m[1] : '';
+  uasort($t, fn($a, $b) => [$a['poradi'], $druh($a['nazev']), $a['nazev']] <=> [$b['poradi'], $druh($b['nazev']), $b['nazev']]);
+  return $t;
+}
+
+require_once __DIR__ . '/_push.php';

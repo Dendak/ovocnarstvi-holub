@@ -19,3 +19,5 @@ jobs:
     steps:
       - name: Zkontrolovat platby
         run: curl -fsS --max-time 90 https://ovoce-holub.cz/api/platby.php
+      - name: Večerní přehled na zítra (upozornění na telefon, pošle se jednou po 18:05)
+        run: curl -fsS --max-time 90 https://ovoce-holub.cz/api/upozorneni.php
