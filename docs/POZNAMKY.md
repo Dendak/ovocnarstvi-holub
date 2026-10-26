@@ -56,6 +56,9 @@ Nic rozpracovaného v kódu není, main = produkce je čistá.
 - [ ] Tátovi nastavit „Heslo k objednávkám“ a ikonu přehledu na plochu telefonu i PC (návod v chatu 22. 10.).
 
 ## Historie
+### 2026-10-26
+- Smazány testovací objednávky (OH-261001-9249, OH-261025-6960, účtenka E20260001) ručním workflow `smazat-objednavky.yml` (podle sha256 e-mailu, nejdřív „vypis“, pak „smazat“). Řada účtenek přepočítána – první ostrá bude zase E20260001.
+
 ### 2026-10-25 (2)
 - Nové ceny moštů od 25. 10. 2026 (5 l / 3 l): jablko 180/125 · hruška-řepa-mrkev 195/135 · skořice-bez-limetka-zázvor 205/140 · višeň-červený rybíz 215/150 · Vánoční 240/170 · rakytník 260/185. Web, e-shop, `_cenik.php` i tištěný ceník z `data.js`.
 
