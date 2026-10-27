@@ -4,6 +4,7 @@ Deník práce na webu, aby šlo navázat z jakéhokoli zařízení. Nejnovějš�
 Na konci každé session: co je hotové, co je rozdělané, co dál.
 
 ## Rozdělané / další kroky
+- [ ] **EET 2.0 od 1. 1. 2027** (pilot leden, ostrý provoz 1. 2.). Rozhodnuto 27. 10.: výjimka pro prvovýrobu není, EET OFF ne (plátce DPH), Rakousko se neeviduje. Evidují se platby na místě: **ze dvora** a **při rozvozu** (hotově, QR u auta). Stánek zatím ne. Eviduje táta, později musí jít přidat další (Lukáš, Denis) – vlastní přihlášení, u každé evidence kdo. Plán: 1. 11. certifikát EET v MOJE daně → test na Playground (SOAP v4.1, eet.gov.cz Vývojáři) → v přehledu objednávek „Zaplaceno na místě“ + nový „Prodej ze dvora“ (částka, DPH ovoce 12 % / mošty 21 %) s FIK na elektronické účtence; záloha aplikace MOJE EET (od 1. 12.).
 - [ ] **Upozornění na telefonu:** na tátově iPhonu (aplikace z plochy) přihlásit heslem, Nastavení → Zapnout upozornění → Poslat zkušební. Ověřit, že dorazí.
 **Další krok:** další zdražení moštů (návrh níže) čeká na rozhodnutí táty a Lukáše – 17. 10.: „zatím jak chtěl Lukáš“.
 Nic rozpracovaného v kódu není, main = produkce je čistá.
