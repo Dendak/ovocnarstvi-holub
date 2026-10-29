@@ -45,13 +45,13 @@ export const OBSAH = {
   mosty: {
     // Ceník moštů pro web, e-shop i tisk (cenik.html). dostupne: false = vyprodáno celé,
     // vyprodano: ['3l'] = vyprodaná jen tato velikost ('3l' nebo '5l').
-    platnostOd: '25. 10. 2026',
+    platnostOd: '29. 10. 2026',
     skupiny: [
       { polozky: [{ nazev: 'Čisté jablko',    dostupne: true }],                                                                                                cena5l: 180, cena3l: 125 },
       { polozky: [{ nazev: 'Hruška',           dostupne: true }, { nazev: 'Červená řepa', dostupne: true }, { nazev: 'Mrkev',   dostupne: true }],              cena5l: 195, cena3l: 135 },
       { polozky: [{ nazev: 'Skořice',          dostupne: true }, { nazev: 'Květ bezu', dostupne: true }, { nazev: 'Limetka', dostupne: true }, { nazev: 'Zázvor', dostupne: true }], cena5l: 205, cena3l: 140 },
       { polozky: [{ nazev: 'Višeň',            dostupne: true }, { nazev: 'Červený rybíz', dostupne: true }],                                                   cena5l: 215, cena3l: 150 },
-      { polozky: [{ nazev: '🎄 Vánoční mošt',   dostupne: true }],                                                                                               cena5l: 240, cena3l: 170 },
+      { polozky: [{ nazev: '🎄 Vánoční mošt',   dostupne: true }],                                                                                               cena5l: 250, cena3l: 175 },
       { polozky: [{ nazev: 'Rakytník',         dostupne: true }],                                                                                                cena5l: 260, cena3l: 185 },
     ],
   },

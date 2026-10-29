@@ -57,6 +57,9 @@ Nic rozpracovaného v kódu není, main = produkce je čistá.
 - [ ] Tátovi nastavit „Heslo k objednávkám“ a ikonu přehledu na plochu telefonu i PC (návod v chatu 22. 10.).
 
 ## Historie
+### 2026-10-29
+- Vánoční mošt 250 / 175 (dřív 240 / 170), ceník platí od 29. 10. 2026.
+
 ### 2026-10-26
 - Smazány testovací objednávky (OH-261001-9249, OH-261025-6960, účtenka E20260001) ručním workflow `smazat-objednavky.yml` (podle sha256 e-mailu, nejdřív „vypis“, pak „smazat“). Řada účtenek přepočítána – první ostrá bude zase E20260001.
 
