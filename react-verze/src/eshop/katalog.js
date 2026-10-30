@@ -18,7 +18,7 @@ const ovoce = nazev => OBSAH.ovoce.find(o => o.nazev === nazev)
 const DRUHY_OVOCE = [
   {
     id: 'jablka', nazev: 'Jablka', zdroj: ovoce('Jablka'), cenaKg: 40,
-    sklizen: 'září – říjen, ze skladu do března',
+    sklizen: 'polovina srpna – říjen, ze skladu do března',
     odrudy: [
       { id: 'bohemia', nazev: 'Bohemia', chut: 'sladkonavinulá', popis: 'Česká odrůda s velkými, sytě červenými plody a šťavnatou dužinou.', hodiSe: ['přímá konzumace', 'mošt'] },
       { id: 'rubinola', nazev: 'Rubinola', chut: 'sladká, aromatická', popis: 'Česká odrůda odolná strupovitosti. Jemná sladká chuť s výrazným aroma, velmi šťavnatá.', hodiSe: ['přímá konzumace', 'pro děti'] },

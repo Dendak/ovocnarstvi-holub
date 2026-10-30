@@ -57,6 +57,9 @@ Nic rozpracovaného v kódu není, main = produkce je čistá.
 - [ ] Tátovi nastavit „Heslo k objednávkám“ a ikonu přehledu na plochu telefonu i PC (návod v chatu 22. 10.).
 
 ## Historie
+### 2026-10-30
+- Jablka: sklizeň začíná 15. 8. (v datech bylo 1. 9.), web ani tištěný ceník už neukazují „ze skladu“ před začátkem sklizně.
+
 ### 2026-10-29
 - Vánoční mošt 250 / 175 (dřív 240 / 170), ceník platí od 29. 10. 2026.
 
