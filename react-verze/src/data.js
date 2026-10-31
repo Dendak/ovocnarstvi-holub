@@ -38,7 +38,7 @@ export const OBSAH = {
     // Druh, který tu není, se v e-shopu ukáže jako nedostupný. Prázdný seznam [] = všechny odrůdy druhu.
     // Celé `nabidka` smažte (nebo dejte null), má-li se dostupnost řídit jen sezónou.
     nabidka: {
-      Jablka: ['Bohemia', 'Gala', 'Jonaprince', 'Idared'],
+      Jablka: ['Gala', 'Golden Delicious', 'Jonaprince', 'Idared'],
       Hrušky: ['Novembra'],
     },
   },

@@ -41,7 +41,7 @@ const DRUHY_OVOCE = [
     odrudy: [
       { id: 'konference', nazev: 'Konference', chut: 'sladká, máslová', popis: 'Protáhlé plody s rezavou slupkou a sladkou, máslově jemnou dužinou. Dobře skladovatelná.', hodiSe: ['přímá konzumace', 'skladování'] },
       { id: 'williams', nazev: 'Williams', chut: 'sladká, velmi aromatická', popis: 'Williamsova čáslavka – nejaromatičtější hruška, šťavnatá a sladká.', hodiSe: ['přímá konzumace', 'kompoty', 'pálenka'] },
-      { id: 'novembra', nazev: 'Novembra', chut: 'sladkokyselá, šťavnatá', popis: 'Pozdní zimní odrůda s velkými plody a šťavnatou dužinou. Dobře se skladuje.', hodiSe: ['přímá konzumace', 'skladování'] },
+      { id: 'novembra', nazev: 'Novembra', chut: 'sladkokyselá, šťavnatá', popis: 'Pozdní zimní odrůda (také známá jako Nojabrskaja nebo Xenia) s velkými plody a šťavnatou dužinou. Dobře se skladuje.', hodiSe: ['přímá konzumace', 'skladování'] },
       { id: 'lucasova', nazev: 'Lucasova', chut: 'sladká, šťavnatá', popis: 'Alexander Lucas – velké zimní hrušky se šťavnatou dužinou.', hodiSe: ['přímá konzumace', 'skladování'] },
       { id: 'bohemica', nazev: 'Bohemica', chut: 'sladká, šťavnatá', popis: 'Česká odrůda se sladkými a šťavnatými plody.', hodiSe: ['přímá konzumace'] },
       { id: 'packhams', nazev: 'Packhams', chut: 'sladká s jemnou kyselinkou', popis: 'Packham’s Triumph – zelenožluté zimní hrušky, šťavnaté a dobře skladovatelné.', hodiSe: ['přímá konzumace', 'skladování'] },
