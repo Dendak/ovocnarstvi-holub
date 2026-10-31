@@ -151,9 +151,12 @@ body {
 @media screen and (max-width: 860px) {
   .tabulka { grid-template-columns: minmax(0, 1fr); }
   .ovladani { margin: 12px; }
-  /* Na telefonu jsou hlášky nad tabulkou: pod ní by nebyly vidět a šipky u čísel se tu neklikají. */
+  /* Hlášky jsou tady nad tabulkou, pod ní by nebyly vidět. Tabulkou ale hýbou a druhý klik na šipku by trefil jiný řádek,
+     proto šipky u čísel v tabulce nejsou a počty se píšou. textfield je pro Firefox, pseudoprvek pro Edge a Chrome. */
   .prava { display: contents; }
   .ovladani .upozorneni { order: -1; margin-bottom: 0; }
+  .ovladani td input { appearance: textfield; }
+  .ovladani td input::-webkit-inner-spin-button { display: none; }
   /* Na telefonu se tabulka posouvá a název příchuti musí zůstat vidět, jinak se datum napíše k jiné příchuti. */
   .ovladani tbody th, .ovladani thead th:first-child { position: sticky; left: 0; background: #fff; }
   /* Pole pod sticky sloupcem prohlížeč bere jako viditelné a sám se k němu nevrátí. Sloupec má 109 px, zbytek je rezerva. */
