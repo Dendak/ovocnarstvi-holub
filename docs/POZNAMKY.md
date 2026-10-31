@@ -11,7 +11,7 @@ Na konci každé session: co je hotové, co je rozdělané, co dál.
   **Čeká na moštárnu (písemně):** přímo lisováno bez vody, cukru a aromat; v jaké podobě je příchuť; přesný podíl jedním číslem (ne rozpětí);
   receptura skořice, květu bezu, zázvoru a Vánočního; lhůta po otevření; výživové údaje na 100 ml; razítko na 5 l (stěna, den a měsíc, nebo jen
   měsíc a rok); datum pro 3 l ke každé várce; siřičitany u limetky. Výživové údaje se na etiketu nevejdou: až budou čísla, přidat druhou etiketu
-  na stejnou stěnu, nebo si od SZPI (Tábor) nechat písemně potvrdit výjimku. Zkušební tisk na skutečný arch ještě neproběhl.
+  na stejnou stěnu, nebo si od SZPI (Tábor) nechat písemně potvrdit výjimku. Zkušební tisk na skutečný arch a sken QR kódu telefonem ještě neproběhly.
 - [ ] **Texty webu k moštům** podle rešerše z 31. 10., čeká na rozhodnutí: pryč „bez přidaného cukru“, „bez konzervantů“, „domácí“, „čerstvě
   lisovaná“, „lisujeme“; cena za litr na webu a v ceníku; v e-shopu u každé příchutě údaje o potravině (čl. 14 nařízení 1169/2011). Při přejmenování
   nechat `druhNazev: 'Mošty'`, jinak `sazba_radku()` v `_spolecne.php` počítá 12 % DPH místo 21 %, a upravit `katalog.js` ř. 144, `cenik.js` ř. 38–43 a klíč v `PRICHUTE` v `etikety.js` (jinak se příchuť přestane tisknout).
@@ -69,6 +69,7 @@ Nic rozpracovaného v kódu není, main = produkce je čistá.
 
 ## Historie
 ### 2026-10-31
+- Nové etikety moštů (`etikety.html`, Avery 3475). Rozestupy a QR kód změřené z PDF na všech 24 pozicích, QR přečtený strojově, ne telefonem. Hlášky v panelu jsou vedle tabulky, aby se pod kurzorem nehýbala; do 860 px jsou nad ní, a proto tam u čísel v tabulce nejsou šipky. Firefox a Safari nezkoušené.
 - Oblast rozvozu: Českobudějovicko a obce na cestě z Krtel (Hluboká, Vodňany, Netolicko). Bez „po domluvě“ jsou adresy s PSČ 370–375, 384, 389 (`vOblastiRozvozu` v `terminy.js`, `v_oblasti_rozvozu` v `_spolecne.php`). Volat se má jen mimo otevírací dobu.
 - Plochy podle LPIS: sad 19,14 ha, orná 9,5 ha, TTP 1,45 ha, celkem 30 ha. Web (CZ i DE) psal 30 ha sadu, opraveno na 19 ha.
 - Otevírací doba po–pá 14:00–17:00 (`terminy.js`): osobní odběr v e-shopu jen po–pá a čas příjezdu výběrem 14:00–16:45, na webu v Kontaktu, v tištěném ceníku, v obchodních podmínkách a ve strukturovaných datech.
