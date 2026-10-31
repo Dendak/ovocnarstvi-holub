@@ -56,7 +56,7 @@ body {
 .ovladani kbd { font: inherit; border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; }
 #tisk { font: inherit; font-weight: 600; color: #fff; background: var(--leaf); border: 0; border-radius: 8px; padding: 10px 22px; cursor: pointer; }
 #tisk:disabled { background: #b5b0a5; cursor: not-allowed; }
-.poznamka { margin-top: 6px; font-size: 14px; color: var(--muted); }
+.ovladani .poznamka { margin-top: 6px; font-size: 14px; color: var(--muted); }
 .tabulka { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 24px; align-items: start; }
 .sloupce { overflow-x: auto; } /* na telefonu se posouvá jen tabulka, ne celá stránka */
 .ovladani table { width: 100%; border-collapse: collapse; }
@@ -69,15 +69,16 @@ body {
 .ovladani td input.datum { width: 112px; }
 .procenta { display: inline-flex; align-items: center; gap: 5px; color: var(--muted); }
 .volby { display: grid; gap: 12px; }
-.volby label { display: grid; gap: 3px; font-weight: 600; font-size: 14px; }
+.volby label, .volby .posun { display: grid; gap: 3px; font-weight: 600; font-size: 14px; }
 .volby small { font-weight: 400; font-size: 13px; color: var(--muted); }
 .dvojice { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.volby .dvojice label { font-weight: 400; }
 .volby .prepinac { grid-template-columns: auto minmax(0, 1fr); column-gap: 8px; align-items: center; }
 .prepinac input { width: auto; margin: 0; }
 .prepinac small { grid-column: 2; }
 .soucet { font-weight: 600; color: var(--leaf); }
-.upozorneni { display: grid; gap: 6px; font-size: 14px; color: #8c2f2b; }
-.upozorneni:empty { display: none; }
+.ovladani .upozorneni { display: grid; gap: 6px; margin-bottom: 16px; font-size: 14px; color: #8c2f2b; }
+.ovladani .upozorneni:empty { display: none; }
 
 /* ---------- arch ---------- */
 .arch {
@@ -94,9 +95,10 @@ body {
 }
 
 /* ---------- etiketa ---------- */
-/* Etiketa musí pojmout osm řádků povinných údajů a QR kód, proto je rozložená do pevné mřížky. Vše v mm od horního kraje:
-   název končí účařím asi na 7,2, linka 8,7, údaje 9,3 až 27,5, pata 27,9 až 33,7. Vpravo objem od 8,9 a QR kód 14 až 27.
-   Obsah má šířku 60 mm, sloupec údajů 45,2 mm, QR kód 13 mm. Vlevo má kód 1,8 mm volna (4 moduly), nahoře a dole asi 1,2 mm. */
+/* Etiketa musí pojmout osm řádků povinných údajů a QR kód, proto je rozložená do pevné mřížky. Svisle je všechno v celých px od horního kraje:
+   polohy v mm by se na každém řádku archu zaokrouhlily jinak a mezery mezi skupinami údajů by skákaly. V mm to dá: název končí účařím asi
+   na 7,2, linka 8,7, údaje 9,3 až 27,8, pata 28,6 až 33,9. Vpravo objem od 9,3 a QR kód 14,3 až 27,3.
+   Obsah má šířku 60 mm, sloupec údajů 45,2 mm, QR kód 13 mm. Vlevo má kód 1,8 mm volna (4 moduly), nahoře asi 1,2 a dole asi 1,4 mm. */
 .etiketa {
   --tmava: color-mix(in srgb, var(--barva) 80%, #000); /* barevné písmo na bílé je o 20 % tmavší */
   width: 70mm;
@@ -111,47 +113,52 @@ body {
 }
 .cernobile .etiketa { --tmava: #000; }
 @media screen { .etiketa { outline: 0.1mm dashed var(--line); } }
-/* Posun tisku hýbe obsahem jako celkem: transform na jednotlivých řádcích by každý zaokrouhlil na pixely jinak. */
-.obsah { position: relative; left: var(--posun-x, 0); top: var(--posun-y, 0); height: 36mm; margin: 0 5mm; }
+/* Posun tisku hýbe obsahem jako celkem přes transform: s left a top by se linka a text zaokrouhlily na pixely každý zvlášť. */
+.obsah { position: relative; transform: translate(var(--posun-x, 0), var(--posun-y, 0)); height: 36mm; margin: 0 5mm; }
 .obsah > * { position: absolute; left: 0; margin: 0; }
 
 /* Název je to, čím se krabice liší, proto je na etiketě největší. Delší názvy se zmenší na šířku před znakem (nazvy() v etikety.js).
    Zmenšuje se jen vnitřní span: výšku řádku určuje písmo nadpisu, takže účaří zůstává u všech názvů stejné. */
-.velky { right: 7mm; top: 2.1mm; color: var(--tmava); font-size: 20.5pt; font-weight: 700; line-height: 6.4mm; letter-spacing: -0.015em; white-space: nowrap; }
+.velky { right: 7mm; top: 8px; color: var(--tmava); font-size: 20.5pt; font-weight: 700; line-height: 24px; letter-spacing: -0.015em; white-space: nowrap; }
 .velky span { line-height: 0; }
 /* Rozměry včetně průhledného okraje obrázku, samotné jablko je 5,5 mm široké. */
-.znak { left: auto; right: 0; top: 2.1mm; display: block; width: 5.9mm; height: 5.8mm; color: var(--tmava); }
+.znak { left: auto; right: 0; top: 8px; display: block; width: 5.9mm; height: 5.8mm; color: var(--tmava); }
 .znak svg { display: block; width: 100%; height: 100%; }
-.linka { right: 0; top: 8.7mm; height: 0; border: 0; border-top: 0.3mm solid var(--tmava); }
+.linka { right: 0; top: 33px; height: 0; border: 0; border-top: 0.3mm solid var(--tmava); }
 
 /* Skupiny údajů se rozloží rovnoměrně: čisté jablko má o dva řádky méně, a přesto dosedá nahoru i dolů stejně jako ostatní. */
-.udaje { top: 9.3mm; display: flex; flex-direction: column; justify-content: space-between; width: 45.2mm; height: 18.2mm; }
+.udaje { top: 35px; display: flex; flex-direction: column; justify-content: space-between; width: 45.2mm; height: 70px; }
 .udaje p { margin: 0; }
 .nazev span { display: block; white-space: nowrap; }
 .nazev span:first-child { font-weight: 700; }
 .nazev span:last-child { letter-spacing: -0.012em; } /* nejdelší řádek končí vedle QR kódu, nesmí mu ubrat volné místo */
 .slozeni span { white-space: nowrap; }
 .trvanlivost b { display: block; font-weight: 700; white-space: nowrap; }
+/* Těsnější řádky drží pohromadě popisek s datem a obě patky, předěly mezi skupinami tak vyjdou zřetelné. Jen tady: v horních řádcích těchto
+   skupin nejsou dotahy, v názvu a složení by se 10 px dotklo háčků. Při změně adresy nebo věty o otevření přeměřit nejbližší inkoust. */
+.trvanlivost, .otevreni, .adresa { line-height: 10px; }
 
-.qr { left: auto; right: 0; top: 14mm; display: block; width: 13mm; height: 13mm; color: #000; }
+.qr { left: auto; right: 0; top: 54px; display: block; width: 13mm; height: 13mm; color: #000; }
 .qr svg { display: block; width: 100%; height: 100%; fill: currentColor; }
 /* Na krabici je objem vytištěný také, tady musí být na stejné stěně jako název. Celým slovem: „5 l“ se malým písmem čte jako „51“. */
-.objem { left: auto; right: 0; top: 8.9mm; display: flex; gap: 0.8mm; align-items: baseline; width: 13mm; font-size: 9pt; font-weight: 700; line-height: 3.6mm; }
+.objem { left: auto; right: 0; top: 35px; display: flex; gap: 0.8mm; align-items: baseline; width: 13mm; font-size: 9pt; font-weight: 700; line-height: 14px; }
 .objem b { font-size: 13pt; font-weight: 900; }
 /* Pata má dva sloupce: co s načatou krabicí a kdo za ni odpovídá. Přes celou šířku by se věta nevešla a pod kódem by rušila. */
-.otevreni { top: 27.9mm; width: 32mm; }
-.adresa { left: 33mm; top: 27.9mm; width: 27mm; }
+.otevreni { top: 108px; width: 32mm; }
+.adresa { left: 33mm; top: 108px; width: 27mm; }
 
 @media screen and (max-width: 860px) {
   .tabulka { grid-template-columns: minmax(0, 1fr); }
   .ovladani { margin: 12px; }
+  /* Na telefonu se tabulka posouvá a název příchuti musí zůstat vidět, jinak se datum napíše k jiné příchuti. */
+  .ovladani tbody th, .ovladani thead th:first-child { position: sticky; left: 0; background: #fff; }
   .arch { zoom: 0.45; }
 }
 
 @media print {
   body { background: #fff; }
   .ovladani { display: none; }
-  .bez-data .arch { display: none; }
+  .blokovano .arch { display: none; }
   /* o kousek nižší než papír, ať zaokrouhlení nepřidá prázdnou stranu */
   .arch { height: 296.5mm; margin: 0; box-shadow: none; break-after: page; }
   .arch:last-child { break-after: auto; }

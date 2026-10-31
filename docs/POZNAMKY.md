@@ -6,14 +6,15 @@ Na konci každé session: co je hotové, co je rozdělané, co dál.
 ## Rozdělané / další kroky
 - [ ] **Etikety moštů** (`react-verze/etikety.html`, arch Avery 3475, nasazeno 31. 10.): návrh „Čistá bílá“ z konceptů a poroty.
   Na etiketě je název, zákonný název, složení s podílem, trvanlivost, objem, QR kód na e-shop, lhůta po otevření a Pavel Holub s adresou.
-  SISPO, telefon a e-mail jsou pryč. Názvy a složení jsou v `src/etikety.js` (`PRICHUTE`), podíly a lhůta se zadávají na stránce.
+  SISPO, telefon a e-mail jsou pryč. Názvy a složení jsou v `src/etikety.js` (`PRICHUTE`), podíly a lhůta se zadávají na stránce. Panel hlásí, co ještě chybí.
+  Tisk se zastaví jen u 3 l bez data, u příchuti bez záznamu v `PRICHUTE` a u razítka, které by vjelo do QR kódu. Svislé polohy etikety jsou v celých px, jinak se rozestupy liší podle řádku archu.
   **Čeká na moštárnu (písemně):** přímo lisováno bez vody, cukru a aromat; v jaké podobě je příchuť; přesný podíl jedním číslem (ne rozpětí);
   receptura skořice, květu bezu, zázvoru a Vánočního; lhůta po otevření; výživové údaje na 100 ml; razítko na 5 l (stěna, den a měsíc, nebo jen
   měsíc a rok); datum pro 3 l ke každé várce; siřičitany u limetky. Výživové údaje se na etiketu nevejdou: až budou čísla, přidat druhou etiketu
   na stejnou stěnu, nebo si od SZPI (Tábor) nechat písemně potvrdit výjimku. Zkušební tisk na skutečný arch ještě neproběhl.
 - [ ] **Texty webu k moštům** podle rešerše z 31. 10., čeká na rozhodnutí: pryč „bez přidaného cukru“, „bez konzervantů“, „domácí“, „čerstvě
   lisovaná“, „lisujeme“; cena za litr na webu a v ceníku; v e-shopu u každé příchutě údaje o potravině (čl. 14 nařízení 1169/2011). Při přejmenování
-  nechat `druhNazev: 'Mošty'`, jinak `sazba_radku()` v `_spolecne.php` počítá 12 % DPH místo 21 %, a upravit `katalog.js` ř. 144 a `cenik.js` ř. 38–43.
+  nechat `druhNazev: 'Mošty'`, jinak `sazba_radku()` v `_spolecne.php` počítá 12 % DPH místo 21 %, a upravit `katalog.js` ř. 144, `cenik.js` ř. 38–43 a klíč v `PRICHUTE` v `etikety.js` (jinak se příchuť přestane tisknout).
 - [ ] **EET 2.0 od 1. 1. 2027** (pilot leden, ostrý provoz 1. 2.). Rozhodnuto 27. 10.: výjimka pro prvovýrobu není, EET OFF ne (plátce DPH), Rakousko se neeviduje. Evidují se platby na místě: **ze dvora** a **při rozvozu** (hotově, QR u auta). Stánek zatím ne. Eviduje táta, později musí jít přidat další (Lukáš, Denis) – vlastní přihlášení, u každé evidence kdo. Plán: 1. 11. certifikát EET v MOJE daně → test na Playground (SOAP v4.1, eet.gov.cz Vývojáři) → v přehledu objednávek „Zaplaceno na místě“ + nový „Prodej ze dvora“ (částka, DPH ovoce 12 % / mošty 21 %) s FIK na elektronické účtence; záloha aplikace MOJE EET (od 1. 12.).
 - [ ] **Upozornění na telefonu:** na tátově iPhonu (aplikace z plochy) přihlásit heslem, Nastavení → Zapnout upozornění → Poslat zkušební. Ověřit, že dorazí.
 **Další krok:** další zdražení moštů (návrh níže) čeká na rozhodnutí táty a Lukáše – 17. 10.: „zatím jak chtěl Lukáš“.
