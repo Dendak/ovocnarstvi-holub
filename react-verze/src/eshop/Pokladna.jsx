@@ -8,7 +8,7 @@ import { rozdelitJmeno } from './mujUcet'
 import { useAuth, poPrihlaseniZpet } from './auth'
 import { ulozitDoUctu } from './objednavkyDb'
 import { variabilniSymbol } from './platba'
-import { UZAVERKA_HODINA, DNY_ROZVOZU, DNY_ODBERU, terminy } from './terminy'
+import { UZAVERKA_HODINA, DNY_ROZVOZU, DNY_ODBERU, CASY_ODBERU, terminy } from './terminy'
 
 // A customer group can have one fixed delivery address (no pickup, no address entry).
 const PEVNA_ADRESA = SKUPINA?.adresa || null
@@ -217,7 +217,7 @@ export default function Pokladna({ onZpet, onHotovo: predatHotovo }) {
     const nyni = new Date()
     if (f.doruceni === 'rozvoz' && !terminy(DNY_ROZVOZU, 6, nyni).includes(f.termin)) e.termin = CHYBA_TERMINU
     if (f.doruceni === 'odber' && !terminy(DNY_ODBERU, 6, nyni).includes(f.terminOdberu)) e.terminOdberu = CHYBA_TERMINU
-    if (f.doruceni === 'odber' && !/^\d{1,2}:\d{2}$/.test(f.casOdberu)) e.casOdberu = 'Vyplňte, kdy přibližně přijedete – ať na vás čekáme.'
+    if (f.doruceni === 'odber' && !CASY_ODBERU.includes(f.casOdberu)) e.casOdberu = 'Vyplňte, kdy přibližně přijedete – ať na vás čekáme.'
     return e
   }
 
@@ -483,8 +483,11 @@ export default function Pokladna({ onZpet, onHotovo: predatHotovo }) {
                 </select>
                 <Chyba id="terminOdberu-chyba" text={chybaTerminuOdberu} />
                 <label htmlFor="casOdberu" className={popisek + ' mt-3'}>Kdy přibližně přijedete? *</label>
-                <input id="casOdberu" type="time" step={900} aria-required="true" value={f.casOdberu} onChange={e => set('casOdberu', e.target.value)}
-                  className={field} {...chybaPole('casOdberu')} />
+                <select id="casOdberu" aria-required="true" value={f.casOdberu} onChange={e => set('casOdberu', e.target.value)}
+                  className={field} {...chybaPole('casOdberu')}>
+                  <option value="">vyberte čas</option>
+                  {CASY_ODBERU.map(c => <option key={c}>{c}</option>)}
+                </select>
                 <Chyba id="casOdberu-chyba" text={chyby.casOdberu} />
               </div>
             ) : (

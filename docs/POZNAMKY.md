@@ -58,6 +58,7 @@ Nic rozpracovaného v kódu není, main = produkce je čistá.
 
 ## Historie
 ### 2026-10-31
+- Otevírací doba po–pá 14:00–17:00 (`terminy.js`): osobní odběr v e-shopu jen po–pá a čas příjezdu výběrem 14:00–16:45, na webu v Kontaktu, v tištěném ceníku, v obchodních podmínkách a ve strukturovaných datech.
 - Stornované objednávky (6 z 28.–30. 9., nezaplacené, bez účtenek) přesunuty na serveru z `api/data/objednavky/` do `api/data/storna-archiv/`: z přehledu zmizely, data zůstala uložená (web je nevidí, přístup zvenku 403).
 - Golden Delicious: nová fotka bez samolepky (Ivar Leidus, CC BY-SA 4.0, `img/odrudy/golden-delicious.jpg`).
 - Aktuální nabídka: jablka Gala, Golden Delicious, Jonaprince, Idared (Bohemia ven), hrušky Novembra (v popisu i názvy Nojabrskaja, Xenia).

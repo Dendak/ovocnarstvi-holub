@@ -1,6 +1,7 @@
 import { OBSAH, isInSeason, vNabidce } from '../data'
 import { FOTO_ODRUD } from './fotoOdrud'
 import { cenaSkupiny, SKUPINA } from './skupina'
+import { OTEVIRACI_DOBA } from './terminy'
 
 // ============================================================
 //  KATALOG E-SHOPU – sem se píšou ceny, dostupnost a popisy
@@ -247,7 +248,7 @@ export const KATEGORIE = [
 ]
 
 export const DORUCENI = {
-  odber: { label: 'Osobní odběr', detail: `${OBSAH.kontakt.adresa}, ${OBSAH.kontakt.mesto} – ve zvolený den` },
+  odber: { label: 'Osobní odběr', detail: `${OBSAH.kontakt.adresa}, ${OBSAH.kontakt.mesto} – ${OTEVIRACI_DOBA}` },
   rozvoz: { label: 'Dovoz až domů', detail: 'České Budějovice a okolí · doprava v ceně · pondělí, středa, pátek dopoledne' },
 }
 

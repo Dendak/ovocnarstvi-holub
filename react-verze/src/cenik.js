@@ -1,6 +1,7 @@
 // Ceník k tisku (cenik.html): mošty a kalendář sezón ovoce na dvě strany A5, s kontaktem a QR kódem na e-shop.
 // Vše se bere z data.js, takže tištěný ceník odpovídá webu a e-shopu.
 import { OBSAH } from './data.js'
+import { OTEVIRACI_DOBA } from './eshop/terminy.js'
 
 const k = OBSAH.kontakt
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c])
@@ -99,6 +100,7 @@ const kontakt = `
   <footer class="kontakt">
     <dl>
       <dt>Adresa</dt><dd>${odkaz(k.mapa, `${esc(k.adresa)}, ${esc(k.mesto)} (u Netolic)`)}</dd>
+      <dt>Otevřeno</dt><dd>${esc(OTEVIRACI_DOBA)}</dd>
       <dt>Telefon</dt><dd>${tel(k.tel1, `<b>${esc(bezPredvolby(k.tel1))}</b>`)} · ${tel(k.tel2, esc(bezPredvolby(k.tel2)))}</dd>
       <dt>DE · EN</dt><dd>${tel(k.telDE)}</dd>
       <dt>E-mail</dt><dd>${odkaz(`mailto:${k.email}`, esc(k.email))}</dd>

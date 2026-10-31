@@ -8,7 +8,13 @@
 // ============================================================
 export const UZAVERKA_HODINA = 18            // objednat nejpozději den předem do 18:00
 export const DNY_ROZVOZU = [1, 3, 5]         // po, st, pá
-export const DNY_ODBERU = [1, 2, 3, 4, 5, 6] // po–so
+export const DNY_ODBERU = [1, 2, 3, 4, 5]    // po–pá
+export const ODBER_OD = 14                   // otevírací doba (osobní odběr) od 14:00
+export const ODBER_DO = 17                   // do 17:00
+export const OTEVIRACI_DOBA = `po–pá ${ODBER_OD}:00–${ODBER_DO}:00`
+// Přibližný čas příjezdu na výběr v pokladně: po čtvrt hodině, poslední čtvrt hodiny před zavřením.
+export const CASY_ODBERU = Array.from({ length: (ODBER_DO - ODBER_OD) * 4 }, (_, i) =>
+  `${ODBER_OD + Math.floor(i / 4)}:${String((i % 4) * 15).padStart(2, '0')}`)
 export const POCET_TERMINU = 6               // kolik nejbližších dnů se nabízí
 
 // Svátky, kdy nerozvážíme ani nevydáváme (státní a ostatní svátky, ve tvaru „den.měsíc.“).

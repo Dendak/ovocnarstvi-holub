@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { OBSAH } from '../data'
+import { OTEVIRACI_DOBA } from '../eshop/terminy'
 import { odeslatZpravu } from './odeslatZpravu'
 
 const MAP_EMBED = `https://maps.google.com/maps?q=${encodeURIComponent('Ovocnářství Holub')}&hl=cs&z=13&output=embed`
@@ -110,6 +111,7 @@ export default function Kontakt({ cookiesAccepted, onAcceptCookies }) {
             <dl className="border-t border-ink/80">
               {[
                 ['Adresa', <>{k.adresa}<br />{k.mesto}<br /><span className="text-sm text-ink-soft">(Krtely u Netolic)</span><br /><a href={k.mapa} target="_blank" rel="noopener noreferrer" className="link text-sm">Otevřít v mapách</a></>],
+                ['Otevřeno', OTEVIRACI_DOBA],
                 ['Telefon', <><a href={`tel:${tel(k.tel1)}`} className="hover:text-leaf">{k.tel1}</a><br /><a href={`tel:${tel(k.tel2)}`} className="hover:text-leaf">{k.tel2}</a></>],
                 ['E-mail', <a href={`mailto:${k.email}`} className="hover:text-leaf">{k.email}</a>],
                 ['Sociální sítě', <><a href={k.facebook} target="_blank" rel="noopener noreferrer" className="hover:text-leaf">Facebook</a>, <a href={k.instagram} target="_blank" rel="noopener noreferrer" className="hover:text-leaf">Instagram</a></>],
