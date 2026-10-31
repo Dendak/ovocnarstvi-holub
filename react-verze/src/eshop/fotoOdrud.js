@@ -5,7 +5,7 @@ export const FOTO_ODRUD = {
   bohemia: { foto: 'odrudy/bohemia.jpg', fit: 'cover', autor: "T. Kebert", licence: 'CC BY-SA 4.0', zdroj: 'https://commons.wikimedia.org/wiki/File:Bohemia_apples_in_basket.jpg' },
   rubinola: { foto: 'odrudy/rubinola.jpg', fit: 'cover', autor: "Glysiak", licence: 'CC BY-SA 3.0', zdroj: 'https://commons.wikimedia.org/wiki/File:Rubinola_apple.jpg' },
   topaz: { foto: 'odrudy/topaz.jpg', fit: 'contain', bg: '#e2e6eb', autor: "Superbass", licence: 'CC BY-SA 4.0', zdroj: 'https://commons.wikimedia.org/wiki/File:Apfel-Topaz.jpg' },
-  golden: { foto: 'odrudy/golden.jpg', fit: 'cover', autor: "Salah Almhamdi", licence: 'CC BY-SA 3.0', zdroj: 'https://commons.wikimedia.org/wiki/File:Golden_Delicious_2.jpg' },
+  golden: { foto: 'odrudy/golden-delicious.jpg', fit: 'cover', autor: "Ivar Leidus", licence: 'CC BY-SA 4.0', zdroj: 'https://commons.wikimedia.org/wiki/File:Golden_Delicious_apples.jpg' },
   gala: { foto: 'odrudy/gala.jpg', fit: 'contain', bg: '#efefea', autor: "Superbass", licence: 'CC BY-SA 4.0', zdroj: 'https://commons.wikimedia.org/wiki/File:Apfel-Gala.jpg' },
   sirius: { foto: 'odrudy/sirius.jpg', fit: 'cover', autor: "joergens.mi", licence: 'CC BY-SA 3.0', zdroj: 'https://commons.wikimedia.org/wiki/File:Sirius_(apple)_jm123575.jpg' },
   idared: { foto: 'odrudy/idared.jpg', fit: 'cover', autor: "Fructibus", licence: 'CC0', zdroj: 'https://commons.wikimedia.org/wiki/File:Idared_apples_2017_A.jpg' },

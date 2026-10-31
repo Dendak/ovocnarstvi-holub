@@ -18,7 +18,7 @@ Nic rozpracovaného v kódu není, main = produkce je čistá.
   směsi 239 · Úherce 210 / 150 · Zelený košík (ČB, BIO) 3 l 210. Levné: Steinocher 150 (2025, neověřeno), Katovice 135,
   akce řetězců 139–150. Ovoce: jablka nechat (farma 28, e-shop 40),
   hrušky farma 32, e-shop 55. Lisujeme v moštárně, jsme plátci DPH (mošt 21 %, ovoce 12 %).
-  Moštárna: 5 l za 75–78 Kč vč. obalu → marže 5 l při 160 Kč ≈ 54 Kč (132 bez DPH − 78), při 180 Kč ≈ 71 Kč, z toho
+  Moštárna: 5 l za 91 Kč vč. obalu (uživatel 31. 10., nejspíš s DPH = 75 Kč bez DPH; 8 kg jablek na 5 l, moštová jablka jinak 3–5 Kč/kg) → marže 5 l při 160 Kč ≈ 54 Kč (132 bez DPH − 78), při 180 Kč ≈ 71 Kč, z toho
   jablka, dovoz, práce. Mošt se vyplatí jen z jablek II. jakosti / padaných (≈ 6–8 Kč/kg). Obaly BIB (Packshop):
   5 l sáček 12,80 + krabice 15 Kč, 3 l 10,70 + 8,85 Kč bez DPH.
   **Chybí od uživatele:** název moštárny, cena 3 l, cena ochucených (a zda příchuť přidává moštárna, nebo vlastní
@@ -58,6 +58,7 @@ Nic rozpracovaného v kódu není, main = produkce je čistá.
 
 ## Historie
 ### 2026-10-31
+- Golden Delicious: nová fotka bez samolepky (Ivar Leidus, CC BY-SA 4.0, `img/odrudy/golden-delicious.jpg`).
 - Aktuální nabídka: jablka Gala, Golden Delicious, Jonaprince, Idared (Bohemia ven), hrušky Novembra (v popisu i názvy Nojabrskaja, Xenia).
 
 ### 2026-10-30
