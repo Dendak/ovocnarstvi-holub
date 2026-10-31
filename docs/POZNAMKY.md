@@ -58,6 +58,7 @@ Nic rozpracovaného v kódu není, main = produkce je čistá.
 
 ## Historie
 ### 2026-10-31
+- Stornované objednávky (6 z 28.–30. 9., nezaplacené, bez účtenek) přesunuty na serveru z `api/data/objednavky/` do `api/data/storna-archiv/`: z přehledu zmizely, data zůstala uložená (web je nevidí, přístup zvenku 403).
 - Golden Delicious: nová fotka bez samolepky (Ivar Leidus, CC BY-SA 4.0, `img/odrudy/golden-delicious.jpg`).
 - Aktuální nabídka: jablka Gala, Golden Delicious, Jonaprince, Idared (Bohemia ven), hrušky Novembra (v popisu i názvy Nojabrskaja, Xenia).
 
