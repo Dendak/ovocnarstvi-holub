@@ -13,7 +13,7 @@ Web a e-shop ovocnářství (CZ + DE stránka pro rakouské pálenice). Produkce
 
 ## Struktura
 - `react-verze/` — **živý web**: React 19 + Vite 8 + Tailwind 4, plain JS/JSX, bez testů.
-  - Stránky (multi-page, `vite.config.js` → `STRANKY`): `index.html` (CZ, `App.jsx`), `index-de.html` (DE, `AppDE.jsx`), `eshop.html` (`eshop/EshopApp.jsx`), statické `gdpr*.html`, `obchodni-podminky.html`.
+  - Stránky (multi-page, `vite.config.js` → `STRANKY`): `index.html` (CZ, `App.jsx`), `index-de.html` (DE, `AppDE.jsx`), `eshop.html` (`eshop/EshopApp.jsx`), `cenik.html` (`cenik.js`, tisk ceníku), `etikety.html` (`etikety.js`, tisk etiket moštů na Avery 3475), statické `gdpr*.html`, `obchodni-podminky.html`.
   - Obsah webu: `src/data.js` (`OBSAH`: ovoce, sezóny, mošty, aktuální nabídka), `src/dataDE.js`.
   - E-shop: `src/eshop/`.
 - `api/` — PHP 8 backend (jen na Wedos): objednávky, stav, skupiny, adresy, kontakt, párování plateb, stránka rozvozu pro farmu (`rozvoz.php`), doklady, nastavení.

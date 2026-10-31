@@ -15,6 +15,7 @@ const STRANKY = {
   podminky: 'obchodni-podminky.html',
   eshop: 'eshop.html',
   cenik: 'cenik.html',
+  etikety: 'etikety.html',
 }
 
 // api/_cenik.php: ceník a pravidla termínů pro kontrolu objednávek na serveru (api/potvrzeni.php).
