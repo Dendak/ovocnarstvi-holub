@@ -22,9 +22,9 @@
 
 /* Etikety moštů k tisku (etikety.html): čistě bílá etiketa bez barevné plochy, barvu má jen příchuť, linka a znak.
    Arch Avery 3475: A4, 3 × 8 etiket 70 × 36 mm bez mezer, nahoře a dole 4,5 mm volno. Krajní sloupce sahají až
-   k okraji listu, kam tiskárna nedotiskne, proto má inkoust od kraje etikety 5 mm vlevo a vpravo a 3 mm nahoře a dole:
-   posun tisku o 2 mm nic neořízne ani nepřetiskne na sousední etiketu.
-   Povinné údaje mají střední výšku písma aspoň 1,2 mm (Source Sans 3 od 7 pt, tady 7,8 pt: 1,34 mm).
+   k okraji listu, kam tiskárna nedotiskne, proto má inkoust od kraje etikety 5 mm vlevo a vpravo a asi 1,9 mm nahoře a dole:
+   posun tisku do 1,5 mm nic neořízne ani nepřetiskne na sousední etiketu.
+   Povinné údaje mají střední výšku písma aspoň 1,2 mm (Source Sans 3 od 7 pt, tady 8 pt: 1,37 mm).
    Všechno kromě barevných prvků je čistá černá #000: tiskne se jedním tonerem bez rastru, takže drobné písmo zůstane ostré. */
 :root {
   --line: #dfd7c9;
@@ -58,9 +58,11 @@ body {
 #tisk:disabled { background: #b5b0a5; cursor: not-allowed; }
 .poznamka { margin-top: 6px; font-size: 14px; color: var(--muted); }
 .tabulka { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 24px; align-items: start; }
+.sloupce { overflow-x: auto; } /* na telefonu se posouvá jen tabulka, ne celá stránka */
 .ovladani table { width: 100%; border-collapse: collapse; }
 .ovladani th, .ovladani td { padding: 3px 6px 3px 0; text-align: left; font-weight: 400; }
 .ovladani thead th { font-size: 13px; font-weight: 600; color: var(--muted); }
+.ovladani tbody th { white-space: nowrap; }
 .ovladani tbody th i { display: inline-block; width: 11px; height: 11px; margin-right: 7px; border-radius: 3px; vertical-align: -1px; }
 .ovladani input { width: 100%; padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px; font: inherit; background: #fff; }
 .ovladani td input { width: 58px; }
@@ -93,17 +95,17 @@ body {
 
 /* ---------- etiketa ---------- */
 /* Etiketa musí pojmout osm řádků povinných údajů a QR kód, proto je rozložená do pevné mřížky. Vše v mm od horního kraje:
-   účaří názvu 7,3, linka 8,7, údaje 9,3 až 27,5, pata 27,9 až 33,7. Vpravo objem od 9,2 a QR kód 14 až 27.
-   Obsah má šířku 60 mm, sloupec údajů 45,2 mm, QR kód 13 mm. Mezi nimi je 1,8 mm, to jsou 4 moduly ochranné zóny kódu. */
+   název končí účařím asi na 7,2, linka 8,7, údaje 9,3 až 27,5, pata 27,9 až 33,7. Vpravo objem od 8,9 a QR kód 14 až 27.
+   Obsah má šířku 60 mm, sloupec údajů 45,2 mm, QR kód 13 mm. Vlevo má kód 1,8 mm volna (4 moduly), nahoře a dole asi 1,2 mm. */
 .etiketa {
   --tmava: color-mix(in srgb, var(--barva) 80%, #000); /* barevné písmo na bílé je o 20 % tmavší */
   width: 70mm;
   height: 36mm;
   overflow: hidden;
   color: #000;
-  font-size: 7.8pt;
+  font-size: 8pt;
   font-weight: 500;
-  line-height: 2.9mm;
+  line-height: 11px; /* celé pixely: řádky v mm by se v tisku zaokrouhlily na každé etiketě jinak */
   font-variant-numeric: lining-nums;
   text-rendering: geometricPrecision;
 }
@@ -115,7 +117,7 @@ body {
 
 /* Název je to, čím se krabice liší, proto je na etiketě největší. Delší názvy se zmenší na šířku před znakem (nazvy() v etikety.js).
    Zmenšuje se jen vnitřní span: výšku řádku určuje písmo nadpisu, takže účaří zůstává u všech názvů stejné. */
-.velky { right: 7mm; top: 1.6mm; color: var(--tmava); font-size: 20.5pt; font-weight: 700; line-height: 6.4mm; letter-spacing: -0.015em; white-space: nowrap; }
+.velky { right: 7mm; top: 2.1mm; color: var(--tmava); font-size: 20.5pt; font-weight: 700; line-height: 6.4mm; letter-spacing: -0.015em; white-space: nowrap; }
 .velky span { line-height: 0; }
 /* Rozměry včetně průhledného okraje obrázku, samotné jablko je 5,5 mm široké. */
 .znak { left: auto; right: 0; top: 2.1mm; display: block; width: 5.9mm; height: 5.8mm; color: var(--tmava); }
@@ -127,16 +129,17 @@ body {
 .udaje p { margin: 0; }
 .nazev span { display: block; white-space: nowrap; }
 .nazev span:first-child { font-weight: 700; }
+.nazev span:last-child { letter-spacing: -0.012em; } /* nejdelší řádek končí vedle QR kódu, nesmí mu ubrat volné místo */
 .slozeni span { white-space: nowrap; }
 .trvanlivost b { display: block; font-weight: 700; white-space: nowrap; }
 
 .qr { left: auto; right: 0; top: 14mm; display: block; width: 13mm; height: 13mm; color: #000; }
 .qr svg { display: block; width: 100%; height: 100%; fill: currentColor; }
 /* Na krabici je objem vytištěný také, tady musí být na stejné stěně jako název. Celým slovem: „5 l“ se malým písmem čte jako „51“. */
-.objem { left: auto; right: 0; top: 9.2mm; display: flex; gap: 0.8mm; align-items: baseline; width: 13mm; font-size: 9pt; font-weight: 700; line-height: 3.6mm; }
+.objem { left: auto; right: 0; top: 8.9mm; display: flex; gap: 0.8mm; align-items: baseline; width: 13mm; font-size: 9pt; font-weight: 700; line-height: 3.6mm; }
 .objem b { font-size: 13pt; font-weight: 900; }
 /* Pata má dva sloupce: co s načatou krabicí a kdo za ni odpovídá. Přes celou šířku by se věta nevešla a pod kódem by rušila. */
-.otevreni { top: 27.9mm; width: 31mm; }
+.otevreni { top: 27.9mm; width: 32mm; }
 .adresa { left: 33mm; top: 27.9mm; width: 27mm; }
 
 @media screen and (max-width: 860px) {
@@ -148,6 +151,7 @@ body {
 @media print {
   body { background: #fff; }
   .ovladani { display: none; }
+  .bez-data .arch { display: none; }
   /* o kousek nižší než papír, ať zaokrouhlení nepřidá prázdnou stranu */
   .arch { height: 296.5mm; margin: 0; box-shadow: none; break-after: page; }
   .arch:last-child { break-after: auto; }

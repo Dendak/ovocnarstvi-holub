@@ -47,17 +47,25 @@ function podilCislem(podil) {
   return p > 0 && p < 100 ? p : 0
 }
 
-// Nedoplněný údaj se vytiskne jako prázdné místo: je vidět, že chybí, a dá se dopsat rukou.
+// Nedoplněný údaj se vytiskne jako prázdné místo, ať je na etiketě vidět, že chybí.
+// Jablko má stejně desetinných míst jako zadaný podíl, jinak by součet nebyl 100 %.
 function slozeni(m, podil) {
   const p = podilCislem(podil)
-  const c = x => (x ? String(x).replace('.', ',') : '__') + NBSP + '%'
-  return `jablečná šťáva ${c(p && Math.round((100 - p) * 10) / 10)}, ${m.slozka} ${c(p)}`
+  const mist = (String(p).split('.')[1] || '').length
+  const c = x => (p ? x.replace('.', ',') : '__') + NBSP + '%'
+  return `jablečná šťáva ${c((100 - p).toFixed(mist))}, ${m.slozka} ${c(String(p))}`
 }
 
-// „30.4.2027“ i „30. 4. 2027“ se tiskne jednotně; na krabici 3 l datum není, takže bez něj etiketa nestačí.
-function datumCesky(text) {
+// „30.4.2027“ i „30. 4. 2027“ se tiskne jednotně; neexistující datum (31. 2.) se bere jako nevyplněné.
+function datumZ(text) {
   const d = String(text).trim().match(/^(\d{1,2})\. ?(\d{1,2})\. ?(\d{4})$/)
-  return d ? `${Number(d[1])}.${NBSP}${Number(d[2])}.${NBSP}${d[3]}` : ''
+  if (!d) return null
+  const den = new Date(Number(d[3]), Number(d[2]) - 1, Number(d[1]))
+  return den.getDate() === Number(d[1]) && den.getMonth() === Number(d[2]) - 1 ? den : null
+}
+const datumCesky = text => {
+  const d = datumZ(text)
+  return d ? `${d.getDate()}.${NBSP}${d.getMonth() + 1}.${NBSP}${d.getFullYear()}` : ''
 }
 
 // QR kód jako vektor v čisté černé: 29 × 29 modulů, na 13 mm vychází modul 0,45 mm.
@@ -133,13 +141,17 @@ function vykreslit() {
   const n = seznam.length
   pole('soucet').textContent = n ? `${n} ${n === 1 ? 'etiketa' : n < 5 ? 'etikety' : 'etiket'} · ${archy.length} ${archy.length === 1 ? 'arch' : archy.length < 5 ? 'archy' : 'archů'}` : 'Zadejte počet etiket'
   const bezPodilu = MOSTY.filter(m => m.slozka && stav[m.id]['5 l'] + stav[m.id]['3 l'] > 0 && !podilCislem(stav[m.id].podil))
-  const bezData = MOSTY.filter(m => stav[m.id]['3 l'] > 0 && !datumCesky(stav[m.id].datum))
+  const bezData = MOSTY.filter(m => stav[m.id]['3 l'] > 0 && !datumZ(stav[m.id].datum))
+  const prosle = MOSTY.filter(m => stav[m.id]['3 l'] > 0 && datumZ(stav[m.id].datum) && datumZ(stav[m.id].datum) < new Date())
   pole('upozorneni').innerHTML = [
-    bezData.length && `Tisk čeká na datum u 3 l: ${bezData.map(m => m.id).join(', ')}. Krabice 3 l datum nemá. Pište ho takhle: 30. 4. 2027.`,
+    bezData.length && `Tisk čeká na platné datum u 3 l: ${bezData.map(m => m.id).join(', ')}. Krabice 3 l datum nemá. Pište ho takhle: 30. 4. 2027.`,
+    prosle.length && `Datum už minulo: ${prosle.map(m => m.id).join(', ')}.`,
     bezPodilu.length && `Bez podílu: ${bezPodilu.map(m => m.id).join(', ')}. Na etiketě musí být jedno číslo, ne rozpětí.`,
     n && !tydny && 'Doplňte, do kolika týdnů po otevření se má mošt spotřebovat.',
   ].filter(Boolean).map(t => `<span>${esc(t)}</span>`).join('')
+  // Tlačítko hlídá jen klik, Ctrl+P hlídá třída: v tisku se archy bez platného data skryjí.
   pole('tisk').disabled = bezData.length > 0
+  document.body.classList.toggle('bez-data', bezData.length > 0)
   document.documentElement.style.setProperty('--posun-x', `${Number(pole('posunX').value) || 0}mm`)
   document.documentElement.style.setProperty('--posun-y', `${Number(pole('posunY').value) || 0}mm`)
 }
