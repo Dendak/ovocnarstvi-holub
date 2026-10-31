@@ -8,7 +8,7 @@ import { rozdelitJmeno } from './mujUcet'
 import { useAuth, poPrihlaseniZpet } from './auth'
 import { ulozitDoUctu } from './objednavkyDb'
 import { variabilniSymbol } from './platba'
-import { UZAVERKA_HODINA, DNY_ROZVOZU, DNY_ODBERU, CASY_ODBERU, terminy } from './terminy'
+import { UZAVERKA_HODINA, DNY_ROZVOZU, DNY_ODBERU, CASY_ODBERU, terminy, vOblastiRozvozu } from './terminy'
 
 // A customer group can have one fixed delivery address (no pickup, no address entry).
 const PEVNA_ADRESA = SKUPINA?.adresa || null
@@ -88,8 +88,8 @@ function OvereniAdresy({ overeni, aktualni, vybrat }) {
     return (
       <>
         <p className="text-sm text-leaf font-medium mt-1.5">✓ {ulice}{zbytek.length > 0 && <>, <strong className="font-bold text-ink">{zbytek.join(', ')}</strong></>}</p>
-        {!overeni.vybrana.adresa.includes(VYCHOZI_MESTO) && (
-          <p className="text-sm text-ink-soft mt-1">{overeni.vybrana.adresa.endsWith('Rakousko') ? 'Do Rakouska' : 'Mimo České Budějovice'} dovážíme po domluvě – po objednávce se vám ozveme s termínem.</p>
+        {!vOblastiRozvozu(overeni.vybrana.adresa) && (
+          <p className="text-sm text-ink-soft mt-1">{overeni.vybrana.adresa.endsWith('Rakousko') ? 'Do Rakouska' : 'Mimo Českobudějovicko'} dovážíme po domluvě – po objednávce se vám ozveme s termínem.</p>
         )}
       </>
     )
@@ -279,7 +279,7 @@ export default function Pokladna({ onZpet, onHotovo: predatHotovo }) {
     }
     dovoz.current = f.doruceni !== 'rozvoz' || PEVNA_ADRESA ? null
       : !adr?.vybrana ? 'neovereno'
-        : !adr.vybrana.adresa.includes(VYCHOZI_MESTO) ? 'mimo' : null
+        : !vOblastiRozvozu(adr.vybrana.adresa) ? 'mimo' : null
     setStav('odesilam')
     const adresaDovozu = adr?.vybrana ? adr.vybrana.adresa : `${f.adresa.trim()}, ${`${f.psc.trim()} ${f.mesto.trim()}`.trim()}${f.zeme === 'AT' ? ', Rakousko' : ''}`
     const celeJmeno = f.firma ? f.nazevFirmy.trim() : `${f.jmeno.trim()} ${f.prijmeni.trim()}`.trim()

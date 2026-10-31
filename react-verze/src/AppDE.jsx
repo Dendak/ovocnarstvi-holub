@@ -20,7 +20,7 @@ const IDENTIFIKACE_DE = `${k.provozovatel} · ${k.adresa}, ${k.mesto}, Tschechie
 const KONDITIONEN = [
   ['Mindestabnahme', '200 kg pro Bestellung, gerne auch gemischt aus mehreren Obstsorten.'],
   ['Liefergebiet', 'Oberösterreich und Salzburg, direkt zu Ihrer Brennerei.'],
-  ['Qualität', 'Kontrollierter Anbau nach den Regeln der integrierten Produktion (SISPO), 30 ha eigener Obstgarten.'],
+  ['Qualität', 'Kontrollierter Anbau nach den Regeln der integrierten Produktion (SISPO), 19 ha eigener Obstgarten.'],
   ['Ablauf', 'Sie senden uns eine Anfrage, wir melden uns mit Verfügbarkeit, Preis und Liefertermin.'],
 ]
 
@@ -37,12 +37,12 @@ export default function AppDE() {
         <HeroBlock
           kicker="Familien-Obstbauernhof Holub · Südböhmen"
           title="Verarbeitungsobst für Ihre Edelbrände"
-          text="Weichsel, Zwetschken, Birnen und Äpfel aus unserem 30 Hektar großen Obstgarten. Wir liefern ab 200 kg direkt zu Brennereien in Oberösterreich und Salzburg."
+          text="Weichsel, Zwetschken, Birnen und Äpfel aus unserem 19 Hektar großen Obstgarten. Wir liefern ab 200 kg direkt zu Brennereien in Oberösterreich und Salzburg."
           actions={[
             { label: 'Anfrage stellen', href: '#anfrage', primary: true },
             { label: 'Unser Sortiment', href: '#obst' },
           ]}
-          facts={['30 ha eigener Obstgarten', 'ab 200 kg', 'integrierte Produktion SISPO', 'Lieferung OÖ & Salzburg']}
+          facts={['19 ha eigener Obstgarten', 'ab 200 kg', 'integrierte Produktion SISPO', 'Lieferung OÖ & Salzburg']}
         />
 
         {/* SORTIMENT */}

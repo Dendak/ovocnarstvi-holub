@@ -534,7 +534,7 @@ if ($castka > 0) {
 $vasePoznamka = mb_strlen($poznamka) > 300 ? rtrim(mb_substr($poznamka, 0, 300)) . '…' : $poznamka;
 $dovozInfo = !$rozvoz || $pevna ? ''
   : ($adresaOverena === '' ? 'Adresu se nepodařilo ověřit v registru adres – kdyby s ní byl problém, zavoláme vám.'
-    : (!str_contains($adresaOverena, 'České Budějovice') ? 'Mimo České Budějovice dovážíme po domluvě – termín dovozu vám ještě potvrdíme telefonem.' : ''));
+    : (!v_oblasti_rozvozu($adresaOverena) ? 'Mimo Českobudějovicko dovážíme po domluvě – termín dovozu vám ještě potvrdíme telefonem.' : ''));
 // Částka je jiná, než ukázal e-shop – zákazník se dozví proč (název skupiny jen ze _skupiny.php, ne z prohlížeče).
 $cenyInfo = match (zmena_ceny($zaznam)) {
   'skupina' => 'Zvýhodněné ceny skupiny' . ($pozadovana['id'] !== '' ? " {$pozadovana['nazev']}" : '') . ' jsme nemohli použít – nepodařilo se ověřit, '

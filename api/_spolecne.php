@@ -307,6 +307,10 @@ function datum_terminu(string $den): string {
   return date('Y-m-d', $t);
 }
 
+// Adresa v oblasti rozvozu bez domluvy podle PSČ: Českobudějovicko (370–375), Netolicko (384), Vodňany (389).
+// Stejné pravidlo je v e-shopu (vOblastiRozvozu v src/eshop/terminy.js).
+function v_oblasti_rozvozu(string $adresa): bool { return (bool)preg_match('/\b(37[0-5]|384|389) ?\d{2}\b/', $adresa); }
+
 function kc(int $castka): string { return number_format($castka, 0, ',', ' ') . ' Kč'; }
 function h(string $s): string { return htmlspecialchars($s, ENT_QUOTES, 'UTF-8'); }
 

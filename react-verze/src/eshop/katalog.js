@@ -249,7 +249,7 @@ export const KATEGORIE = [
 
 export const DORUCENI = {
   odber: { label: 'Osobní odběr', detail: `${OBSAH.kontakt.adresa}, ${OBSAH.kontakt.mesto} – ${OTEVIRACI_DOBA}` },
-  rozvoz: { label: 'Dovoz až domů', detail: 'České Budějovice a okolí · doprava v ceně · pondělí, středa, pátek dopoledne' },
+  rozvoz: { label: 'Dovoz až domů', detail: 'Českobudějovicko a obce na cestě z Krtel (Hluboká, Vodňany, Netolicko) · doprava v ceně · pondělí, středa, pátek dopoledne' },
 }
 
 

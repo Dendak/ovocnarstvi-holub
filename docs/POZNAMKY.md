@@ -58,6 +58,8 @@ Nic rozpracovaného v kódu není, main = produkce je čistá.
 
 ## Historie
 ### 2026-10-31
+- Oblast rozvozu: Českobudějovicko a obce na cestě z Krtel (Hluboká, Vodňany, Netolicko). Bez „po domluvě“ jsou adresy s PSČ 370–375, 384, 389 (`vOblastiRozvozu` v `terminy.js`, `v_oblasti_rozvozu` v `_spolecne.php`). Volat se má jen mimo otevírací dobu.
+- Plochy podle LPIS: sad 19,14 ha, orná 9,5 ha, TTP 1,45 ha, celkem 30 ha. Web (CZ i DE) psal 30 ha sadu, opraveno na 19 ha.
 - Otevírací doba po–pá 14:00–17:00 (`terminy.js`): osobní odběr v e-shopu jen po–pá a čas příjezdu výběrem 14:00–16:45, na webu v Kontaktu, v tištěném ceníku, v obchodních podmínkách a ve strukturovaných datech.
 - Stornované objednávky (6 z 28.–30. 9., nezaplacené, bez účtenek) přesunuty na serveru z `api/data/objednavky/` do `api/data/storna-archiv/`: z přehledu zmizely, data zůstala uložená (web je nevidí, přístup zvenku 403).
 - Golden Delicious: nová fotka bez samolepky (Ivar Leidus, CC BY-SA 4.0, `img/odrudy/golden-delicious.jpg`).

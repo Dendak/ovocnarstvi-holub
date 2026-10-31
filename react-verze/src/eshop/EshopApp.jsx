@@ -316,7 +316,7 @@ function Katalog() {
         </div>
         <div className="border-t border-white/15">
           <ul className="container-page py-4 flex flex-wrap gap-x-8 gap-y-2 text-sm text-white/70">
-            {['Dovoz v ceně – Č. Budějovice, po · st · pá', `${DORUCENI.odber.label} v Krtelích`, 'Libovolné množství od 1 kg', 'Platba při převzetí'].map(t => (
+            {['Dovoz v ceně – Českobudějovicko, po · st · pá', `${DORUCENI.odber.label} v Krtelích`, 'Libovolné množství od 1 kg', 'Platba při převzetí'].map(t => (
               <li key={t}>{t}</li>
             ))}
           </ul>
@@ -388,7 +388,7 @@ function Hotovo({ info, onZpet }) {
           ? <>Objednávka k nám dorazila, potvrzení e-mailem vám ale tentokrát nepřijde – číslo objednávky si prosím poznamenejte. </>
           : <>Potvrzení jsme poslali na <strong>{info.email}</strong>. </>}
         {info.dovoz === 'mimo'
-          ? 'Mimo České Budějovice dovážíme po domluvě – termín dovozu vám ještě potvrdíme telefonem.'
+          ? 'Mimo Českobudějovicko dovážíme po domluvě – termín dovozu vám ještě potvrdíme telefonem.'
           : info.dovoz === 'neovereno'
             ? 'Adresu se nepodařilo ověřit v registru adres – kdyby s ní byl problém, zavoláme vám.'
             : 'Nic dalšího potvrzovat nemusíte – ozveme se jen tehdy, kdyby něco nebylo k dispozici.'}

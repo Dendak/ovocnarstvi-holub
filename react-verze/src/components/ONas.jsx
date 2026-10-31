@@ -1,7 +1,7 @@
 const SISPO_URL = 'https://www.sispo.cz/integrovana-produkce/'
 
 const FAKTA = [
-  ['30 ha', 'vlastního sadu v Krtelích u Netolic'],
+  ['19 ha', 'vlastních sadů v Krtelích u Netolic'],
   ['15 000+', 'ovocných stromů'],
   ['15+', 'odrůd jablek, od Topazu po Braeburn'],
   ['7', 'druhů ovoce od července do jara'],
@@ -16,7 +16,7 @@ export default function ONas() {
           <h2 className="section-title mb-6">Rodinný sad, kde ovoce sklízíme sami</h2>
           <div className="space-y-4 lead">
             <p>
-              V Krtelích u Netolic pěstujeme ovoce na třiceti hektarech. Třešně, višně, meruňky, broskve,
+              V Krtelích u Netolic pěstujeme ovoce na devatenácti hektarech sadů. Třešně, višně, meruňky, broskve,
               švestky, hrušky a hlavně jablka – od první sklizně v červenci až po zimní odrůdy, které
               skladujeme do jara.
             </p>

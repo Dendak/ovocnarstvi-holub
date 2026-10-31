@@ -796,9 +796,9 @@ $karta = function (array $o) use ($platba, $tlacitko, $zaplaceno, $cil, $dorucen
     $s .= '<div>' . ($zruseno ? h($o['adresa']) : '<a class="adr" href="' . h('https://www.google.com/maps/dir/?api=1&destination=' . urlencode($o['plna_adresa'] ?? $o['adresa'])) . '">' . h($o['adresa']) . '</a>')
       . (!empty($o['adresa_overena']) ? '<br><span class="muted" style="color:var(--leaf)">✓ ověřeno: ' . h($o['adresa_overena']) . '</span>' : '')
       . '</div>';
-    // Mimo ČB se zákazníkovi po objednání slíbilo, že termín dovozu potvrdíme telefonem.
-    if (!$zruseno && !empty($o['adresa_overena']) && !str_contains($o['adresa_overena'], 'České Budějovice')) {
-      $s .= '<span class="stitek hot">Mimo České Budějovice – termín dovozu zákazníkovi potvrďte telefonem</span>';
+    // Mimo oblast rozvozu se zákazníkovi po objednání slíbilo, že termín dovozu potvrdíme telefonem.
+    if (!$zruseno && !empty($o['adresa_overena']) && !v_oblasti_rozvozu($o['adresa_overena'])) {
+      $s .= '<span class="stitek hot">Mimo oblast rozvozu – termín dovozu zákazníkovi potvrďte telefonem</span>';
     }
   }
   if (!$dovoz && !empty($o['cas'])) $s .= '<div><b>Přijede kolem ' . h($o['cas']) . '</b></div>';

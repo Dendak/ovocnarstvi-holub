@@ -16,6 +16,9 @@ export const OTEVIRACI_DOBA = `po–pá ${ODBER_OD}:00–${ODBER_DO}:00`
 export const CASY_ODBERU = Array.from({ length: (ODBER_DO - ODBER_OD) * 4 }, (_, i) =>
   `${ODBER_OD + Math.floor(i / 4)}:${String((i % 4) * 15).padStart(2, '0')}`)
 export const POCET_TERMINU = 6               // kolik nejbližších dnů se nabízí
+// Oblast rozvozu bez domluvy podle PSČ v ověřené adrese: Českobudějovicko (370–375) a obce na cestě z Krtel
+// (Netolicko 384, Vodňany 389). Stejné pravidlo je na serveru (v_oblasti_rozvozu v api/_spolecne.php).
+export const vOblastiRozvozu = adresa => /\b(37[0-5]|384|389) ?\d{2}\b/.test(adresa)
 
 // Svátky, kdy nerozvážíme ani nevydáváme (státní a ostatní svátky, ve tvaru „den.měsíc.“).
 // Velký pátek a Velikonoční pondělí se počítají samy.

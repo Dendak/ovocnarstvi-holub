@@ -25,7 +25,7 @@ export default function OvoceSection() {
         <div className="mb-14">
           <OvoceKarta item={featured} featured dostupne={featuredKMani}
             cta={{ href: ESHOP, label: featuredKMani ? 'Objednat v e-shopu' : 'Otevřít e-shop' }}
-            note="Dovezeme až domů do Českých Budějovic v pondělí, středu a pátek. Doprava je v ceně." />
+            note="Dovezeme až domů po Českobudějovicku v pondělí, středu a pátek. Doprava je v ceně." />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
