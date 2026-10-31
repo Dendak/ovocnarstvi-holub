@@ -100,7 +100,7 @@ const kontakt = `
   <footer class="kontakt">
     <dl>
       <dt>Adresa</dt><dd>${odkaz(k.mapa, `${esc(k.adresa)}, ${esc(k.mesto)} (u Netolic)`)}</dd>
-      <dt>Otevřeno</dt><dd>${esc(OTEVIRACI_DOBA)}</dd>
+      <dt>Otevřeno</dt><dd>${esc(OTEVIRACI_DOBA)}, jindy po domluvě</dd>
       <dt>Telefon</dt><dd>${tel(k.tel1, `<b>${esc(bezPredvolby(k.tel1))}</b>`)} · ${tel(k.tel2, esc(bezPredvolby(k.tel2)))}</dd>
       <dt>DE · EN</dt><dd>${tel(k.telDE)}</dd>
       <dt>E-mail</dt><dd>${odkaz(`mailto:${k.email}`, esc(k.email))}</dd>
