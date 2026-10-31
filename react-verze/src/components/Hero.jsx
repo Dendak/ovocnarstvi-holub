@@ -12,7 +12,7 @@ export default function Hero() {
         { label: 'Objednat v e-shopu', href: `${import.meta.env.BASE_URL}eshop.html`, primary: true },
         { label: `Zavolat ${k.tel1.replace('+420 ', '')}`, href: `tel:${k.tel1.replace(/\s/g, '')}` },
       ]}
-      facts={['19 ha vlastních sadů', 'přes 15 000 stromů', 'integrovaná produkce SISPO', 'dovoz po · st · pá']}
+      facts={['19 ha vlastních sadů', 'přes 10 000 stromů', 'integrovaná produkce SISPO', 'dovoz po · st · pá']}
     />
   )
 }

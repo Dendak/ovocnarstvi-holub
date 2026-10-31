@@ -2,7 +2,7 @@ const SISPO_URL = 'https://www.sispo.cz/integrovana-produkce/'
 
 const FAKTA = [
   ['19 ha', 'vlastních sadů v Krtelích u Netolic'],
-  ['15 000+', 'ovocných stromů'],
+  ['10 000+', 'ovocných stromů'],
   ['15+', 'odrůd jablek, od Topazu po Braeburn'],
   ['7', 'druhů ovoce od července do jara'],
 ]
