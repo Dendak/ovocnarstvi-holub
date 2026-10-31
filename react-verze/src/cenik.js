@@ -22,15 +22,15 @@ const zahlavi = (nadpis, podnadpis) => `
 // Každý mošt má vlastní řádek „Jablko + Hruška … 170,– 120,–“. Příchutě se stejnou cenou v jednom řádku
 // („Hruška · Červená řepa · Mrkev“) lidé četli jako jeden míchaný mošt. Cenové hladiny (data.js: skupiny)
 // odděluje jen mezera a tenká čára.
-const VELIKOSTI = [['5l', 'cena5l', '5 l', 20], ['3l', 'cena3l', '3 l', 13]]
-// Bag-in-box: krabice zpředu a trochu shora, s úchytem a kohoutkem; přední stěna 5 l je vyšší než 3 l.
-const krabice = h => {
-  const y = 6, dno = y + h
-  return `<svg class="krabice" viewBox="0 0 30 ${dno + 3}" aria-hidden="true">
-  <path d="M2 ${y}l6-5h20l-6 5z" class="vrch"/><path d="M22 ${y}l6-5v${h}l-6 5z" class="bok"/>
-  <rect x="2" y="${y}" width="20" height="${h}" class="cela"/>
-  <rect x="8" y="${y + 2}" width="8" height="2" rx="1" class="uchyt"/>
-  <circle cx="12" cy="${dno - 3.2}" r="1.9" class="kohout"/><rect x="11.2" y="${dno - 2}" width="1.6" height="4" class="kohout"/>
+const VELIKOSTI = [['5l', 'cena5l', '5 l', 26, 12], ['3l', 'cena3l', '3 l', 13, 20]]
+// Bag-in-box: krabice zpředu a trochu shora, s úchytem a kohoutkem; 5 l leží (široká a nízká), 3 l stojí (úzká a vysoká).
+const krabice = (sirka, vyska) => {
+  const y = 6, dno = y + vyska, stred = 2 + sirka / 2
+  return `<svg class="krabice" viewBox="0 0 ${sirka + 10} ${dno + 3}" style="width:${(sirka + 10) * 0.23}mm" aria-hidden="true">
+  <path d="M2 ${y}l6-5h${sirka}l-6 5z" class="vrch"/><path d="M${2 + sirka} ${y}l6-5v${vyska}l-6 5z" class="bok"/>
+  <rect x="2" y="${y}" width="${sirka}" height="${vyska}" class="cela"/>
+  <rect x="${stred - 4}" y="${y + 2}" width="8" height="2" rx="1" class="uchyt"/>
+  <circle cx="${stred}" cy="${dno - 3.2}" r="1.9" class="kohout"/><rect x="${stred - 0.8}" y="${dno - 2}" width="1.6" height="4" class="kohout"/>
 </svg>`
 }
 // „Čisté jablko“ → „Jablko“, „Hruška“ → „Jablko + Hruška“, „Vánoční mošt“ zůstane (je to celý název).
@@ -57,7 +57,7 @@ const platnost = OBSAH.mosty.platnostOd ? `platí od ${esc(OBSAH.mosty.platnostO
 const mosty = `
   <div class="sloupce">
     <p class="pozn"><span class="stitek">Cena v Kč za balení</span>bag-in-box vč. obalu a DPH · ${platnost}</p>
-    ${VELIKOSTI.map(([, , popis, v]) => `<span class="velikost">${krabice(v)}${popis}</span>`).join('')}
+    ${VELIKOSTI.map(([, , popis, sirka, vyska]) => `<span class="velikost">${krabice(sirka, vyska)}${popis}</span>`).join('')}
   </div>
   <div class="radky">${OBSAH.mosty.skupiny.map(sk => `
     <div class="hladina">${sk.polozky.map(p => radekMostu(sk, p)).join('')}</div>`).join('')}
