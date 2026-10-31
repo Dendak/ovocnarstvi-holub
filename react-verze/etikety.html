@@ -21,7 +21,6 @@
         </div>
         <button type="button" id="tisk">Tisknout</button>
       </div>
-      <p class="upozorneni" id="upozorneni" role="status"></p>
 
       <div class="tabulka">
         <div>
@@ -34,30 +33,33 @@
           <p class="poznamka">Podíl příchuti je hmotnostní podle moštárny, zbytek se dopočítá jako jablečná šťáva.
             Číslo si stránka pamatuje, u nové várky ho zkontrolujte.</p>
         </div>
-        <div class="volby">
-          <label>Po otevření spotřebujte do (týdnů)
-            <input id="tydny" type="number" min="1" max="99" inputmode="numeric">
-            <small>Lhůtu určuje moštárna, platí pro všechny příchutě</small>
-          </label>
-          <label>Razítko s trvanlivostí na 5 l
-            <input id="razitko" type="text" value="na krabici" maxlength="24" autocomplete="off">
-            <small>Tiskne se za „viz razítko“. Až budete vědět stěnu, napište ji, třeba „na boku krabice“.</small>
-          </label>
-          <label>Přeskočit etiket na začátku
-            <input id="preskocit" type="number" min="0" max="23" value="0" inputmode="numeric">
-            <small>Když je arch už načatý</small>
-          </label>
-          <div class="posun">Posun tisku (mm)
-            <div class="dvojice">
-              <label>Doprava <input id="posunX" type="number" step="0.5" value="0"></label>
-              <label>Dolů <input id="posunY" type="number" step="0.5" value="0"></label>
+        <div class="prava">
+          <p class="upozorneni" id="upozorneni" role="status"></p>
+          <div class="volby">
+            <label>Po otevření spotřebujte do (týdnů)
+              <input id="tydny" type="number" min="1" max="99" inputmode="numeric">
+              <small>Lhůtu určuje moštárna, platí pro všechny příchutě</small>
+            </label>
+            <label>Razítko s trvanlivostí na 5 l
+              <input id="razitko" type="text" value="na krabici" maxlength="24" autocomplete="off">
+              <small>Tiskne se za „viz razítko“. Až budete vědět stěnu, napište ji, třeba „na boku krabice“.</small>
+            </label>
+            <label>Přeskočit etiket na začátku
+              <input id="preskocit" type="number" min="0" max="23" value="0" inputmode="numeric">
+              <small>Když je arch už načatý</small>
+            </label>
+            <div class="posun">Posun tisku (mm)
+              <div class="dvojice">
+                <label>Doprava <input id="posunX" type="number" step="0.5" value="0"></label>
+                <label>Dolů <input id="posunY" type="number" step="0.5" value="0"></label>
+              </div>
+              <small>Když tisk nesedí. Doleva a nahoru se píše s mínusem. Bezpečně do ±1,5 mm.</small>
             </div>
-            <small>Když tisk nesedí. Doleva a nahoru se píše s mínusem. Bezpečně do ±1,5 mm.</small>
+            <label class="prepinac"><input id="cernobile" type="checkbox"> Černobílá tiskárna
+              <small>Příchuť se vytiskne plnou černou, ne šedými tečkami</small>
+            </label>
+            <p class="soucet" id="soucet" role="status"></p>
           </div>
-          <label class="prepinac"><input id="cernobile" type="checkbox"> Černobílá tiskárna
-            <small>Příchuť se vytiskne plnou černou, ne šedými tečkami</small>
-          </label>
-          <p class="soucet" id="soucet" role="status"></p>
         </div>
       </div>
     </section>

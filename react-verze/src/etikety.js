@@ -215,7 +215,8 @@ try {
 } catch { /* nic uloženého */ }
 
 vykreslit()
-document.fonts.load('700 20.5pt "Source Sans 3"', 'Červený').then(nazvy)
+// Po načtení písma znovu všechno: záložní písmo je širší a razítko by v něm falešně zablokovalo tisk.
+document.fonts.load('700 20.5pt "Source Sans 3"', 'Červený').then(vykreslit)
 fetch('img/logo/znak-jednobarevny.svg').then(r => (r.ok ? r.text() : '')).then(svg => {
   znak = svg.replace(/\s(width|height)="[^"]*"/g, '').replace(/fill="[^"]*"/g, 'fill="currentColor"')
   vykreslit()
