@@ -6,9 +6,9 @@ Na konci každé session: co je hotové, co je rozdělané, co dál.
 ## Rozdělané / další kroky
 - [ ] **Etikety moštů** (`react-verze/etikety.html`, arch Avery 3475, nasazeno 31. 10.): návrh „Čistá bílá“ z konceptů a poroty.
   Na etiketě je název, zákonný název, složení s podílem, trvanlivost, objem, QR kód na e-shop, lhůta po otevření a Pavel Holub s adresou.
-  SISPO, telefon a e-mail jsou pryč. Názvy a složení jsou v `src/etikety.js` (`PRICHUTE`), podíly a lhůta se zadávají na stránce. Panel hlásí, co ještě chybí.
+  SISPO, telefon a e-mail jsou pryč. Názvy, složení a podíly jsou v `src/etikety.js` (`PRICHUTE`), lhůta se zadává na stránce. Panel hlásí, co ještě chybí.
   Tisk se zastaví jen u 3 l bez data, u příchuti bez záznamu v `PRICHUTE` a u razítka, které by vjelo do QR kódu. Svislé polohy etikety jsou v celých px, jinak se rozestupy liší podle řádku archu.
-  **Čeká na moštárnu (písemně):** přímo lisováno bez vody, cukru a aromat; v jaké podobě je příchuť; přesný podíl jedním číslem (ne rozpětí);
+  **Čeká na moštárnu (písemně):** přímo lisováno bez vody, cukru a aromat; v jaké podobě je příchuť; skutečné podíly místo odhadů (u Vánočního chybí i odhad podílu třešňové šťávy, tiskne se __ %);
   receptura skořice, květu bezu, zázvoru a Vánočního; lhůta po otevření; výživové údaje na 100 ml; razítko na 5 l (stěna, den a měsíc, nebo jen
   měsíc a rok); datum pro 3 l ke každé várce; siřičitany u limetky. Výživové údaje se na etiketu nevejdou: až budou čísla, přidat druhou etiketu
   na stejnou stěnu, nebo si od SZPI (Tábor) nechat písemně potvrdit výjimku. Zkušební tisk na skutečný arch a sken QR kódu telefonem ještě neproběhly.
@@ -68,6 +68,9 @@ Nic rozpracovaného v kódu není, main = produkce je čistá.
 - [ ] Tátovi nastavit „Heslo k objednávkám“ a ikonu přehledu na plochu telefonu i PC (návod v chatu 22. 10.).
 
 ## Historie
+### 2026-11-01
+- Etikety: podíly příchutí jsou pevně v `PRICHUTE`, průměr odhadu moštárny zaokrouhlený na 5 (hruška 35, mrkev 25, řepa, višeň a rybíz 20, rakytník 10, limetka a zázvor 5). Sloupec s podílem je z panelu pryč. Skořice a květ bezu jsou jen vylouhované: 99 % jablečné šťávy, příchuť bez procenta. Vánoční má třešňovou šťávu: „Jablečno-třešňový nápoj s kořením“. Limetka a rakytník jsou „Jablko + …“ bez slova příchuť.
+
 ### 2026-10-31
 - Nové etikety moštů (`etikety.html`, Avery 3475). Rozestupy a QR kód změřené z PDF na všech 24 pozicích, QR přečtený strojově, ne telefonem. Hlášky v panelu jsou vedle tabulky, aby se pod kurzorem nehýbala; do 860 px jsou nad ní, a proto tam u čísel v tabulce nejsou šipky. Firefox a Safari nezkoušené.
 - Oblast rozvozu: Českobudějovicko a obce na cestě z Krtel (Hluboká, Vodňany, Netolicko). Bez „po domluvě“ jsou adresy s PSČ 370–375, 384, 389 (`vOblastiRozvozu` v `terminy.js`, `v_oblasti_rozvozu` v `_spolecne.php`). Volat se má jen mimo otevírací dobu.

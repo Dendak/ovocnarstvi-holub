@@ -15,46 +15,45 @@ const NBSP = '\u00A0'
 // nejsou ovoce a skořice, květ a zázvor do šťávy nepatří. Názvy platí, až moštárna písemně potvrdí šťávy bez vody, cukru a aromat.
 // slozka: co je v krabici kromě jablečné šťávy. U koření a květu rozhoduje skutečná receptura moštárny.
 // receptura: složení je zatím odhad, panel na to upozorní. Po odpovědi moštárny upravit slozka a příznak smazat.
-// rozpeti: podíl příchuti z nabídky moštárny v %. Na etiketě musí být jedno číslo, rozpětí je jen nápověda v políčku.
+// podil: podíl příchuti v %, jablko se dopočítá do 100. Průměr odhadu moštárny zaokrouhlený na 5 (hruška 30–40, mrkev 20–30, řepa, višeň a rybíz 15–20,
+// rakytník 8–10, limetka a zázvor cca 5). Bez odhadu se tiskne __ %, jablečná šťáva procento mít musí.
+// navic: složka bez procent za příchutí, do součtu 100 se nepočítá. Koření jen pro chuť procento mít nemusí.
+// vyluh: příchuť se jen vylouhuje. Sama procento mít nemusí, jablečná šťáva ano a „100 %“ se u nápoje s kořením psát nesmí, proto 99.
 // barva: příchuť, linka a znak, ať se krabice s různými příchutěmi rozliší na první pohled. Kontrast s bílou aspoň 4,5:1,
 // na etiketě je o 20 % tmavší (aspoň 6,7:1). Sousední odstíny od sebe aspoň ΔE 15.
 const PRICHUTE = {
   'Čisté jablko': { velky: 'Jablko', nazev: ['Jablečný mošt', 'pasterovaná, 100% jablečná šťáva'], slozka: null, barva: '#2f5a33' },
-  'Hruška': { velky: 'Jablko + hruška', nazev: ['Jablečno-hruškový mošt', 'pasterovaná šťáva z jablek a hrušek'], slozka: 'hrušková šťáva', rozpeti: '30–40', barva: '#626e18' },
-  'Červená řepa': { velky: 'Jablko + červená řepa', nazev: ['Ovocno-zeleninová šťáva', 'pasterovaná, z jablek a červené řepy'], slozka: 'šťáva z červené řepy', rozpeti: '15–20', barva: '#7d1f4e' },
-  'Mrkev': { velky: 'Jablko + mrkev', nazev: ['Ovocno-zeleninová šťáva', 'pasterovaná, z jablek a mrkve'], slozka: 'mrkvová šťáva', rozpeti: '20–30', barva: '#c44e14' },
-  'Skořice': { velky: 'Jablko + skořice', nazev: ['Jablečný nápoj se skořicí', 'pasterovaný'], slozka: 'skořice', receptura: true, rozpeti: '', barva: '#7a4a24' },
-  'Květ bezu': { velky: 'Jablko + květ bezu', nazev: ['Jablečný nápoj s květem bezu', 'pasterovaný'], slozka: 'květ černého bezu', receptura: true, rozpeti: '', barva: '#2f6b73' },
-  'Limetka': { velky: 'Jablko, příchuť limetka', nazev: ['Jablečno-limetkový mošt', 'pasterovaná šťáva z jablek a limetek'], slozka: 'limetková šťáva', receptura: true, rozpeti: 'cca 5', barva: '#457c1b' },
-  'Zázvor': { velky: 'Jablko + zázvor', nazev: ['Jablečný nápoj se zázvorem', 'pasterovaný'], slozka: 'zázvor', receptura: true, rozpeti: 'cca 5', barva: '#86641a' },
-  'Višeň': { velky: 'Jablko + višeň', nazev: ['Jablečno-višňový mošt', 'pasterovaná šťáva z jablek a višní'], slozka: 'višňová šťáva', rozpeti: '15–20', barva: '#7c1d2b' },
-  'Červený rybíz': { velky: 'Jablko + červený rybíz', nazev: ['Jablečno-rybízový mošt', 'pasterovaná šťáva z jablek a rybízu'], slozka: 'šťáva z červeného rybízu', rozpeti: '15–20', barva: '#b3242f' },
-  'Vánoční mošt': { velky: 'Vánoční', nazev: ['Jablečný nápoj s kořením', 'pasterovaný'], slozka: 'koření', receptura: true, rozpeti: '', barva: '#17241a' },
-  'Rakytník': { velky: 'Jablko, příchuť rakytník', nazev: ['Jablečno-rakytníkový mošt', 'pasterovaná šťáva z jablek a rakytníku'], slozka: 'rakytníková šťáva', rozpeti: '8–10', barva: '#aa6100' },
+  'Hruška': { velky: 'Jablko + hruška', nazev: ['Jablečno-hruškový mošt', 'pasterovaná šťáva z jablek a hrušek'], slozka: 'hrušková šťáva', podil: 35, barva: '#626e18' },
+  'Červená řepa': { velky: 'Jablko + červená řepa', nazev: ['Ovocno-zeleninová šťáva', 'pasterovaná, z jablek a červené řepy'], slozka: 'šťáva z červené řepy', podil: 20, barva: '#7d1f4e' },
+  'Mrkev': { velky: 'Jablko + mrkev', nazev: ['Ovocno-zeleninová šťáva', 'pasterovaná, z jablek a mrkve'], slozka: 'mrkvová šťáva', podil: 25, barva: '#c44e14' },
+  'Skořice': { velky: 'Jablko + skořice', nazev: ['Jablečný nápoj se skořicí', 'pasterovaný'], slozka: 'skořice', vyluh: true, receptura: true, barva: '#7a4a24' },
+  'Květ bezu': { velky: 'Jablko + květ bezu', nazev: ['Jablečný nápoj s květem bezu', 'pasterovaný'], slozka: 'květ černého bezu', vyluh: true, receptura: true, barva: '#2f6b73' },
+  'Limetka': { velky: 'Jablko + limetka', nazev: ['Jablečno-limetkový mošt', 'pasterovaná šťáva z jablek a limetek'], slozka: 'limetková šťáva', receptura: true, podil: 5, barva: '#457c1b' },
+  'Zázvor': { velky: 'Jablko + zázvor', nazev: ['Jablečný nápoj se zázvorem', 'pasterovaný'], slozka: 'zázvor', receptura: true, podil: 5, barva: '#86641a' },
+  'Višeň': { velky: 'Jablko + višeň', nazev: ['Jablečno-višňový mošt', 'pasterovaná šťáva z jablek a višní'], slozka: 'višňová šťáva', podil: 20, barva: '#7c1d2b' },
+  'Červený rybíz': { velky: 'Jablko + červený rybíz', nazev: ['Jablečno-rybízový mošt', 'pasterovaná šťáva z jablek a rybízu'], slozka: 'šťáva z červeného rybízu', podil: 20, barva: '#b3242f' },
+  'Vánoční mošt': { velky: 'Vánoční', nazev: ['Jablečno-třešňový nápoj s kořením', 'pasterovaný'], slozka: 'třešňová šťáva', navic: 'koření', receptura: true, barva: '#17241a' },
+  'Rakytník': { velky: 'Jablko + rakytník', nazev: ['Jablečno-rakytníkový mošt', 'pasterovaná šťáva z jablek a rakytníku'], slozka: 'rakytníková šťáva', podil: 10, barva: '#aa6100' },
 }
 
 const MOSTY = OBSAH.mosty.skupiny.flatMap(sk => sk.polozky).map(p => {
   const id = bezEmoji(p.nazev)
-  return { id, bezZaznamu: !PRICHUTE[id], ...(PRICHUTE[id] || { velky: `Jablko + ${id.toLowerCase()}`, nazev: [id], slozka: id.toLowerCase(), rozpeti: '', barva: '#2f5a33' }) }
+  return { id, bezZaznamu: !PRICHUTE[id], ...(PRICHUTE[id] || { velky: `Jablko + ${id.toLowerCase()}`, nazev: [id], slozka: id.toLowerCase(), barva: '#2f5a33' }) }
 })
 
 // Od každé příchuti dva kusy: první pohled na celý arch se všemi příchutěmi.
-const stav = Object.fromEntries(MOSTY.map(m => [m.id, { '5 l': 2, '3 l': 0, podil: '', datum: '' }]))
+const stav = Object.fromEntries(MOSTY.map(m => [m.id, { '5 l': 2, '3 l': 0, datum: '' }]))
 const pole = id => document.getElementById(id)
 const cislo = (x, min, max) => Math.min(max, Math.max(min, parseInt(x, 10) || 0))
 
-function podilCislem(podil) {
-  const p = Number(String(podil).replace(',', '.'))
-  return p > 0 && p < 100 ? p : 0
-}
-
 // Nedoplněný údaj se vytiskne jako prázdné místo, ať je na etiketě vidět, že chybí.
-// Jablko má stejně desetinných míst jako zadaný podíl, jinak by součet nebyl 100 %.
-function slozeni(m, podil) {
-  const p = podilCislem(podil)
-  const mist = (String(p).split('.')[1] || '').length
-  const c = x => (p ? x.replace('.', ',') : '__') + NBSP + '%'
-  return `jablečná šťáva ${c((100 - p).toFixed(mist))}, ${m.slozka} ${c(String(p))}`
+// Složení má vždy dva řádky: na jednom by se rozestupy etikety rozdělily na půl pixelu a na každém řádku archu by vyšly jinak.
+function slozeni(m) {
+  const c = x => (m.podil ? x : '__') + NBSP + '%'
+  const [jablko, zbytek] = m.vyluh
+    ? [`99${NBSP}%`, m.slozka]
+    : [c(100 - m.podil), [`${m.slozka} ${c(m.podil)}`, m.navic].filter(Boolean).join(', ')]
+  return `<span>jablečná šťáva ${jablko}</span>,<br><span>${esc(zbytek)}</span>`
 }
 
 // „30.4.2027“ i „30. 4. 2027“ se tiskne jednotně; neexistující datum (31. 2.) se bere jako nevyplněné.
@@ -89,9 +88,6 @@ const qr = (() => {
 // Znak z loga jako SVG přímo ve stránce: vektorový a v barvě textu.
 let znak = ''
 
-// Každá složka je pohromadě, dlouhé složení se proto zalomí jen za čárkou.
-const slozky = text => text.split(', ').map(s => `<span>${esc(s)}</span>`).join(', ')
-
 const etiketa = (m, objem, s, tydny, razitko) => `
   <article class="etiketa" style="--barva:${m.barva}">
     <div class="obsah">
@@ -100,7 +96,7 @@ const etiketa = (m, objem, s, tydny, razitko) => `
       <hr class="linka">
       <div class="udaje">
         <p class="nazev">${m.nazev.map(r => `<span>${esc(r)}</span>`).join(' ')}</p>
-        ${m.slozka ? `<p class="slozeni">Složení: ${slozky(slozeni(m, s.podil))}</p>` : ''}
+        ${m.slozka ? `<p class="slozeni">Složení: ${slozeni(m)}</p>` : ''}
         <p class="trvanlivost">Minimální trvanlivost do: <b>${esc(objem === 5 ? `viz razítko ${razitko}` : datumCesky(s.datum) || `__.${NBSP}__.${NBSP}____`)}</b></p>
       </div>
       <span class="qr">${qr}</span>
@@ -147,8 +143,7 @@ function vykreslit() {
   const tiskne = m => stav[m.id]['5 l'] + stav[m.id]['3 l'] > 0
   const vypis = s => s.map(m => m.id).join(', ')
   const bezZaznamu = MOSTY.filter(m => m.bezZaznamu && tiskne(m))
-  const bezPodilu = MOSTY.filter(m => m.slozka && tiskne(m) && !podilCislem(stav[m.id].podil))
-  const velkyPodil = MOSTY.filter(m => tiskne(m) && podilCislem(stav[m.id].podil) > 50)
+  const bezPodilu = MOSTY.filter(m => m.slozka && !m.podil && !m.vyluh && tiskne(m))
   const bezReceptury = MOSTY.filter(m => m.receptura && tiskne(m))
   const bezData = MOSTY.filter(m => stav[m.id]['3 l'] > 0 && !datumZ(stav[m.id].datum))
   const dnes = new Date().setHours(0, 0, 0, 0)
@@ -159,8 +154,7 @@ function vykreslit() {
     bezData.length && `Tisk čeká na platné datum u 3 l: ${vypis(bezData)}. Krabice 3 l datum nemá. Pište ho takhle: 30. 4. 2027.`,
     dlouheRazitko && 'Tisk čeká na kratší text razítka, takhle by vjel do QR kódu.',
     prosle.length && `Datum už minulo: ${vypis(prosle)}.`,
-    bezPodilu.length && `Bez podílu: ${vypis(bezPodilu)}. Na etiketě musí být jedno číslo, ne rozpětí.`,
-    velkyPodil.length && `Podíl přes 50 %: ${vypis(velkyPodil)}. Zadává se podíl příchuti, ne jablka.`,
+    bezPodilu.length && `Bez podílu: ${vypis(bezPodilu)}. Odhad moštárny chybí, na etiketě bude __ %.`,
     bezReceptury.length && `Složení je zatím odhad: ${vypis(bezReceptury)}. Tiskněte až podle úplné receptury od moštárny.`,
     n && !tydny && 'Doplňte, do kolika týdnů po otevření se má mošt spotřebovat.',
     Number(pole('tydny').value) !== Number(tydny) && 'Lhůta po otevření musí být celý počet týdnů od 1 do 99.',
@@ -180,15 +174,13 @@ pole('prichute').innerHTML = MOSTY.map(m => `
     <th scope="row"><i style="background:${m.barva}"></i>${esc(m.id)}</th>
     <td><input type="number" min="0" max="999" inputmode="numeric" data-most="${esc(m.id)}" data-pole="5 l" value="${stav[m.id]['5 l']}" aria-label="${esc(m.id)}, 5 l, počet etiket"></td>
     <td><input type="number" min="0" max="999" inputmode="numeric" data-most="${esc(m.id)}" data-pole="3 l" value="${stav[m.id]['3 l']}" aria-label="${esc(m.id)}, 3 l, počet etiket"></td>
-    <td>${m.slozka ? `<span class="procenta"><input type="text" inputmode="decimal" placeholder="${esc(m.rozpeti)}" data-most="${esc(m.id)}" data-pole="podil" aria-label="${esc(m.id)}, podíl příchuti v procentech"> %</span>` : ''}</td>
     <td><input class="datum" type="text" placeholder="30. 4. 2027" maxlength="12" autocomplete="off" data-most="${esc(m.id)}" data-pole="datum" aria-label="${esc(m.id)}, 3 l, minimální trvanlivost do"></td>
   </tr>`).join('')
 
-// Podíly, lhůta a nastavení tiskárny se pamatují v prohlížeči. Počty a data patří k jednomu tisku.
+// Lhůta a nastavení tiskárny se pamatují v prohlížeči. Počty a data patří k jednomu tisku.
 function ulozit() {
   try {
     localStorage.setItem('etikety', JSON.stringify({
-      podily: Object.fromEntries(MOSTY.map(m => [m.id, stav[m.id].podil])),
       ...Object.fromEntries(['tydny', 'razitko', 'posunX', 'posunY'].map(id => [id, pole(id).value])),
       cernobile: pole('cernobile').checked,
     }))
@@ -197,7 +189,7 @@ function ulozit() {
 
 document.querySelector('.ovladani').addEventListener('input', e => {
   const { most, pole: co } = e.target.dataset
-  if (most) stav[most][co] = ['podil', 'datum'].includes(co) ? e.target.value : cislo(e.target.value, 0, 999)
+  if (most) stav[most][co] = co === 'datum' ? e.target.value : cislo(e.target.value, 0, 999)
   ulozit()
   vykreslit()
 })
@@ -207,11 +199,6 @@ try {
   const ulozene = JSON.parse(localStorage.getItem('etikety')) || {}
   for (const id of ['tydny', 'razitko', 'posunX', 'posunY']) if (ulozene[id]) pole(id).value = ulozene[id]
   pole('cernobile').checked = !!ulozene.cernobile
-  for (const m of MOSTY) {
-    stav[m.id].podil = ulozene.podily?.[m.id] || ''
-    const vstup = document.querySelector(`[data-most="${CSS.escape(m.id)}"][data-pole="podil"]`)
-    if (vstup) vstup.value = stav[m.id].podil
-  }
 } catch { /* nic uloženého */ }
 
 vykreslit()

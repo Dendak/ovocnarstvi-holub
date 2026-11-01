@@ -67,7 +67,6 @@ body {
 .ovladani input { width: 100%; padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px; font: inherit; background: #fff; }
 .ovladani td input { width: 58px; }
 .ovladani td input.datum { width: 112px; }
-.procenta { display: inline-flex; align-items: center; gap: 5px; color: var(--muted); }
 .volby { display: grid; gap: 12px; }
 .volby label, .volby .posun { display: grid; gap: 3px; font-weight: 600; font-size: 14px; }
 .volby small { font-weight: 400; font-size: 13px; color: var(--muted); }
