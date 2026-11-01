@@ -70,7 +70,7 @@ Nic rozpracovaného v kódu není, main = produkce je čistá.
 
 ## Historie
 ### 2026-11-01
-- Podíly z etiket jsou i v ceníku: tištěný má „Jablko 65 % + Hruška 35 %“, blok Ceník na webu „Hruška 35 %“. Stojí u názvu, vedle ceny by se četly jako sleva. Čísla se přesunula z `PRICHUTE` do `data.js` (`podil`, `vyluh`, `podilJablka()`), etikety se tím nezměnily. Vánoční v ceníku číslo nemá, dokud nebude znám podíl třešňové šťávy.
+- Podíly z etiket jsou i v ceníku: tištěný má „Jablko 65 % + Hruška 35 %“, blok Ceník na webu „Hruška 35 %“. Stojí u názvu, vedle ceny by se četly jako sleva. Čísla se přesunula z `PRICHUTE` do `data.js` (`podil`, `vyluh`, `podilJablka()`), etikety se tím nezměnily. Vánoční číslo nemá. Až bude znám podíl třešňové šťávy, nestačí ho doplnit do `data.js`: ceník u něj podíl nečte a web by napsal jen „Vánoční mošt 15 %“.
 - Etikety: podíly příchutí jsou pevně v `PRICHUTE`, průměr odhadu moštárny zaokrouhlený na 5 (hruška 35, mrkev 25, řepa, višeň a rybíz 20, rakytník 10, limetka a zázvor 5). Sloupec s podílem je z panelu pryč. Skořice a květ bezu jsou jen vylouhované: 99 % jablečné šťávy, příchuť bez procenta. Vánoční má třešňovou šťávu: „Ovocný nápoj s kořením, pasterovaný, ze šťávy z jablek a třešní“ (§ 5 odst. 3 vyhlášky 248/2018 dává „jablečný“ jen u jednoho druhu ovoce). Limetka a rakytník jsou „Jablko + …“ bez slova příchuť.
 
 ### 2026-10-31

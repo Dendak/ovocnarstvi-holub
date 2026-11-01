@@ -35,7 +35,7 @@ const krabice = (sirka, vyska) => {
 }
 // „Čisté jablko“ → „Jablko“, „Hruška“ → „Jablko + Hruška“, „Vánoční mošt“ zůstane (je to celý název).
 // Tučně je to, čím se mošty liší; „Jablko +“ je obyčejným písmem.
-// Podíly stojí u názvu jako na etiketě, vedle ceny by se četly jako sleva. Neznámý podíl se vynechá.
+// Podíly stojí u názvu, vedle ceny by se četly jako sleva. Neznámý podíl se vynechá.
 const jeCisteJablko = p => /^čisté jablko$/i.test(bezEmoji(p.nazev))
 const podil = x => (x == null ? '' : `<small>${x}&nbsp;%</small>`)
 const nazevMostu = p => {
@@ -146,7 +146,7 @@ try { ulozeny = localStorage.getItem('cenik-format') } catch { /* soukromý rež
 nastavitFormat(new URLSearchParams(location.search).get('format')?.toUpperCase() || ulozeny || 'A5')
 
 // Dlouhý název moštu se nezalamuje (cenik.css) – druhý řádek by vzal místo celému dalšímu moštu. Když se nevejde
-// do řádku, zmenší se jen jeho písmo, nejvýš na 12 pt z 17 pt („Jablko + Černý bez s citronovou trávou“ má asi 12 pt).
+// do řádku, zmenší se jen jeho písmo, nejvýš na 12 pt z 17 pt („Jablko 80 % + Černý bez s citronem 20 %“ má asi 13,6 pt).
 // Až kdyby nestačilo ani to, zalomí se. Zmenšuje se v em, takže to platí pro A5 i zvětšené A4/A3.
 const NEJMENSI_NAZEV = 12 / 17
 const vejitNazvy = () => document.querySelectorAll('.most .nazev > span').forEach(el => {

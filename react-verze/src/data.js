@@ -47,6 +47,7 @@ export const OBSAH = {
     // vyprodano: ['3l'] = vyprodaná jen tato velikost ('3l' nebo '5l').
     // podil: podíl příchuti v %, stejné číslo je na etiketách, v ceníku i na webu. Průměr odhadu moštárny zaokrouhlený na 5 (hruška 30–40,
     // mrkev 20–30, řepa, višeň a rybíz 15–20, rakytník 8–10, limetka a zázvor cca 5). Bez čísla = zatím neznámý: etiketa má __ %, ceník nic.
+    // Až bude číslo u Vánočního, dořešit ceník a web: ceník u něj podíl nečte a web by nenapsal, že jde o třešňovou šťávu.
     // vyluh: příchuť se jen vylouhuje. Sama procento mít nemusí, jablečná šťáva ano a „100 %“ se u nápoje s kořením psát nesmí, proto 99.
     platnostOd: '29. 10. 2026',
     skupiny: [

@@ -5,8 +5,8 @@ const FOTO = 'mosty/most-sklenice.jpg'
 const bezEmoji = s => s.replace(/\p{Extended_Pictographic}️?\s*/gu, '').trim()
 // „ (jen 5 l)“, když je u příchuti vyprodaná jedna velikost (data.js: vyprodano: ['3l']).
 const jenVelikost = p => {
-  const zbyva = ['3 l', '5 l'].filter(v => !p.vyprodano?.includes(v.replace(' ', '')))
-  return p.dostupne !== false && zbyva.length === 1 ? ` (jen ${zbyva[0]})` : ''
+  const zbyva = ['3', '5'].filter(v => !p.vyprodano?.includes(`${v}l`))
+  return p.dostupne !== false && zbyva.length === 1 ? <> (jen&nbsp;{zbyva[0]}&nbsp;l)</> : ''
 }
 
 export default function Mosty() {
@@ -50,8 +50,8 @@ export default function Mosty() {
                 <span className="text-ink leading-snug">
                   {sk.polozky.map((p, j) => (
                     <span key={p.nazev}>
-                      {/* inline-block: příchuť s procenty se zalomí celá, procenta nezůstanou samotná na dalším řádku */}
-                      <span className="inline-block">
+                      {/* inline-block: příchuť s procenty se zalomí celá, když se vejde na řádek. align-top drží ceny na prvním řádku. */}
+                      <span className="inline-block align-top">
                         <span className={p.dostupne === false ? 'text-muted line-through' : ''}>
                           {bezEmoji(p.nazev)}
                           {p.podil > 0 && <span className="text-sm text-muted"> {p.podil}&nbsp;%</span>}
@@ -74,7 +74,7 @@ export default function Mosty() {
               Ceny za balení bag-in-box včetně obalu a DPH. Procenta jsou podíl příchuti, zbytek je jablečná šťáva.
               {vyluhy.length > 0 && <> Příchutě {vyluhy.map(p => bezEmoji(p.nazev).toLowerCase()).join(' a ')} se jen vyluhují, jablečné šťávy je {podilJablka(vyluhy[0])}&nbsp;%.</>}
             </p>
-            <a href={`${import.meta.env.BASE_URL}eshop.html`} className="btn">Objednat mošt</a>
+            <a href={`${import.meta.env.BASE_URL}eshop.html`} className="btn shrink-0">Objednat mošt</a>
           </div>
         </div>
       </div>
