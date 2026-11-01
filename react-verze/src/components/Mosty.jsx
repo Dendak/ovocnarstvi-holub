@@ -1,4 +1,4 @@
-import { OBSAH, imgSrc, imgSrcSet } from '../data'
+import { OBSAH, imgSrc, imgSrcSet, podilJablka } from '../data'
 
 const FOTO = 'mosty/most-sklenice.jpg'
 
@@ -11,6 +11,7 @@ const jenVelikost = p => {
 
 export default function Mosty() {
   const { platnostOd, skupiny } = OBSAH.mosty
+  const vyluhy = skupiny.flatMap(sk => sk.polozky).filter(p => p.vyluh)
 
   return (
     <section id="mosty" className="bg-paper py-20 sm:py-24">
@@ -37,7 +38,7 @@ export default function Mosty() {
             <p className="text-sm text-muted">platí od {platnostOd}</p>
           </div>
 
-          <div className="grid grid-cols-[1fr_4.5rem_4.5rem] gap-x-4 pt-4 pb-2 text-sm text-muted">
+          <div className="grid grid-cols-[1fr_4.5rem_4.5rem] gap-x-3 sm:gap-x-4 pt-4 pb-2 text-sm text-muted">
             <span>Příchuť</span>
             <span className="text-right">3 l</span>
             <span className="text-right">5 l</span>
@@ -45,12 +46,20 @@ export default function Mosty() {
 
           <ul>
             {skupiny.map((sk, i) => (
-              <li key={i} className="grid grid-cols-[1fr_4.5rem_4.5rem] gap-x-4 py-3.5 border-t border-line items-baseline">
+              <li key={i} className="grid grid-cols-[1fr_4.5rem_4.5rem] gap-x-3 sm:gap-x-4 py-3.5 border-t border-line items-baseline">
                 <span className="text-ink leading-snug">
                   {sk.polozky.map((p, j) => (
                     <span key={p.nazev}>
-                      <span className={p.dostupne === false ? 'text-muted line-through' : ''}>{bezEmoji(p.nazev)}{jenVelikost(p)}</span>
-                      {j < sk.polozky.length - 1 ? ', ' : ''}
+                      {/* inline-block: příchuť s procenty se zalomí celá, procenta nezůstanou samotná na dalším řádku */}
+                      <span className="inline-block">
+                        <span className={p.dostupne === false ? 'text-muted line-through' : ''}>
+                          {bezEmoji(p.nazev)}
+                          {p.podil > 0 && <span className="text-sm text-muted"> {p.podil}&nbsp;%</span>}
+                          {jenVelikost(p)}
+                        </span>
+                        {j < sk.polozky.length - 1 ? ',' : ''}
+                      </span>
+                      {j < sk.polozky.length - 1 ? ' ' : ''}
                     </span>
                   ))}
                 </span>
@@ -61,7 +70,10 @@ export default function Mosty() {
           </ul>
 
           <div className="mt-6 pt-6 border-t border-line flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <p className="text-sm text-muted">Ceny za balení bag-in-box včetně obalu a DPH.</p>
+            <p className="text-sm text-muted">
+              Ceny za balení bag-in-box včetně obalu a DPH. Procenta jsou podíl příchuti, zbytek je jablečná šťáva.
+              {vyluhy.length > 0 && <> Příchutě {vyluhy.map(p => bezEmoji(p.nazev).toLowerCase()).join(' a ')} se jen vyluhují, jablečné šťávy je {podilJablka(vyluhy[0])}&nbsp;%.</>}
+            </p>
             <a href={`${import.meta.env.BASE_URL}eshop.html`} className="btn">Objednat mošt</a>
           </div>
         </div>

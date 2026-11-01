@@ -1,6 +1,6 @@
 // Ceník k tisku (cenik.html): mošty a kalendář sezón ovoce na dvě strany A5, s kontaktem a QR kódem na e-shop.
 // Vše se bere z data.js, takže tištěný ceník odpovídá webu a e-shopu.
-import { OBSAH } from './data.js'
+import { OBSAH, podilJablka } from './data.js'
 import { OTEVIRACI_DOBA } from './eshop/terminy.js'
 
 const k = OBSAH.kontakt
@@ -35,11 +35,13 @@ const krabice = (sirka, vyska) => {
 }
 // „Čisté jablko“ → „Jablko“, „Hruška“ → „Jablko + Hruška“, „Vánoční mošt“ zůstane (je to celý název).
 // Tučně je to, čím se mošty liší; „Jablko +“ je obyčejným písmem.
+// Podíly stojí u názvu jako na etiketě, vedle ceny by se četly jako sleva. Neznámý podíl se vynechá.
 const jeCisteJablko = p => /^čisté jablko$/i.test(bezEmoji(p.nazev))
+const podil = x => (x == null ? '' : `<small>${x}&nbsp;%</small>`)
 const nazevMostu = p => {
   const n = bezEmoji(p.nazev)
-  if (jeCisteJablko(p)) return '<b>Jablko</b>'
-  return /mošt/i.test(n) ? `<b>${esc(n)}</b>` : `Jablko <i>+</i> <b>${esc(n)}</b>`
+  if (jeCisteJablko(p)) return `<b>Jablko</b>${podil(podilJablka(p))}`
+  return /mošt/i.test(n) ? `<b>${esc(n)}</b>` : `Jablko${podil(podilJablka(p))} <i>+</i> <b>${esc(n)}</b>${podil(p.podil)}`
 }
 // Vyprodaný mošt (i když má vyprodané všechny velikosti): název přeškrtnutý a přes oba sloupce „vyprodáno“.
 // Vyprodaná jedna velikost: „vyprodáno“ místo její ceny.

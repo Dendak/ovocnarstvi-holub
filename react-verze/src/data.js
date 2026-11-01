@@ -45,17 +45,23 @@ export const OBSAH = {
   mosty: {
     // Ceník moštů pro web, e-shop i tisk (cenik.html). dostupne: false = vyprodáno celé,
     // vyprodano: ['3l'] = vyprodaná jen tato velikost ('3l' nebo '5l').
+    // podil: podíl příchuti v %, stejné číslo je na etiketách, v ceníku i na webu. Průměr odhadu moštárny zaokrouhlený na 5 (hruška 30–40,
+    // mrkev 20–30, řepa, višeň a rybíz 15–20, rakytník 8–10, limetka a zázvor cca 5). Bez čísla = zatím neznámý: etiketa má __ %, ceník nic.
+    // vyluh: příchuť se jen vylouhuje. Sama procento mít nemusí, jablečná šťáva ano a „100 %“ se u nápoje s kořením psát nesmí, proto 99.
     platnostOd: '29. 10. 2026',
     skupiny: [
-      { polozky: [{ nazev: 'Čisté jablko',    dostupne: true }],                                                                                                cena5l: 180, cena3l: 125 },
-      { polozky: [{ nazev: 'Hruška',           dostupne: true }, { nazev: 'Červená řepa', dostupne: true }, { nazev: 'Mrkev',   dostupne: true }],              cena5l: 195, cena3l: 135 },
-      { polozky: [{ nazev: 'Skořice',          dostupne: true }, { nazev: 'Květ bezu', dostupne: true }, { nazev: 'Limetka', dostupne: true }, { nazev: 'Zázvor', dostupne: true }], cena5l: 205, cena3l: 140 },
-      { polozky: [{ nazev: 'Višeň',            dostupne: true }, { nazev: 'Červený rybíz', dostupne: true }],                                                   cena5l: 215, cena3l: 150 },
-      { polozky: [{ nazev: '🎄 Vánoční mošt',   dostupne: true }],                                                                                               cena5l: 250, cena3l: 175 },
-      { polozky: [{ nazev: 'Rakytník',         dostupne: true }],                                                                                                cena5l: 260, cena3l: 185 },
+      { polozky: [{ nazev: 'Čisté jablko', podil: 0, dostupne: true }],                                                                                                                      cena5l: 180, cena3l: 125 },
+      { polozky: [{ nazev: 'Hruška', podil: 35, dostupne: true }, { nazev: 'Červená řepa', podil: 20, dostupne: true }, { nazev: 'Mrkev', podil: 25, dostupne: true }],                       cena5l: 195, cena3l: 135 },
+      { polozky: [{ nazev: 'Skořice', vyluh: true, dostupne: true }, { nazev: 'Květ bezu', vyluh: true, dostupne: true }, { nazev: 'Limetka', podil: 5, dostupne: true }, { nazev: 'Zázvor', podil: 5, dostupne: true }], cena5l: 205, cena3l: 140 },
+      { polozky: [{ nazev: 'Višeň', podil: 20, dostupne: true }, { nazev: 'Červený rybíz', podil: 20, dostupne: true }],                                                                     cena5l: 215, cena3l: 150 },
+      { polozky: [{ nazev: '🎄 Vánoční mošt', dostupne: true }],                                                                                                                              cena5l: 250, cena3l: 175 },
+      { polozky: [{ nazev: 'Rakytník', podil: 10, dostupne: true }],                                                                                                                         cena5l: 260, cena3l: 185 },
     ],
   },
 }
+
+// Podíl jablečné šťávy v % u položky OBSAH.mosty, null = zatím neznámý.
+export const podilJablka = p => (p.vyluh ? 99 : p.podil == null ? null : 100 - p.podil)
 
 export function imgSrc(path) {
   return import.meta.env.BASE_URL + 'img/' + path.split('/').map(encodeURIComponent).join('/')

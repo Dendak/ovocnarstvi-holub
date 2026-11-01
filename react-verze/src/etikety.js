@@ -1,7 +1,7 @@
 // Etikety moštů k tisku (etikety.html) na arch Avery 3475: A4, 3 × 8 etiket 70 × 36 mm bez mezer.
-// Příchutě a adresa jsou z data.js. Názvy, složení a barvy jsou tady v PRICHUTE; příchuť bez záznamu se ukáže, ale nevytiskne.
+// Příchutě, podíly a adresa jsou z data.js. Názvy, složení a barvy jsou tady v PRICHUTE; příchuť bez záznamu se ukáže, ale nevytiskne.
 import QRCode from 'qrcode'
-import { OBSAH } from './data.js'
+import { OBSAH, podilJablka } from './data.js'
 
 const k = OBSAH.kontakt
 const NA_ARCH = 24
@@ -15,30 +15,27 @@ const NBSP = '\u00A0'
 // nejsou ovoce a skořice, květ a zázvor do šťávy nepatří. Názvy platí, až moštárna písemně potvrdí šťávy bez vody, cukru a aromat.
 // slozka: co je v krabici kromě jablečné šťávy. U koření a květu rozhoduje skutečná receptura moštárny.
 // receptura: složení je zatím odhad, panel na to upozorní. Po odpovědi moštárny upravit slozka a příznak smazat.
-// podil: podíl příchuti v %, jablko se dopočítá do 100. Průměr odhadu moštárny zaokrouhlený na 5 (hruška 30–40, mrkev 20–30, řepa, višeň a rybíz 15–20,
-// rakytník 8–10, limetka a zázvor cca 5). Bez odhadu se tiskne __ %, jablečná šťáva procento mít musí.
 // navic: složka bez procent za příchutí, do součtu 100 se nepočítá. Koření jen pro chuť procento mít nemusí.
-// vyluh: příchuť se jen vylouhuje. Sama procento mít nemusí, jablečná šťáva ano a „100 %“ se u nápoje s kořením psát nesmí, proto 99.
 // barva: příchuť, linka a znak, ať se krabice s různými příchutěmi rozliší na první pohled. Kontrast s bílou aspoň 4,5:1,
 // na etiketě je o 20 % tmavší (aspoň 6,7:1). Sousední odstíny od sebe aspoň ΔE 15.
 const PRICHUTE = {
   'Čisté jablko': { velky: 'Jablko', nazev: ['Jablečný mošt', 'pasterovaná, 100% jablečná šťáva'], slozka: null, barva: '#2f5a33' },
-  'Hruška': { velky: 'Jablko + hruška', nazev: ['Jablečno-hruškový mošt', 'pasterovaná šťáva z jablek a hrušek'], slozka: 'hrušková šťáva', podil: 35, barva: '#626e18' },
-  'Červená řepa': { velky: 'Jablko + červená řepa', nazev: ['Ovocno-zeleninová šťáva', 'pasterovaná, z jablek a červené řepy'], slozka: 'šťáva z červené řepy', podil: 20, barva: '#7d1f4e' },
-  'Mrkev': { velky: 'Jablko + mrkev', nazev: ['Ovocno-zeleninová šťáva', 'pasterovaná, z jablek a mrkve'], slozka: 'mrkvová šťáva', podil: 25, barva: '#c44e14' },
-  'Skořice': { velky: 'Jablko + skořice', nazev: ['Jablečný nápoj se skořicí', 'pasterovaný'], slozka: 'skořice', vyluh: true, receptura: true, barva: '#7a4a24' },
-  'Květ bezu': { velky: 'Jablko + květ bezu', nazev: ['Jablečný nápoj s květem bezu', 'pasterovaný'], slozka: 'květ černého bezu', vyluh: true, receptura: true, barva: '#2f6b73' },
-  'Limetka': { velky: 'Jablko + limetka', nazev: ['Jablečno-limetkový mošt', 'pasterovaná šťáva z jablek a limetek'], slozka: 'limetková šťáva', receptura: true, podil: 5, barva: '#457c1b' },
-  'Zázvor': { velky: 'Jablko + zázvor', nazev: ['Jablečný nápoj se zázvorem', 'pasterovaný'], slozka: 'zázvor', receptura: true, podil: 5, barva: '#86641a' },
-  'Višeň': { velky: 'Jablko + višeň', nazev: ['Jablečno-višňový mošt', 'pasterovaná šťáva z jablek a višní'], slozka: 'višňová šťáva', podil: 20, barva: '#7c1d2b' },
-  'Červený rybíz': { velky: 'Jablko + červený rybíz', nazev: ['Jablečno-rybízový mošt', 'pasterovaná šťáva z jablek a rybízu'], slozka: 'šťáva z červeného rybízu', podil: 20, barva: '#b3242f' },
+  'Hruška': { velky: 'Jablko + hruška', nazev: ['Jablečno-hruškový mošt', 'pasterovaná šťáva z jablek a hrušek'], slozka: 'hrušková šťáva', barva: '#626e18' },
+  'Červená řepa': { velky: 'Jablko + červená řepa', nazev: ['Ovocno-zeleninová šťáva', 'pasterovaná, z jablek a červené řepy'], slozka: 'šťáva z červené řepy', barva: '#7d1f4e' },
+  'Mrkev': { velky: 'Jablko + mrkev', nazev: ['Ovocno-zeleninová šťáva', 'pasterovaná, z jablek a mrkve'], slozka: 'mrkvová šťáva', barva: '#c44e14' },
+  'Skořice': { velky: 'Jablko + skořice', nazev: ['Jablečný nápoj se skořicí', 'pasterovaný'], slozka: 'skořice', receptura: true, barva: '#7a4a24' },
+  'Květ bezu': { velky: 'Jablko + květ bezu', nazev: ['Jablečný nápoj s květem bezu', 'pasterovaný'], slozka: 'květ černého bezu', receptura: true, barva: '#2f6b73' },
+  'Limetka': { velky: 'Jablko + limetka', nazev: ['Jablečno-limetkový mošt', 'pasterovaná šťáva z jablek a limetek'], slozka: 'limetková šťáva', receptura: true, barva: '#457c1b' },
+  'Zázvor': { velky: 'Jablko + zázvor', nazev: ['Jablečný nápoj se zázvorem', 'pasterovaný'], slozka: 'zázvor', receptura: true, barva: '#86641a' },
+  'Višeň': { velky: 'Jablko + višeň', nazev: ['Jablečno-višňový mošt', 'pasterovaná šťáva z jablek a višní'], slozka: 'višňová šťáva', barva: '#7c1d2b' },
+  'Červený rybíz': { velky: 'Jablko + červený rybíz', nazev: ['Jablečno-rybízový mošt', 'pasterovaná šťáva z jablek a rybízu'], slozka: 'šťáva z červeného rybízu', barva: '#b3242f' },
   'Vánoční mošt': { velky: 'Vánoční', nazev: ['Ovocný nápoj s kořením', 'pasterovaný, ze šťávy z jablek a třešní'], slozka: 'třešňová šťáva', navic: 'koření', receptura: true, barva: '#17241a' },
-  'Rakytník': { velky: 'Jablko + rakytník', nazev: ['Jablečno-rakytníkový mošt', 'pasterovaná šťáva z jablek a rakytníku'], slozka: 'rakytníková šťáva', podil: 10, barva: '#aa6100' },
+  'Rakytník': { velky: 'Jablko + rakytník', nazev: ['Jablečno-rakytníkový mošt', 'pasterovaná šťáva z jablek a rakytníku'], slozka: 'rakytníková šťáva', barva: '#aa6100' },
 }
 
 const MOSTY = OBSAH.mosty.skupiny.flatMap(sk => sk.polozky).map(p => {
   const id = bezEmoji(p.nazev)
-  return { id, bezZaznamu: !PRICHUTE[id], ...(PRICHUTE[id] || { velky: `Jablko + ${id.toLowerCase()}`, nazev: [id], slozka: id.toLowerCase(), barva: '#2f5a33' }) }
+  return { id, podil: p.podil, vyluh: p.vyluh, bezZaznamu: !PRICHUTE[id], ...(PRICHUTE[id] || { velky: `Jablko + ${id.toLowerCase()}`, nazev: [id], slozka: id.toLowerCase(), barva: '#2f5a33' }) }
 })
 
 // Od každé příchuti dva kusy: první pohled na celý arch se všemi příchutěmi.
@@ -49,11 +46,9 @@ const cislo = (x, min, max) => Math.min(max, Math.max(min, parseInt(x, 10) || 0)
 // Nedoplněný údaj se vytiskne jako prázdné místo, ať je na etiketě vidět, že chybí.
 // Složení má vždy dva řádky: na jednom by se rozestupy etikety rozdělily na půl pixelu a na každém řádku archu by vyšly jinak.
 function slozeni(m) {
-  const c = x => (m.podil ? x : '__') + NBSP + '%'
-  const [jablko, zbytek] = m.vyluh
-    ? [`99${NBSP}%`, m.slozka]
-    : [c(100 - m.podil), [`${m.slozka} ${c(m.podil)}`, m.navic].filter(Boolean).join(', ')]
-  return `<span>jablečná šťáva ${jablko}</span>,<br><span>${esc(zbytek)}</span>`
+  const c = x => (x ?? '__') + NBSP + '%'
+  const zbytek = m.vyluh ? m.slozka : [`${m.slozka} ${c(m.podil)}`, m.navic].filter(Boolean).join(', ')
+  return `<span>jablečná šťáva ${c(podilJablka(m))}</span>,<br><span>${esc(zbytek)}</span>`
 }
 
 // „30.4.2027“ i „30. 4. 2027“ se tiskne jednotně; neexistující datum (31. 2.) se bere jako nevyplněné.
@@ -144,7 +139,7 @@ function vykreslit() {
   const tiskne = m => stav[m.id]['5 l'] + stav[m.id]['3 l'] > 0
   const vypis = s => s.map(m => m.id).join(', ')
   const bezZaznamu = MOSTY.filter(m => m.bezZaznamu && tiskne(m))
-  const bezPodilu = MOSTY.filter(m => m.slozka && !m.podil && !m.vyluh && tiskne(m))
+  const bezPodilu = MOSTY.filter(m => m.slozka && podilJablka(m) === null && tiskne(m))
   const bezReceptury = MOSTY.filter(m => m.receptura && tiskne(m))
   const bezData = MOSTY.filter(m => stav[m.id]['3 l'] > 0 && !datumZ(stav[m.id].datum))
   const dnes = new Date().setHours(0, 0, 0, 0)

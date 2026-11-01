@@ -165,8 +165,11 @@ body {
 .most .nazev b { font-weight: 600; }
 /* „+“ tučným bezpatkovým písmem, ať spojka „Jablko + …“ vydrží i z dálky */
 .most .nazev i { font-family: var(--sans); font-style: normal; font-weight: 700; color: var(--leaf); }
-/* tečky vedou oko od názvu k cenám */
-.most .nazev::after { content: ''; flex: 1; min-width: 4mm; margin: 0 2mm 0 2.5mm; border-bottom: 1.5pt dotted color-mix(in srgb, var(--ink) 45%, #fff); }
+/* podíly šťáv z etiket: drobně a tlumeně, ať vynikne název. Stejně široké číslice drží „+“ pod sebou. */
+.most .nazev small { margin: 0 0.4mm 0 0.9mm; font-family: var(--sans); font-size: 0.53em; font-weight: 500; font-variant-numeric: tabular-nums; color: var(--muted); }
+.most .nazev b + small { margin-right: 0; }
+/* tečky vedou oko od názvu k cenám; u nejdelšího názvu s podíly zbudou 2 mm, jinak by se zmenšil a „+“ by neseděl pod sebou */
+.most .nazev::after { content: ''; flex: 1; min-width: 2mm; margin: 0 2mm; border-bottom: 1.5pt dotted color-mix(in srgb, var(--ink) 45%, #fff); }
 .cena { font-size: 18.5pt; font-weight: 700; text-align: center; font-variant-numeric: tabular-nums; white-space: nowrap; }
 /* „,–“ menší a tlumeně, ať vynikne číslo */
 .cena small { font-size: 0.72em; font-weight: 600; color: var(--muted); }

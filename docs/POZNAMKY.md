@@ -6,7 +6,7 @@ Na konci každé session: co je hotové, co je rozdělané, co dál.
 ## Rozdělané / další kroky
 - [ ] **Etikety moštů** (`react-verze/etikety.html`, arch Avery 3475, nasazeno 31. 10.): návrh „Čistá bílá“ z konceptů a poroty.
   Na etiketě je název, zákonný název, složení s podílem, trvanlivost, objem, QR kód na e-shop, lhůta po otevření a Pavel Holub s adresou.
-  SISPO, telefon a e-mail jsou pryč. Názvy, složení a podíly jsou v `src/etikety.js` (`PRICHUTE`), lhůta se zadává na stránce. Panel hlásí, co ještě chybí.
+  SISPO, telefon a e-mail jsou pryč. Názvy a složení jsou v `src/etikety.js` (`PRICHUTE`), podíly v `src/data.js` (`OBSAH.mosty`, stejná čísla tiskne ceník a ukazuje web), lhůta se zadává na stránce. Panel hlásí, co ještě chybí.
   Tisk se zastaví jen u 3 l bez data, u příchuti bez záznamu v `PRICHUTE` a u razítka, které by vjelo do QR kódu. Svislé polohy etikety jsou v celých px, jinak se rozestupy liší podle řádku archu.
   **Čeká na moštárnu (písemně):** přímo lisováno bez vody, cukru a aromat; v jaké podobě je příchuť; skutečné podíly místo odhadů (u Vánočního chybí i odhad podílu třešňové šťávy, tiskne se __ %, tak se prodávat nesmí);
   zda se skořice a květ louhují přímo ve šťávě (99 % platí jen bez přidané vody, asi do 1 kg suroviny na 100 kg šťávy); zda je zázvor šťáva (pak „zázvorová šťáva 5 %“);
@@ -15,7 +15,7 @@ Na konci každé session: co je hotové, co je rozdělané, co dál.
   na stejnou stěnu, nebo si od SZPI (Tábor) nechat písemně potvrdit výjimku. Zkušební tisk na skutečný arch a sken QR kódu telefonem ještě neproběhly.
 - [ ] **Texty webu k moštům** podle rešerše z 31. 10., čeká na rozhodnutí: pryč „bez přidaného cukru“, „bez konzervantů“, „domácí“, „čerstvě
   lisovaná“, „lisujeme“; cena za litr na webu a v ceníku; v e-shopu u každé příchutě údaje o potravině (čl. 14 nařízení 1169/2011). Při přejmenování
-  nechat `druhNazev: 'Mošty'`, jinak `sazba_radku()` v `_spolecne.php` počítá 12 % DPH místo 21 %, a upravit `katalog.js` ř. 144, `cenik.js` ř. 38–43 a klíč v `PRICHUTE` v `etikety.js` (jinak se příchuť přestane tisknout).
+  nechat `druhNazev: 'Mošty'`, jinak `sazba_radku()` v `_spolecne.php` počítá 12 % DPH místo 21 %, a upravit `katalog.js` ř. 144, `cenik.js` ř. 39–45 a klíč v `PRICHUTE` v `etikety.js` (jinak se příchuť přestane tisknout).
 - [ ] **EET 2.0 od 1. 1. 2027** (pilot leden, ostrý provoz 1. 2.). Rozhodnuto 27. 10.: výjimka pro prvovýrobu není, EET OFF ne (plátce DPH), Rakousko se neeviduje. Evidují se platby na místě: **ze dvora** a **při rozvozu** (hotově, QR u auta). Stánek zatím ne. Eviduje táta, později musí jít přidat další (Lukáš, Denis) – vlastní přihlášení, u každé evidence kdo. Plán: 1. 11. certifikát EET v MOJE daně → test na Playground (SOAP v4.1, eet.gov.cz Vývojáři) → v přehledu objednávek „Zaplaceno na místě“ + nový „Prodej ze dvora“ (částka, DPH ovoce 12 % / mošty 21 %) s FIK na elektronické účtence; záloha aplikace MOJE EET (od 1. 12.).
 - [ ] **Upozornění na telefonu:** na tátově iPhonu (aplikace z plochy) přihlásit heslem, Nastavení → Zapnout upozornění → Poslat zkušební. Ověřit, že dorazí.
 **Další krok:** další zdražení moštů (návrh níže) čeká na rozhodnutí táty a Lukáše – 17. 10.: „zatím jak chtěl Lukáš“.
@@ -70,6 +70,7 @@ Nic rozpracovaného v kódu není, main = produkce je čistá.
 
 ## Historie
 ### 2026-11-01
+- Podíly z etiket jsou i v ceníku: tištěný má „Jablko 65 % + Hruška 35 %“, blok Ceník na webu „Hruška 35 %“. Stojí u názvu, vedle ceny by se četly jako sleva. Čísla se přesunula z `PRICHUTE` do `data.js` (`podil`, `vyluh`, `podilJablka()`), etikety se tím nezměnily. Vánoční v ceníku číslo nemá, dokud nebude znám podíl třešňové šťávy.
 - Etikety: podíly příchutí jsou pevně v `PRICHUTE`, průměr odhadu moštárny zaokrouhlený na 5 (hruška 35, mrkev 25, řepa, višeň a rybíz 20, rakytník 10, limetka a zázvor 5). Sloupec s podílem je z panelu pryč. Skořice a květ bezu jsou jen vylouhované: 99 % jablečné šťávy, příchuť bez procenta. Vánoční má třešňovou šťávu: „Ovocný nápoj s kořením, pasterovaný, ze šťávy z jablek a třešní“ (§ 5 odst. 3 vyhlášky 248/2018 dává „jablečný“ jen u jednoho druhu ovoce). Limetka a rakytník jsou „Jablko + …“ bez slova příchuť.
 
 ### 2026-10-31
