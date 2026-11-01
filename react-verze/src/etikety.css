@@ -22,7 +22,7 @@
 
 /* Etikety moštů k tisku (etikety.html): čistě bílá etiketa bez barevné plochy, barvu má jen příchuť, linka a znak.
    Arch Avery 3475: A4, 3 × 8 etiket 70 × 36 mm bez mezer, nahoře a dole 4,5 mm volno. Krajní sloupce sahají až
-   k okraji listu, kam tiskárna nedotiskne, proto má inkoust od kraje etikety 5 mm vlevo a vpravo a asi 1,9 mm nahoře a dole:
+   k okraji listu, kam tiskárna nedotiskne, proto má inkoust od kraje etikety 5 mm vlevo a vpravo, asi 1,7 mm nahoře a 2 mm dole:
    posun tisku do 1,5 mm nic neořízne ani nepřetiskne na sousední etiketu.
    Povinné údaje mají střední výšku písma aspoň 1,2 mm (Source Sans 3 od 7 pt, tady 8 pt: 1,37 mm).
    Všechno kromě barevných prvků je čistá černá #000: tiskne se jedním tonerem bez rastru, takže drobné písmo zůstane ostré. */
@@ -160,6 +160,7 @@ body {
   .ovladani tbody th, .ovladani thead th:first-child { position: sticky; left: 0; background: #fff; }
   /* Pole pod sticky sloupcem prohlížeč bere jako viditelné a sám se k němu nevrátí. Sloupec má 109 px, zbytek je rezerva. */
   .sloupce { scroll-padding-left: 120px; }
+  #archy { overflow-x: auto; } /* náhled má 357 px, na nejužších telefonech by jinak ujížděla celá stránka */
   .arch { zoom: 0.45; }
 }
 

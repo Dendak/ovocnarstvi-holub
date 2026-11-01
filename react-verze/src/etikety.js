@@ -32,7 +32,7 @@ const PRICHUTE = {
   'Zázvor': { velky: 'Jablko + zázvor', nazev: ['Jablečný nápoj se zázvorem', 'pasterovaný'], slozka: 'zázvor', receptura: true, podil: 5, barva: '#86641a' },
   'Višeň': { velky: 'Jablko + višeň', nazev: ['Jablečno-višňový mošt', 'pasterovaná šťáva z jablek a višní'], slozka: 'višňová šťáva', podil: 20, barva: '#7c1d2b' },
   'Červený rybíz': { velky: 'Jablko + červený rybíz', nazev: ['Jablečno-rybízový mošt', 'pasterovaná šťáva z jablek a rybízu'], slozka: 'šťáva z červeného rybízu', podil: 20, barva: '#b3242f' },
-  'Vánoční mošt': { velky: 'Vánoční', nazev: ['Jablečno-třešňový nápoj s kořením', 'pasterovaný'], slozka: 'třešňová šťáva', navic: 'koření', receptura: true, barva: '#17241a' },
+  'Vánoční mošt': { velky: 'Vánoční', nazev: ['Ovocný nápoj s kořením', 'pasterovaný, ze šťávy z jablek a třešní'], slozka: 'třešňová šťáva', navic: 'koření', receptura: true, barva: '#17241a' },
   'Rakytník': { velky: 'Jablko + rakytník', nazev: ['Jablečno-rakytníkový mošt', 'pasterovaná šťáva z jablek a rakytníku'], slozka: 'rakytníková šťáva', podil: 10, barva: '#aa6100' },
 }
 
@@ -117,11 +117,12 @@ function nazvy() {
     mereni.font = `${css.fontWeight} 240px ${css.fontFamily}`
     mereni.letterSpacing = `${parseFloat(css.letterSpacing) * v}px`
     const tvar = mereni.measureText(p.textContent)
-    const zmenseni = Math.min(1, v * p.parentElement.clientWidth / (tvar.actualBoundingBoxLeft + tvar.actualBoundingBoxRight))
+    const dotah = tvar.actualBoundingBoxDescent / v > 1
+    const zmenseni = Math.min(dotah ? 0.933 : 1, v * p.parentElement.clientWidth / (tvar.actualBoundingBoxLeft + tvar.actualBoundingBoxRight))
     if (zmenseni < 1) p.style.fontSize = `${parseFloat(css.fontSize) * zmenseni}px`
     p.parentElement.style.textIndent = `${tvar.actualBoundingBoxLeft * zmenseni / v}px`
-    // Názvy pod 17 pt mají stejné účaří jako plné, jejich p a y by proto seděly skoro na lince. Zvednou se o 2 px.
-    p.parentElement.style.top = zmenseni < 0.85 ? '6px' : ''
+    // Ocásek p a y by vjel do linky, proto se názvy s dotahem zvednou o 2 px a kvůli hornímu okraji mají nejvýš 19 pt.
+    p.parentElement.style.top = dotah ? '6px' : ''
   }
 }
 
@@ -154,7 +155,7 @@ function vykreslit() {
     bezData.length && `Tisk čeká na platné datum u 3 l: ${vypis(bezData)}. Krabice 3 l datum nemá. Pište ho takhle: 30. 4. 2027.`,
     dlouheRazitko && 'Tisk čeká na kratší text razítka, takhle by vjel do QR kódu.',
     prosle.length && `Datum už minulo: ${vypis(prosle)}.`,
-    bezPodilu.length && `Bez podílu: ${vypis(bezPodilu)}. Odhad moštárny chybí, na etiketě bude __ %.`,
+    bezPodilu.length && `Bez podílu: ${vypis(bezPodilu)}. Odhad moštárny chybí, na etiketě bude __${NBSP}%.`,
     bezReceptury.length && `Složení je zatím odhad: ${vypis(bezReceptury)}. Tiskněte až podle úplné receptury od moštárny.`,
     n && !tydny && 'Doplňte, do kolika týdnů po otevření se má mošt spotřebovat.',
     Number(pole('tydny').value) !== Number(tydny) && 'Lhůta po otevření musí být celý počet týdnů od 1 do 99.',
