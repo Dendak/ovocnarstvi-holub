@@ -39,13 +39,17 @@ $mnozstvi = fn(string $r): ?array => preg_match('/^(\d+(?:[.,]\d+)?)\s*(kg|ks|×
 // Nezlomitelné mezery: částka se na úzkém displeji nerozdělí na dva řádky („základ 10“ / „714,29 Kč“).
 $kc2 = fn(float $x) => number_format($x, 2, ',', "\u{00A0}") . "\u{00A0}Kč";
 $radky = '';
+$soucet = 0;
+$zakladRadku = 0.0;
 foreach ($o['polozky'] ?? [] as $r) {
   $cena = cena_radku($r);
+  $soucet += (int)$cena;
   $popis = preg_replace('/\s*–\s*[\d\s]+\s*Kč\s*$/u', '', $r);
   $sazba = sazba_radku($r);
   $podrobne = '';
   if ($plny && $cena !== null) {
     $zaklad = round($cena / (1 + $sazba / 100), 2);
+    $zakladRadku += $zaklad;
     $mn = $mnozstvi($r);
     $podrobne = '<br><span class="muted">' . ($mn ? h(str_replace('.', ',', (string)$mn[0]) . ' ' . $mn[1] . ' × ' . $kc2($zaklad / $mn[0]) . ' bez DPH · ') : '')
       . 'základ ' . h($kc2($zaklad)) . ' · DPH ' . $sazba . ' % ' . h($kc2($cena - $zaklad)) . '</span>';
@@ -56,6 +60,9 @@ if ($radky === '') $radky = '<tr><td colspan="2" style="white-space:pre-line">' 
 $celkem = cil_platby($o);
 // Ceny v e-shopu jsou konečné (včetně DPH) – základ a daň se dopočítají.
 $rozpis = rozpis_dph($o);
+// Sleva na celou objednávku: řádky jsou v běžných cenách, celkem a rozpis DPH už po slevě.
+$sleva = !empty($o['sleva']) ? $soucet - $celkem : 0;
+$slevaZaklad = $zakladRadku - array_sum(array_column($rozpis, 'zaklad'));
 // Data s nezlomitelnými mezerami – na telefonu se „23. 10. 2026“ nerozdělí na dva řádky.
 $den = fn(string $x): string => date("j.\u{00A0}n.\u{00A0}Y", strtotime($x));
 $datum = $den($d['vystaveno']);
@@ -83,13 +90,14 @@ table{width:100%;border-collapse:collapse;margin-top:12px}td{padding:8px 0;borde
   <div class="strany">
     <div><b>Prodávající</b><?= h($p['jmeno']) ?><br><?= h($p['adresa']) ?><br>IČO: <?= h($p['ico']) ?><?= $p['dic'] ? '<br>DIČ: ' . h($p['dic']) : '' ?><?= !empty($p['telefon']) ? '<br>Tel.: ' . h($p['telefon']) : '' ?>
       <?= $p['zapis'] ? '<br><span class="muted">' . h($p['zapis']) . '</span>' : '' ?></div>
-    <div><b>Kupující</b><?= h($o['jmeno']) ?><?= !empty($o['ico']) ? '<br>IČO: ' . h($o['ico']) : '' ?><?= !empty($o['adresa_overena']) ? '<br>' . h($o['adresa_overena'])
-      : (!empty($o['adresa']) ? '<br>' . h($o['adresa'] . ', ' . trim(($o['psc'] ?? '') . ' ' . (($o['mesto'] ?? '') ?: 'České Budějovice'))) : '') ?></div>
+    <div><b>Kupující</b><?= h($o['jmeno']) ?><?= !empty($o['ico']) ? '<br>IČO: ' . h($o['ico']) : '' ?><?= !empty($o['dic']) ? '<br>DIČ: ' . h($o['dic']) : '' ?><?= !empty($o['fakturacni_adresa']) ? '<br>' . h($o['fakturacni_adresa']) : (!empty($o['adresa_overena']) ? '<br>' . h($o['adresa_overena'])
+      : (!empty($o['adresa']) ? '<br>' . h($o['adresa'] . ', ' . trim(($o['psc'] ?? '') . ' ' . (($o['mesto'] ?? '') ?: 'České Budějovice'))) : '')) ?></div>
   </div>
   <p>Datum vystavení: <?= h($datum) ?><br><?= $p['platce_dph'] ? 'Datum uskutečnění zdanitelného plnění' : 'Datum prodeje' ?>: <?= h($den(duzp($o))) ?><br>
     Úhrada: <?= h($d['uhrada']) ?> – uhrazeno</p>
   <table>
     <?= $radky ?>
+    <?php if ($sleva): ?><tr><td>Sleva <?= (int)$o['sleva'] ?>&nbsp;% na celou objednávku<?= $plny ? '<br><span class="muted">základ −' . h($kc2($slevaZaklad)) . ' · DPH −' . h($kc2($sleva - $slevaZaklad)) . '</span>' : '' ?></td><td class="r">−<?= h(kc($sleva)) ?></td></tr><?php endif ?>
     <?php if (!empty($o['rozvoz'])): ?><tr><td>Doprava až domů</td><td class="r">v ceně</td></tr><?php endif ?>
     <tr class="celkem"><td>Celkem<?= $p['platce_dph'] ? ' včetně DPH' : '' ?></td><td class="r"><?= h(kc($celkem)) ?></td></tr>
   </table>

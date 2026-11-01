@@ -281,6 +281,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && is_string($_POST['vs'] ?? null)) {
       } else {
         $o['puvodni'] = ['polozky' => $puv['polozky'], 'celkem' => $puv['celkem'], 'castka' => $puv['castka'], 'mn' => $zmeny];
         $o['polozky'] = $radky;
+        $ubyde = po_sleve($o, $ubyde); // řádky jsou v běžných cenách, celkem po slevě
         $o['celkem'] = max(0, $puv['celkem'] - $ubyde);
         $o['castka'] = $puv['castka'] > 0 ? max(0, $puv['castka'] - $ubyde) : 0;
         $o['upraveno'] = date('c');
@@ -804,6 +805,7 @@ $karta = function (array $o) use ($platba, $tlacitko, $zaplaceno, $cil, $dorucen
   if (!$dovoz && !empty($o['cas'])) $s .= '<div><b>Přijede kolem ' . h($o['cas']) . '</b></div>';
   if (!empty($o['telefon'])) $s .= '<div><a class="tel" href="tel:' . h(preg_replace('/[^\d+]/', '', $o['telefon'])) . '">' . h($o['telefon']) . '</a></div>';
   $s .= '<ul>' . implode('', array_map(fn($r) => '<li>' . h($r) . '</li>', $o['polozky'] ?? [])) . '</ul>';
+  if (!empty($o['sleva'])) $s .= '<div><b>Sleva ' . (int)$o['sleva'] . ' % na celou objednávku</b>, po slevě ' . h(kc(cil_platby($o))) . '</div>';
   if (empty($o['polozky'])) $s .= '<div class="muted" style="white-space:pre-line">' . h($o['souhrn']) . '</div>';
   if (!empty($o['poznamka'])) $s .= '<div><b>Poznámka:</b> ' . h($o['poznamka']) . '</div>';
   if (!$zruseno) $s .= $platba($o);

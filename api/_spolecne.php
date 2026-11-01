@@ -905,6 +905,8 @@ function zpracovat_zpravu_banky(string $raw, array &$stav, array &$vysledek): vo
 // Účtenky (doklady o prodeji)
 // ---------------------------------------------------------------------------
 function cil_platby(array $o): int { return (int)(($o['castka'] ?? 0) ?: ($o['celkem'] ?? 0)); }
+// Sleva na celou objednávku v % (pole sleva, zatím jen u objednávek zapsaných ručně): řádky zůstávají v běžných cenách, celkem a castka jsou po slevě.
+function po_sleve(array $o, int $castka): int { return (int)round($castka * (100 - (float)($o['sleva'] ?? 0)) / 100); }
 function je_zaplaceno(array $o): bool {
   return !empty($o['zaplaceno_hotove']) || (cil_platby($o) > 0 && (float)($o['zaplaceno'] ?? 0) + 0.001 >= cil_platby($o));
 }
@@ -994,6 +996,16 @@ function rozpis_dph(array $o): array {
     $sazba = sazba_radku((string)$r);
     $poSazbach[$sazba] = ($poSazbach[$sazba] ?? 0) + $cena;
     $soucet += $cena;
+  }
+  // Sleva na celou objednávku se rozdělí mezi sazby podle jejich podílu, jinak by celá spadla do sazby pro ovoce.
+  if (!empty($o['sleva']) && $soucet > 0) {
+    $zbyva = $cil = cil_platby($o);
+    $posledni = array_key_last($poSazbach);
+    foreach ($poSazbach as $sazba => $celkem) {
+      $poSazbach[$sazba] = $sazba === $posledni ? round($zbyva, 2) : round($celkem * $cil / $soucet, 2);
+      $zbyva -= $poSazbach[$sazba];
+    }
+    $soucet = $cil;
   }
   $zbytek = cil_platby($o) - $soucet;
   if ($zbytek !== 0 || !$poSazbach) {
