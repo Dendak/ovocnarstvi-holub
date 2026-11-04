@@ -9,8 +9,8 @@ Na konci každé session: co je hotové, co je rozdělané, co dál.
   SISPO, telefon a e-mail jsou pryč. Názvy a složení jsou v `src/etikety.js` (`PRICHUTE`), podíly v `src/data.js` (`OBSAH.mosty`, stejná čísla tiskne ceník a ukazuje web), lhůta se zadává na stránce. Panel hlásí, co ještě chybí.
   Tisk se zastaví jen u 3 l bez data, u příchuti bez záznamu v `PRICHUTE` a u razítka, které by vjelo do QR kódu. Svislé polohy etikety jsou v celých px, jinak se rozestupy liší podle řádku archu.
   **Čeká na moštárnu (písemně):** přímo lisováno bez vody, cukru a aromat; v jaké podobě je příchuť; skutečné podíly místo odhadů (u Vánočního chybí i odhad podílu třešňové šťávy, tiskne se __ %, tak se prodávat nesmí);
-  zda se skořice a květ louhují přímo ve šťávě (99 % platí jen bez přidané vody, asi do 1 kg suroviny na 100 kg šťávy); zda je zázvor šťáva (pak „zázvorová šťáva 5 %“);
-  receptura skořice, květu bezu, zázvoru a Vánočního; lhůta po otevření; výživové údaje na 100 ml; razítko na 5 l (stěna, den a měsíc, nebo jen
+  zda se skořice a květ louhují přímo ve šťávě (99 % platí jen bez přidané vody, asi do 1 kg suroviny na 100 kg šťávy);
+  receptura skořice, květu bezu a Vánočního; lhůta po otevření; výživové údaje na 100 ml; razítko na 5 l (stěna, den a měsíc, nebo jen
   měsíc a rok); datum pro 3 l ke každé várce; siřičitany u limetky. Výživové údaje se na etiketu nevejdou: až budou čísla, přidat druhou etiketu
   na stejnou stěnu, nebo si od SZPI (Tábor) nechat písemně potvrdit výjimku. Zkušební tisk na skutečný arch a sken QR kódu telefonem ještě neproběhly.
 - [ ] **Texty webu k moštům** podle rešerše z 31. 10., čeká na rozhodnutí: pryč „bez přidaného cukru“, „bez konzervantů“, „domácí“, „čerstvě
@@ -69,6 +69,9 @@ Nic rozpracovaného v kódu není, main = produkce je čistá.
 - [ ] Tátovi nastavit „Heslo k objednávkám“ a ikonu přehledu na plochu telefonu i PC (návod v chatu 22. 10.).
 
 ## Historie
+### 2026-11-04
+- Zázvor má podle majitele 1 % zázvoru: etiketa „jablečná šťáva 99 %, zázvor 1 %“, stejně ceník a web (`data.js`). Upozornění „složení je zatím odhad“ už u zázvoru není.
+
 ### 2026-11-01
 - Účtenka umí slevu na celou objednávku: pole `sleva` v % v JSON objednávky, řádky zůstávají v běžných cenách, `celkem` a `castka` jsou po slevě (`po_sleve()`, `rozpis_dph()` rozdělí slevu mezi sazby DPH). U kupujícího ukáže `dic` a `fakturacni_adresa`, jsou-li vyplněné. Formulář na to není, zapisuje se přes `scripts/data-serveru.sh`.
 - Podíly z etiket jsou i v ceníku: tištěný má „Jablko 65 % + Hruška 35 %“, blok Ceník na webu „Hruška 35 %“. Stojí u názvu, vedle ceny by se četly jako sleva. Čísla se přesunula z `PRICHUTE` do `data.js` (`podil`, `vyluh`, `podilJablka()`), etikety se tím nezměnily. Vánoční číslo nemá. Až bude znám podíl třešňové šťávy, nestačí ho doplnit do `data.js`: ceník u něj podíl nečte a web by napsal jen „Vánoční mošt 15 %“.

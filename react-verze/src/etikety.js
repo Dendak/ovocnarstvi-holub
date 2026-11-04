@@ -26,7 +26,7 @@ const PRICHUTE = {
   'Skořice': { velky: 'Jablko + skořice', nazev: ['Jablečný nápoj se skořicí', 'pasterovaný'], slozka: 'skořice', receptura: true, barva: '#7a4a24' },
   'Květ bezu': { velky: 'Jablko + květ bezu', nazev: ['Jablečný nápoj s květem bezu', 'pasterovaný'], slozka: 'květ černého bezu', receptura: true, barva: '#2f6b73' },
   'Limetka': { velky: 'Jablko + limetka', nazev: ['Jablečno-limetkový mošt', 'pasterovaná šťáva z jablek a limetek'], slozka: 'limetková šťáva', receptura: true, barva: '#457c1b' },
-  'Zázvor': { velky: 'Jablko + zázvor', nazev: ['Jablečný nápoj se zázvorem', 'pasterovaný'], slozka: 'zázvor', receptura: true, barva: '#86641a' },
+  'Zázvor': { velky: 'Jablko + zázvor', nazev: ['Jablečný nápoj se zázvorem', 'pasterovaný'], slozka: 'zázvor', barva: '#86641a' },
   'Višeň': { velky: 'Jablko + višeň', nazev: ['Jablečno-višňový mošt', 'pasterovaná šťáva z jablek a višní'], slozka: 'višňová šťáva', barva: '#7c1d2b' },
   'Červený rybíz': { velky: 'Jablko + červený rybíz', nazev: ['Jablečno-rybízový mošt', 'pasterovaná šťáva z jablek a rybízu'], slozka: 'šťáva z červeného rybízu', barva: '#b3242f' },
   'Vánoční mošt': { velky: 'Vánoční', nazev: ['Ovocný nápoj s kořením', 'pasterovaný, ze šťávy z jablek a třešní'], slozka: 'třešňová šťáva', navic: 'koření', receptura: true, barva: '#17241a' },

@@ -46,14 +46,14 @@ export const OBSAH = {
     // Ceník moštů pro web, e-shop i tisk (cenik.html). dostupne: false = vyprodáno celé,
     // vyprodano: ['3l'] = vyprodaná jen tato velikost ('3l' nebo '5l').
     // podil: podíl příchuti v %, stejné číslo je na etiketách, v ceníku i na webu. Průměr odhadu moštárny zaokrouhlený na 5 (hruška 30–40,
-    // mrkev 20–30, řepa, višeň a rybíz 15–20, rakytník 8–10, limetka a zázvor cca 5). Bez čísla = zatím neznámý: etiketa má __ %, ceník nic.
+    // mrkev 20–30, řepa, višeň a rybíz 15–20, rakytník 8–10, limetka cca 5), zázvor 1 podle majitele. Bez čísla = zatím neznámý: etiketa má __ %, ceník nic.
     // Až bude číslo u Vánočního, dořešit ceník a web: ceník u něj podíl nečte a web by nenapsal, že jde o třešňovou šťávu.
     // vyluh: příchuť se jen vylouhuje. Sama procento mít nemusí, jablečná šťáva ano a „100 %“ se u nápoje s kořením psát nesmí, proto 99.
     platnostOd: '29. 10. 2026',
     skupiny: [
       { polozky: [{ nazev: 'Čisté jablko', podil: 0, dostupne: true }],                                                                                                                      cena5l: 180, cena3l: 125 },
       { polozky: [{ nazev: 'Hruška', podil: 35, dostupne: true }, { nazev: 'Červená řepa', podil: 20, dostupne: true }, { nazev: 'Mrkev', podil: 25, dostupne: true }],                       cena5l: 195, cena3l: 135 },
-      { polozky: [{ nazev: 'Skořice', vyluh: true, dostupne: true }, { nazev: 'Květ bezu', vyluh: true, dostupne: true }, { nazev: 'Limetka', podil: 5, dostupne: true }, { nazev: 'Zázvor', podil: 5, dostupne: true }], cena5l: 205, cena3l: 140 },
+      { polozky: [{ nazev: 'Skořice', vyluh: true, dostupne: true }, { nazev: 'Květ bezu', vyluh: true, dostupne: true }, { nazev: 'Limetka', podil: 5, dostupne: true }, { nazev: 'Zázvor', podil: 1, dostupne: true }], cena5l: 205, cena3l: 140 },
       { polozky: [{ nazev: 'Višeň', podil: 20, dostupne: true }, { nazev: 'Červený rybíz', podil: 20, dostupne: true }],                                                                     cena5l: 215, cena3l: 150 },
       { polozky: [{ nazev: '🎄 Vánoční mošt', dostupne: true }],                                                                                                                              cena5l: 250, cena3l: 175 },
       { polozky: [{ nazev: 'Rakytník', podil: 10, dostupne: true }],                                                                                                                         cena5l: 260, cena3l: 185 },
