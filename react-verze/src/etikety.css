@@ -22,9 +22,9 @@
 
 /* Etikety moštů k tisku (etikety.html): čistě bílá etiketa bez barevné plochy, barvu má jen příchuť, linka a znak.
    Arch Avery 3475: A4, 3 × 8 etiket 70 × 36 mm bez mezer, nahoře a dole 4,5 mm volno. Krajní sloupce sahají až
-   k okraji listu, kam tiskárna nedotiskne, proto má inkoust od kraje etikety 5 mm vlevo a vpravo, asi 1,7 mm nahoře a 2 mm dole:
+   k okraji listu, kam tiskárna nedotiskne, proto má inkoust od kraje etikety 5 mm vlevo a vpravo, asi 1,7 mm nahoře a 1,8 mm dole:
    posun tisku do 1,5 mm nic neořízne ani nepřetiskne na sousední etiketu.
-   Povinné údaje mají střední výšku písma aspoň 1,2 mm (Source Sans 3 od 7 pt, tady 8 pt: 1,37 mm).
+   Povinné údaje mají střední výšku písma aspoň 1,2 mm (Source Sans 3 od 7 pt, tady 9,5 pt: 1,63 mm, adresa 8,5 pt: 1,46 mm).
    Všechno kromě barevných prvků je čistá černá #000: tiskne se jedním tonerem bez rastru, takže drobné písmo zůstane ostré. */
 :root {
   --line: #dfd7c9;
@@ -95,19 +95,20 @@ body {
 }
 
 /* ---------- etiketa ---------- */
-/* Etiketa musí pojmout osm řádků povinných údajů a QR kód, proto je rozložená do pevné mřížky. Svisle je všechno v celých px od horního kraje:
+/* Etiketa musí pojmout sedm řádků povinných údajů a QR kód, proto je rozložená do pevné mřížky. Svisle je všechno v celých px od horního kraje:
    polohy v mm by se na každém řádku archu zaokrouhlily jinak a mezery mezi skupinami údajů by skákaly. V mm to dá: název končí účařím asi
-   na 7,2, linka 8,7, údaje 9,3 až 27,8, pata 28,6 až 33,9. Vpravo objem od 9,3 a QR kód 14,3 až 27,3.
-   Obsah má šířku 60 mm, sloupec údajů 45,2 mm, QR kód 13 mm. Vlevo má kód 1,8 mm volna (4 moduly), nahoře asi 1,2 a dole asi 1,4 mm. */
+   na 7,2, linka 8,7, údaje 9,5 až 30,7, adresa 31,2 až 34,1. Vpravo objem od 9,3 a QR kód 15,1 až 28,1.
+   Obsah má šířku 60 mm, sloupec údajů 45,2 mm, QR kód 13 mm. Kód má kolem dokola aspoň 4 moduly volna (1,8 mm).
+   Šířku písma určuje sloupec vedle kódu: při 9,5 pt je nejdelší řádek „Jablečný nápoj s květem bezu“ (44,1 mm). */
 .etiketa {
   --tmava: color-mix(in srgb, var(--barva) 80%, #000); /* barevné písmo na bílé je o 20 % tmavší */
   width: 70mm;
   height: 36mm;
   overflow: hidden;
   color: #000;
-  font-size: 8pt;
+  font-size: 9.5pt;
   font-weight: 500;
-  line-height: 11px; /* celé pixely: řádky v mm by se v tisku zaokrouhlily na každé etiketě jinak */
+  line-height: 13px; /* celé pixely: řádky v mm by se v tisku zaokrouhlily na každé etiketě jinak */
   font-variant-numeric: lining-nums;
   text-rendering: geometricPrecision;
 }
@@ -126,26 +127,28 @@ body {
 .znak svg { display: block; width: 100%; height: 100%; }
 .linka { right: 0; top: 33px; height: 0; border: 0; border-top: 0.3mm solid var(--tmava); }
 
-/* Skupiny údajů se rozloží rovnoměrně: čisté jablko má o dva řádky méně, a přesto dosedá nahoru i dolů stejně jako ostatní. */
-.udaje { top: 35px; display: flex; flex-direction: column; justify-content: space-between; width: 45.2mm; height: 70px; }
+/* Skupiny údajů se rozloží rovnoměrně: čisté jablko má o dva řádky méně, a přesto dosedá nahoru i dolů stejně jako ostatní.
+   Volné místo bloku má 6 px na dvě mezery (čisté jablko 32 px na jednu), takže space-between nikde nedá půl pixelu. Blok začíná o 1 px níž než
+   dřív, ať háček prvního řádku nesedí na lince. Řádek 13 px nechá mezi ocáskem a háčkem pod ním víc místa než dřív 11 px při 8 pt. */
+.udaje { top: 36px; display: flex; flex-direction: column; justify-content: space-between; width: 45.2mm; height: 80px; }
 .udaje p { margin: 0; }
 .nazev span { display: block; white-space: nowrap; }
 .nazev span:first-child { font-weight: 700; }
-.nazev span:last-child { letter-spacing: -0.012em; } /* nejdelší řádek končí vedle QR kódu, nesmí mu ubrat volné místo */
-.slozeni span { white-space: nowrap; }
+.nazev span:last-child:not(:first-child) { letter-spacing: -0.012em; } /* dlouhý řádek končí vedle QR kódu, nesmí mu ubrat volné místo */
+.slozeni { white-space: nowrap; } /* zalamuje se jen mezi složkami (<br> v etikety.js), co je delší, stránka pozná */
 .trvanlivost b { display: block; font-weight: 700; white-space: nowrap; }
-/* Těsnější řádky drží pohromadě popisek s datem a obě patky, předěly mezi skupinami tak vyjdou zřetelné. Jen tady: v horních řádcích těchto
-   skupin nejsou dotahy, v názvu a složení by se 10 px dotklo háčků. Při změně adresy nebo věty o otevření přeměřit nejbližší inkoust. */
-.trvanlivost, .otevreni, .adresa { line-height: 10px; }
+/* Těsnější řádky drží pohromadě popisek s datem, předěly mezi skupinami tak vyjdou zřetelné. Jen tady: v horním řádku nejsou dotahy,
+   v názvu a složení by se 11 px dotklo háčků. */
+.trvanlivost { line-height: 11px; }
 
-.qr { left: auto; right: 0; top: 54px; display: block; width: 13mm; height: 13mm; color: #000; }
+.qr { left: auto; right: 0; top: 57px; display: block; width: 13mm; height: 13mm; color: #000; }
 .qr svg { display: block; width: 100%; height: 100%; fill: currentColor; }
 /* Na krabici je objem vytištěný také, tady musí být na stejné stěně jako název. Celým slovem: „5 l“ se malým písmem čte jako „51“. */
 .objem { left: auto; right: 0; top: 35px; display: flex; gap: 0.8mm; align-items: baseline; width: 13mm; font-size: 9pt; font-weight: 700; line-height: 14px; }
 .objem b { font-size: 13pt; font-weight: 900; }
-/* Pata má dva sloupce: co s načatou krabicí a kdo za ni odpovídá. Přes celou šířku by se věta nevešla a pod kódem by rušila. */
-.otevreni { top: 108px; width: 32mm; }
-.adresa { left: 33mm; top: 108px; width: 27mm; }
+/* Kdo za krabici odpovídá: pata na jednom řádku přes celou šířku pod kódem. Je o něco menší než údaje a má nad sebou víc místa
+   než řádky uvnitř skupin, jinak by se četla jako další řádek trvanlivosti. Níž nejde: při posunu tisku 1,5 mm dolů by se ořízla. */
+.adresa { top: 118px; font-size: 8.5pt; line-height: 11px; white-space: nowrap; }
 
 @media screen and (max-width: 860px) {
   .tabulka { grid-template-columns: minmax(0, 1fr); }

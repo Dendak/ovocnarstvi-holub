@@ -1,4 +1,4 @@
-import { OBSAH, imgSrc, imgSrcSet, podilJablka } from '../data'
+import { OBSAH, imgSrc, imgSrcSet, podilJablka, rozpis } from '../data'
 
 const FOTO = 'mosty/most-sklenice.jpg'
 
@@ -55,6 +55,7 @@ export default function Mosty() {
                         <span className={p.dostupne === false ? 'text-muted line-through' : ''}>
                           {bezEmoji(p.nazev)}
                           {p.podil > 0 && <span className="text-sm text-muted"> {p.podil}&nbsp;%</span>}
+                          {p.rozpis && <span className="text-sm text-muted"> {rozpis(p).map(([s, x]) => `${s.toLowerCase()}\u00A0${x}\u00A0%`).join(', ')}</span>}
                           {jenVelikost(p)}
                         </span>
                         {j < sk.polozky.length - 1 ? ',' : ''}

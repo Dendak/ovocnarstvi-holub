@@ -5,14 +5,15 @@ Na konci každé session: co je hotové, co je rozdělané, co dál.
 
 ## Rozdělané / další kroky
 - [ ] **Etikety moštů** (`react-verze/etikety.html`, arch Avery 3475, nasazeno 31. 10.): návrh „Čistá bílá“ z konceptů a poroty.
-  Na etiketě je název, zákonný název, složení s podílem, trvanlivost, objem, QR kód na e-shop, lhůta po otevření a Pavel Holub s adresou.
-  SISPO, telefon a e-mail jsou pryč. Názvy a složení jsou v `src/etikety.js` (`PRICHUTE`), podíly v `src/data.js` (`OBSAH.mosty`, stejná čísla tiskne ceník a ukazuje web), lhůta se zadává na stránce. Panel hlásí, co ještě chybí.
-  Tisk se zastaví jen u 3 l bez data, u příchuti bez záznamu v `PRICHUTE` a u razítka, které by vjelo do QR kódu. Svislé polohy etikety jsou v celých px, jinak se rozestupy liší podle řádku archu.
-  **Čeká na moštárnu (písemně):** přímo lisováno bez vody, cukru a aromat; v jaké podobě je příchuť; skutečné podíly místo odhadů (u Vánočního chybí i odhad podílu třešňové šťávy, tiskne se __ %, tak se prodávat nesmí);
+  Na etiketě je název, zákonný název, složení s podílem, trvanlivost, objem, QR kód na e-shop a Pavel Holub s adresou. Věta o lhůtě po otevření je od 4. 11. pryč.
+  SISPO, telefon a e-mail jsou pryč. Názvy a složení jsou v `src/etikety.js` (`PRICHUTE`), podíly v `src/data.js` (`OBSAH.mosty`, stejná čísla tiskne ceník a ukazuje web). Panel hlásí, co ještě chybí.
+  Tisk se zastaví jen u 3 l bez data, u příchuti bez záznamu v `PRICHUTE`, u řádku nebo razítka, které by vjely do QR kódu, a dokud se nenačte písmo. Svislé polohy etikety jsou v celých px, jinak se rozestupy liší podle řádku archu.
+  **Čeká na moštárnu (písemně):** přímo lisováno bez vody, cukru a aromat; v jaké podobě je příchuť; skutečné podíly místo odhadů (Vánoční 16 % višní a 8 % třešní má zatím jen od majitele, k tomu složení směsi koření: celer nebo hořčice by se musely ve Složení zvýraznit, souhrnné „koření“ jen do 2 %);
   zda se skořice a květ louhují přímo ve šťávě (99 % platí jen bez přidané vody, asi do 1 kg suroviny na 100 kg šťávy);
-  receptura skořice, květu bezu a Vánočního; lhůta po otevření; výživové údaje na 100 ml; razítko na 5 l (stěna, den a měsíc, nebo jen
+  receptura skořice, květu bezu a Vánočního; výživové údaje na 100 ml; razítko na 5 l (stěna, den a měsíc, nebo jen
   měsíc a rok); datum pro 3 l ke každé várce; siřičitany u limetky. Výživové údaje se na etiketu nevejdou: až budou čísla, přidat druhou etiketu
   na stejnou stěnu, nebo si od SZPI (Tábor) nechat písemně potvrdit výjimku. Zkušební tisk na skutečný arch a sken QR kódu telefonem ještě neproběhly.
+  Bez věty o otevření je riziko střední (rešerše 4. 11.): levná náprava je „Po otevření uchovávejte v chladničce.“ jinde na krabici (předtisk, druhá etiketa, razítko), lhůta s číslem jen písemně od moštárny.
 - [ ] **Texty webu k moštům** podle rešerše z 31. 10., čeká na rozhodnutí: pryč „bez přidaného cukru“, „bez konzervantů“, „domácí“, „čerstvě
   lisovaná“, „lisujeme“; cena za litr na webu a v ceníku; v e-shopu u každé příchutě údaje o potravině (čl. 14 nařízení 1169/2011). Při přejmenování
   nechat `druhNazev: 'Mošty'`, jinak `sazba_radku()` v `_spolecne.php` počítá 12 % DPH místo 21 %, a upravit `katalog.js` ř. 144, `cenik.js` ř. 39–45 a klíč v `PRICHUTE` v `etikety.js` (jinak se příchuť přestane tisknout).
@@ -70,6 +71,8 @@ Nic rozpracovaného v kódu není, main = produkce je čistá.
 
 ## Historie
 ### 2026-11-04
+- Etikety bez věty „Po otevření chlaďte a spotřebujte do __ týdnů.“ (rozhodnutí majitele) a s větším písmem: údaje 9,5 pt místo 8 pt (střední výška 1,63 mm), adresa 8,5 pt na jednom řádku pod QR kódem, kód o 3 px níž, ať má kolem dokola 4 moduly volna. Vybráno ze tří konceptů s porotou (čitelnost, předpisy a tisk): menší QR kód dával jen 8,5 pt. Aby se při 9,5 pt vešel výčet ovoce („šťáva z jablek a hrušek“), zmizelo u šťáv slovo „pasterovaná“, povinné není. Pole týdnů je z panelu pryč. Stránka hlídá přetečení všech řádků a tiskne až s načteným písmem.
+- Vánoční punč (jen na etiketě, web, ceník a e-shop dál „Vánoční mošt“): název „Ovocný nápoj s kořením“, složení „jablečná šťáva 76 %, višňová šťáva 16 %, třešňová šťáva 8 %, koření“ podle majitele, koření se jen louhuje, cukr není. Čísla jsou v `data.js` (`rozpis`, `rozpis()`), web a ceník je ukazují taky.
 - Zázvor má podle majitele 1 % zázvoru: etiketa „jablečná šťáva 99 %, zázvor 1 %“, stejně ceník a web (`data.js`). Upozornění „složení je zatím odhad“ už u zázvoru není.
 
 ### 2026-11-01
