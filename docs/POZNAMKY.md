@@ -70,6 +70,10 @@ Nic rozpracovaného v kódu není, main = produkce je čistá.
 - [ ] Tátovi nastavit „Heslo k objednávkám“ a ikonu přehledu na plochu telefonu i PC (návod v chatu 22. 10.).
 
 ## Historie
+### 2026-11-05
+- Supabase (projekt ovoce-holub-eshop) se uspal, bezplatný se uspí po týdnu bez provozu. E-shop pak bral přihlášené jako odhlášené a skupině Elektron zmizely bedýnky. Probuzen v 17:21 (supabase.com → Resume project). Nově ho budí `.github/workflows/supabase-budik.yml` jednou denně, když neodpoví, přijde e-mail z GitHubu.
+- Uzávěrka 5. 11. výjimečně do 21:00 (na pátek): `UZAVERKA_VYJIMKY` v `terminy.js`, server (`hodina_uzaverky()`) i večerní přehled do telefonu (dnes v 21:05) se podle ní řídí. Nasazení teď kontroluje syntaxi PHP, chybné PHP se na server nedostane.
+
 ### 2026-11-04
 - Etikety bez věty „Po otevření chlaďte a spotřebujte do __ týdnů.“ (rozhodnutí majitele) a s větším písmem: údaje 9,5 pt místo 8 pt (střední výška 1,63 mm), adresa 8,5 pt na jednom řádku pod QR kódem, kód o 3 px níž, ať má kolem dokola 4 moduly volna. Vybráno ze tří konceptů s porotou (čitelnost, předpisy a tisk): menší QR kód dával jen 8,5 pt. Aby se při 9,5 pt vešel výčet ovoce („šťáva z jablek a hrušek“), zmizelo u šťáv slovo „pasterovaná“, povinné není. Pole týdnů je z panelu pryč. Stránka hlídá přetečení všech řádků a tiskne až s načteným písmem.
 - Vánoční punč (jen na etiketě, web, ceník a e-shop dál „Vánoční mošt“): název „Ovocný nápoj s kořením“, složení „jablečná šťáva 76 %, višňová šťáva 16 %, třešňová šťáva 8 %, koření“ podle majitele, koření se jen louhuje, cukr není. Čísla jsou v `data.js` (`rozpis`, `rozpis()`), web a ceník je ukazují taky.

@@ -208,7 +208,8 @@ function nabizene_dny(array $p, bool $rozvoz, int $ted): array {
   for ($i = 1; count($out) < (int)($p['pocet'] ?? 6) && $i < 60; $i++) {
     $den = mktime(12, 0, 0, (int)date('n', $ted), (int)date('j', $ted) + $i, (int)date('Y', $ted));
     if (!in_array((int)date('w', $den), $dny, true) || zavreno($p, $den)) continue;
-    $uzaverka = mktime((int)($p['uzaverka'] ?? 18), 0, 0, (int)date('n', $den), (int)date('j', $den) - 1, (int)date('Y', $den));
+    $predem = mktime(12, 0, 0, (int)date('n', $den), (int)date('j', $den) - 1, (int)date('Y', $den));
+    $uzaverka = mktime(hodina_uzaverky($p, date('Y-m-d', $predem)), 0, 0, (int)date('n', $predem), (int)date('j', $predem), (int)date('Y', $predem));
     if ($ted >= $uzaverka) continue;
     $out[date('Y-m-d', $den)] = DNY_TYDNE[(int)date('w', $den)] . ' ' . date('j. n.', $den);
   }
@@ -420,7 +421,8 @@ if ($pravidla) {
   if ($datum === '' || $datum <= date('Y-m-d')) $upozorneni[] = "Termín „{$denKlient}“ už nejde stihnout – domluvit se zákazníkem jiný den.";
 }
 if ($poUzaverce) $upozorneni[] = 'Objednáno po uzávěrce (' . date('j. n. G:i') . ') – stihnout, nebo domluvit jiný den.';
-$uzaverka = (int)($pravidla['uzaverka'] ?? 18);
+// Do kdy jde objednávku změnit: den před termínem v hodinu uzávěrky (i s výjimkou z terminy.js).
+$uzaverka = hodina_uzaverky($pravidla, $datum !== '' ? date('Y-m-d', strtotime("$datum -1 day")) : '');
 
 // ---------- uložení ----------
 $castka = $platba === 'prevod' ? $celkem : 0;

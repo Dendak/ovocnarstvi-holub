@@ -41,6 +41,13 @@ jobs:
         run: |
           printf 'DirectoryIndex index.html\nRewriteEngine On\nRewriteCond %%{HTTPS} off\nRewriteRule ^(.*)$ https://%%{HTTP_HOST}%%{REQUEST_URI} [L,R=301]\n' > react-verze/dist/.htaccess
 
+      # Chyba syntaxe v PHP by na serveru shodila celé API (objednávky, platby, rozvoz), proto se nenasadí nic.
+      - name: Check PHP syntax
+        run: |
+          chyba=0
+          for f in $(find react-verze/dist/api -name '*.php'); do php -l "$f" > /tmp/php-l.txt 2>&1 || { cat /tmp/php-l.txt; chyba=1; }; done
+          exit $chyba
+
       - name: Deploy via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:

@@ -149,10 +149,14 @@ function poslat_push(string $nadpis, string $text, string $url = 'rozvoz.php', s
   }
 }
 
-// Večerní přehled na zítra (jednou denně po uzávěrce objednávek v 18:00). Volá upozorneni.php (GitHub Actions každých 10 min).
+// Večerní přehled na zítra (jednou denně 5 minut po uzávěrce objednávek, obvykle v 18:05, nejpozději do 22:00).
+// Volá upozorneni.php (GitHub Actions každých 10 min). Uzávěrka i její výjimky jsou v _cenik.php z terminy.js.
 function push_vecerni_prehled(): string {
   $ted = time();
-  if ((int)date('G', $ted) < 18 || (int)date('G', $ted) >= 22 || ((int)date('G', $ted) === 18 && (int)date('i', $ted) < 5)) return 'mimo čas';
+  $cenik = is_file(__DIR__ . '/_cenik.php') ? include __DIR__ . '/_cenik.php' : null;
+  $hodina = hodina_uzaverky(is_array($cenik['terminy'] ?? null) ? $cenik['terminy'] : null, date('Y-m-d', $ted));
+  $minuta = (int)date('G', $ted) * 60 + (int)date('i', $ted);
+  if ($minuta < $hodina * 60 + 5 || $minuta >= max(22, $hodina + 1) * 60) return 'mimo čas';
   $dnes = date('Y-m-d', $ted);
   $stav = nacist_json('push-stav.json', []);
   if (($stav['prehled'] ?? '') === $dnes) return 'už odesláno';

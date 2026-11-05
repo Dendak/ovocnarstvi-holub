@@ -7,6 +7,8 @@
 //  odmítne den, který už objednat nejde.
 // ============================================================
 export const UZAVERKA_HODINA = 18            // objednat nejpozději den předem do 18:00
+// Výjimečně jindy: den uzávěrky 'RRRR-MM-DD' → hodina. Platí jen ten den, starý záznam nevadí.
+export const UZAVERKA_VYJIMKY = { '2026-11-05': 21 } // 5. 11. na pátek do 21:00
 export const DNY_ROZVOZU = [1, 3, 5]         // po, st, pá
 export const DNY_ODBERU = [1, 2, 3, 4, 5]    // po–pá
 export const ODBER_OD = 14                   // otevírací doba (osobní odběr) od 14:00
@@ -28,7 +30,7 @@ export const ZAVRENO = []
 
 // Pro server (api/_cenik.php).
 export const PRAVIDLA_TERMINU = {
-  uzaverka: UZAVERKA_HODINA, rozvoz: DNY_ROZVOZU, odber: DNY_ODBERU, pocet: POCET_TERMINU, svatky: SVATKY, zavreno: ZAVRENO,
+  uzaverka: UZAVERKA_HODINA, vyjimky: UZAVERKA_VYJIMKY, rozvoz: DNY_ROZVOZU, odber: DNY_ODBERU, pocet: POCET_TERMINU, svatky: SVATKY, zavreno: ZAVRENO,
 }
 
 const DNY = ['neděle', 'pondělí', 'úterý', 'středa', 'čtvrtek', 'pátek', 'sobota']
@@ -43,10 +45,12 @@ function velikonoce(rok) {
   return new Date(rok, Math.floor(n / 31) - 1, (n % 31) + 1, 12)
 }
 
+const p2 = x => String(x).padStart(2, '0')
+const datumKlic = den => `${den.getFullYear()}-${p2(den.getMonth() + 1)}-${p2(den.getDate())}`
+
 function jeZavreno(den) {
   if (SVATKY.includes(`${den.getDate()}.${den.getMonth() + 1}.`)) return true
-  const p = x => String(x).padStart(2, '0')
-  if (ZAVRENO.includes(`${den.getFullYear()}-${p(den.getMonth() + 1)}-${p(den.getDate())}`)) return true
+  if (ZAVRENO.includes(datumKlic(den))) return true
   const odVelikonoc = Math.round((den - velikonoce(den.getFullYear())) / 86400000)
   return odVelikonoc === -2 || odVelikonoc === 1
 }
@@ -77,7 +81,7 @@ export function terminy(dny, pocet = POCET_TERMINU, now = new Date()) {
     if (!dny.includes(den.getDay()) || jeZavreno(den)) continue
     const uzaverka = new Date(den)
     uzaverka.setDate(den.getDate() - 1)
-    uzaverka.setHours(UZAVERKA_HODINA, 0, 0, 0)
+    uzaverka.setHours(UZAVERKA_VYJIMKY[datumKlic(uzaverka)] ?? UZAVERKA_HODINA, 0, 0, 0)
     if (ted >= uzaverka) continue
     out.push(`${DNY[den.getDay()]} ${den.getDate()}. ${den.getMonth() + 1}.`)
   }

@@ -1053,4 +1053,9 @@ function pripravit_polozky(array $objednavky): array {
   return $t;
 }
 
+// Hodina uzávěrky objednávek v den $den (Y-m-d) podle pravidel z _cenik.php: obvykle 18, výjimky z UZAVERKA_VYJIMKY v terminy.js.
+function hodina_uzaverky(?array $pravidla, string $den): int {
+  return (int)($pravidla['vyjimky'][$den] ?? $pravidla['uzaverka'] ?? 18);
+}
+
 require_once __DIR__ . '/_push.php';

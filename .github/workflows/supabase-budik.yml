@@ -1,0 +1,32 @@
+name: Supabase nespí (denně)
+
+# Bezplatný projekt Supabase (účty zákazníků e-shopu) se po týdnu bez provozu uspí. Přihlášení a ceny skupin
+# v e-shopu pak nefungují (stalo se 5. 11. 2026). Tahle úloha se na něj jednou denně ozve dotazem na přihlašování
+# a do databáze. Když neodpoví, úloha selže a GitHub pošle e-mail: projekt pak probudit na supabase.com
+# (projekt ovoce-holub-eshop → Resume project). Adresa a veřejný klíč se berou ze supabaseConfig.js.
+# GitHub plánované běhy po 60 dnech bez změny v repu vypne (pošle e-mail, pak stačí v Actions znovu zapnout).
+on:
+  schedule:
+    - cron: '23 5 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ozvat:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: react-verze/src/eshop/supabaseConfig.js
+          sparse-checkout-cone-mode: false
+      - name: Dotaz na přihlašování a do databáze
+        run: |
+          soubor=react-verze/src/eshop/supabaseConfig.js
+          url=$(grep -o "https://[a-z0-9]*\.supabase\.co" "$soubor" | head -1)
+          klic=$(grep -o "sb_publishable_[A-Za-z0-9_-]*" "$soubor" | head -1)
+          curl -fsS --max-time 60 --retry 3 --retry-delay 30 -H "apikey: $klic" "$url/auth/v1/health" -o /dev/null
+          curl -fsS --max-time 60 --retry 3 --retry-delay 30 -H "apikey: $klic" "$url/rest/v1/objednavky?select=id&limit=1" -o /dev/null
+          echo "Supabase odpovídá."
