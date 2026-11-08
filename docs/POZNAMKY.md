@@ -12,8 +12,16 @@ Na konci každé session: co je hotové, co je rozdělané, co dál.
   zda se skořice a květ louhují přímo ve šťávě (99 % platí jen bez přidané vody, asi do 1 kg suroviny na 100 kg šťávy);
   receptura skořice, květu bezu a Vánočního; výživové údaje na 100 ml; razítko na 5 l (stěna, den a měsíc, nebo jen
   měsíc a rok); datum pro 3 l ke každé várce; siřičitany u limetky. Výživové údaje se na etiketu nevejdou: až budou čísla, přidat druhou etiketu
-  na stejnou stěnu, nebo si od SZPI (Tábor) nechat písemně potvrdit výjimku. Zkušební tisk na skutečný arch a sken QR kódu telefonem ještě neproběhly.
+  na stejnou stěnu, nebo si od SZPI (Tábor) nechat písemně potvrdit výjimku. Na skutečné archy farma tiskne od 6. 11. (viz Sharp níže), sken QR kódu telefonem zatím nikdo nepotvrdil.
   Bez věty o otevření je riziko střední (rešerše 4. 11.): levná náprava je „Po otevření uchovávejte v chladničce.“ jinde na krabici (předtisk, druhá etiketa, razítko), lhůta s číslem jen písemně od moštárny.
+- [ ] **Tisk etiket na Sharp MX-3640 (farma):** Lukášovi se 6. 11. od 3. archu za sebou maže toner a jsou dvojité obrazy, po 2 arších to jde.
+  Rešerše 8. 11. (příručka MX-2640N/3140N/3640N, ověřeno druhým agentem): štítky a lesklý papír jen z ručního podavače, lícem dolů, zásuvka typ štítky ani nenabízí.
+  Typ musí být stejný na tiskárně (Settings → System Settings → Paper Tray Settings → ruční podavač → Labels, česky nejspíš „Samolepky“; „Štítkový papír“ jsou rozdružovače)
+  i v ovladači (Chrome: Ctrl+Shift+P → Předvolby → Paper: Bypass Tray + Labels), jinak tiskárna úlohu nevytiskne. Bez toho jdou archy jako obyčejný papír (výchozí u zásuvky i podavače,
+  Chrome bere výchozí předvolby ovladače) s teplem fixace na 60–89 g/m², nejspíš proto se toner nezapeče. Když se i s Labels stírá, zkusit Heavy paper 1.
+  Lesklé archy nejsou Avery 3475: na obalu ověřit „Laser“, lesklá média pro inkoust Sharp zakazuje. Čištění fixace: Device Control → Fusing Cleaning Mode (heslo správce).
+  Duchové i na obyčejném papíře se správným typem = servis. Náhrada 70 × 36 mm: Avery 3475, HERMA 4453, Rayfilm R0100.0527A (matné), lesklé pro laser Rayfilm R0119.0527A,
+  do vlhka laserová fólie Rayfilm R0502/R0503.0527A. **Čeká:** co je na obalu archů, nastavení tiskárny, zkouška 5 archů za sebou.
 - [ ] **Texty webu k moštům** podle rešerše z 31. 10., čeká na rozhodnutí: pryč „bez přidaného cukru“, „bez konzervantů“, „domácí“, „čerstvě
   lisovaná“, „lisujeme“; cena za litr na webu a v ceníku; v e-shopu u každé příchutě údaje o potravině (čl. 14 nařízení 1169/2011). Při přejmenování
   nechat `druhNazev: 'Mošty'`, jinak `sazba_radku()` v `_spolecne.php` počítá 12 % DPH místo 21 %, a upravit `katalog.js` ř. 144, `cenik.js` ř. 39–45 a klíč v `PRICHUTE` v `etikety.js` (jinak se příchuť přestane tisknout).
@@ -70,6 +78,9 @@ Nic rozpracovaného v kódu není, main = produkce je čistá.
 - [ ] Tátovi nastavit „Heslo k objednávkám“ a ikonu přehledu na plochu telefonu i PC (návod v chatu 22. 10.).
 
 ## Historie
+### 2026-11-08
+- Rešerše, proč se na Sharp MX-3640 od 3. archu maže tisk etiket a jak ho nastavit. Závěry a postup jsou v Rozdělaných (Tisk etiket na Sharp), kód beze změny.
+
 ### 2026-11-05
 - Supabase (projekt ovoce-holub-eshop) se uspal, bezplatný se uspí po týdnu bez provozu. E-shop pak bral přihlášené jako odhlášené a skupině Elektron zmizely bedýnky. Probuzen v 17:21 (supabase.com → Resume project). Nově ho budí `.github/workflows/supabase-budik.yml` jednou denně, když neodpoví, přijde e-mail z GitHubu.
 - Uzávěrka 5. 11. výjimečně do 21:00 (na pátek): `UZAVERKA_VYJIMKY` v `terminy.js`, server (`hodina_uzaverky()`) i večerní přehled do telefonu (dnes v 21:05) se podle ní řídí. Nasazení teď kontroluje syntaxi PHP, chybné PHP se na server nedostane.
