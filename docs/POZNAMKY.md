@@ -78,6 +78,12 @@ Nic rozpracovaného v kódu není, main = produkce je čistá.
 - [ ] Tátovi nastavit „Heslo k objednávkám“ a ikonu přehledu na plochu telefonu i PC (návod v chatu 22. 10.).
 
 ## Historie
+### 2026-11-19
+- Supabase 18. 11. poslal varování „scheduled to be paused“, i když budík od 6. 11. denně uspěl. `/auth/v1/health` do databáze nesahá a jeden prázdný anonymní dotaz denně Supabase nestačí (docs: „pár dotazů do databáze denně“, bez záruky; rešerše a stejné případy z 10.–11. 2026).
+  Nově jednořádková tabulka `budik` + funkce `budik_zazvonit()` (SECURITY DEFINER, volá jen anon, zapisuje nejvýš 1× za minutu, tabulka přes API zamčená), SQL je v `supabase/schema.sql` a 19. 11. je v Supabase spuštěné.
+  `supabase-budik.yml` běží 6× denně: zápis přes `POST /rest/v1/rpc/budik_zazvonit` a čtení `objednavky`. Security Advisor hlásí u funkce „executable by anon“ – záměr, neopravovat.
+  **Hlídat:** přijde-li další varování po 26. 11., zbývá přihlašování testovacího účtu z GitHubu, nebo placený Pro (jediná jistota).
+
 ### 2026-11-08
 - Rešerše, proč se na Sharp MX-3640 od 3. archu maže tisk etiket a jak ho nastavit. Závěry a postup jsou v Rozdělaných (Tisk etiket na Sharp), kód beze změny.
 
