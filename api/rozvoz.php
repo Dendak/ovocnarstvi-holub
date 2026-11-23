@@ -866,7 +866,9 @@ if (!$dny) {
   // Proužek dnů: od dneška nejvýš 7 dnů s objednávkami (a zvolený den); ostatní dny jsou ve výběru „Jiný den“.
   $prouzek = array_slice(array_values(array_filter($datovane, fn($d) => $d >= $dnes)), 0, 7);
   if ($vybrany !== 'bez-terminu' && !in_array($vybrany, $prouzek, true)) { $prouzek[] = $vybrany; sort($prouzek); }
-  if (isset($dny['bez-terminu'])) $prouzek[] = 'bez-terminu';
+  // „Bez termínu“ jen dokud tam je něco neodvezeného (nebo je právě zvolený); jinak je ve výběru „Jiný den“.
+  $bezTerminuNeodvezeno = count(array_filter($vse, fn($o) => !($o['datum'] ?? '') && empty($o['zruseno']) && empty($o['doruceno'])));
+  if (isset($dny['bez-terminu']) && ($bezTerminuNeodvezeno > 0 || $vybrany === 'bez-terminu')) $prouzek[] = 'bez-terminu';
   $obsah .= '<nav class="dny" aria-label="Dny">';
   foreach ($prouzek as $d) {
     $pozor = $minuly($d) && $dny[$d]['otevrene'] > 0;
@@ -876,7 +878,8 @@ if (!$dny) {
   // Zvolený den posunout do viditelné části proužku (jen vodorovně – stránka zůstane u karty po akci).
   $obsah .= '</nav><script>{const n=document.querySelector(".dny"),a=n&&n.querySelector("[aria-current]");if(a&&a.offsetLeft+a.offsetWidth>n.clientWidth)n.scrollLeft=a.offsetLeft-16}</script>';
   $ostatni = array_values(array_diff($datovane, $prouzek));
-  if ($ostatni) {
+  $bezTerminuVeVyberu = isset($dny['bez-terminu']) && !in_array('bez-terminu', $prouzek, true);
+  if ($ostatni || $bezTerminuVeVyberu) {
     $moznost = fn(string $d): string => '<option value="' . h($d) . '">' . h($nazevDne($d)) . ' (' . $dny[$d]['pocet'] . ')'
       . ($minuly($d) && $dny[$d]['otevrene'] ? ' ⚠ nevyřízené: ' . $dny[$d]['otevrene'] : '') . '</option>';
     $pozdeji = array_filter($ostatni, fn($d) => $d > $dnes);
@@ -884,6 +887,7 @@ if (!$dny) {
     $obsah .= '<form method="get" class="jiny-den"><label for="jiny-den" class="muted">Jiný den:</label><select id="jiny-den" name="den" onchange="if(this.value)this.form.submit()"><option value="">vyberte…</option>'
       . ($pozdeji ? '<optgroup label="Později">' . implode('', array_map($moznost, $pozdeji)) . '</optgroup>' : '')
       . ($starsi ? '<optgroup label="Starší">' . implode('', array_map($moznost, $starsi)) . '</optgroup>' : '')
+      . ($bezTerminuVeVyberu ? '<option value="bez-terminu">Bez termínu (' . $dny['bez-terminu']['pocet'] . ', odvezeno)</option>' : '')
       . '</select><noscript><button class="btn">Zobrazit</button></noscript></form>';
   }
   $obsah .= '</div>';
