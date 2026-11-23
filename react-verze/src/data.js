@@ -39,7 +39,6 @@ export const OBSAH = {
     // Celé `nabidka` smažte (nebo dejte null), má-li se dostupnost řídit jen sezónou.
     nabidka: {
       Jablka: ['Gala', 'Golden Delicious', 'Jonaprince', 'Idared'],
-      Hrušky: ['Novembra'],
     },
   },
   mosty: {
