@@ -62,14 +62,15 @@ export default function ProduktKarta({ produkt }) {
       <div className="p-5 flex flex-col flex-1">
         <div className="flex items-start justify-between gap-3 mb-1">
           <h3 className="font-serif text-xl font-semibold text-ink leading-tight">{produkt.nazev}</h3>
-          {produkt.cenaOd != null && (
+          {/* Nedostupné zboží (vyprodané, mimo sezónu) bez ceny. */}
+          {produkt.dostupne && produkt.cenaOd != null && (
             <p className="text-right shrink-0">
               <span className="font-semibold text-lg text-ink tabular-nums">od {formatKc(produkt.cenaOd)}</span>
               <span className="text-ink-soft text-xs block -mt-0.5">za balení</span>
               {produkt.cenaOdLitr != null && <span className="text-ink-soft text-xs block tabular-nums">od {formatJednotkovaCena(produkt.cenaOdLitr, 1, 'l')}</span>}
             </p>
           )}
-          {produkt.cenaZaJednotku != null && (
+          {produkt.dostupne && produkt.cenaZaJednotku != null && (
             <p className="text-right shrink-0">
               {produkt.cenaBezna != null && <span className="text-muted text-sm line-through tabular-nums mr-1.5">{formatKc(produkt.cenaBezna)}</span>}
               <span className="font-semibold text-lg text-ink tabular-nums">{formatKc(produkt.cenaZaJednotku)}</span>
